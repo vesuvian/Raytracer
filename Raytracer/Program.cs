@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -9,6 +10,7 @@ using Raytracer.Math;
 using Raytracer.SceneObjects;
 using Raytracer.SceneObjects.Geometry;
 using Raytracer.Utils;
+using Plane = Raytracer.SceneObjects.Geometry.Plane;
 
 namespace Raytracer
 {
@@ -19,7 +21,7 @@ namespace Raytracer
 		private const float NEAR_PLANE = 0.01f;
 		private const float FAR_PLANE = 1000.0f;
 		private const float FOV = 100;
-		private const float RENDER_SCALE = 2.0f;
+		private const float RENDER_SCALE = 0.5f;
 
 		private const string PATH = @"C:\\Temp\\raytrace.bmp";
 
@@ -44,11 +46,16 @@ namespace Raytracer
 				{
 					new Sphere
 					{
-						Position = new Vector3(3, 1, 0),
+						Position = new Vector3(3, 1, 7.5f),
 						Scale = new Vector3(2, 1, 1),
 						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 15, MathUtils.DEG2RAD * 30),
 						Radius = 2
 					},
+					new Plane
+					{
+						Position = new Vector3(0, 0, 0),
+						Rotation = Quaternion.CreateFromYawPitchRoll(0, MathUtils.DEG2RAD * 45, 0)
+					}
 				}
 			};
 
@@ -115,7 +122,14 @@ namespace Raytracer
 				closestIntersection = intersection;
 			}
 
-			return closest == null ? Color.Black : Color.Red;
+			if (closest == null)
+				return Color.Black;
+
+			if (closestIntersection == null)
+				return Color.Red;
+
+			float t = MathUtils.Clamp(closestIntersection.Value.Distance, NEAR_PLANE, FAR_PLANE) / (FAR_PLANE - NEAR_PLANE);
+			return ColorUtils.Lerp(Color.White, Color.Black, t);
 		}
 	}
 }
