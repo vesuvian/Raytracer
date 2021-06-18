@@ -3,7 +3,9 @@ using System.Text;
 
 namespace Raytracer.Extensions
 {
-	public static class Matrix4x4Extensions
+// ReSharper disable InconsistentNaming
+	public static class Matrix4x4Extensions 
+// ReSharper restore InconsistentNaming
 	{
 		public static Vector3 MultiplyNormal(this Matrix4x4 matrix, Vector3 vector)
 		{

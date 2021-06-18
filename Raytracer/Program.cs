@@ -8,6 +8,7 @@ using Raytracer.Extensions;
 using Raytracer.Math;
 using Raytracer.SceneObjects;
 using Raytracer.SceneObjects.Geometry;
+using Raytracer.Utils;
 
 namespace Raytracer
 {
@@ -20,8 +21,6 @@ namespace Raytracer
 		const float ASPECT = (float)WIDTH / HEIGHT;
 		const float FOV = 100;
 
-		const float DEG2RAD = (float)System.Math.PI / 180;
-
 		const string PATH = @"C:\\Temp\\raytrace.bmp";
 
 		public static void Main()
@@ -31,7 +30,7 @@ namespace Raytracer
 				Camera = new Camera
 				{
 					Position = new Vector3(0, 0, -10),
-					Rotation = Quaternion.CreateFromYawPitchRoll(DEG2RAD * 180, 0, 0)
+					Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 180, 0, 0),
 					//Projection = Matrix4x4.CreatePerspective(WIDTH, HEIGHT, NEAR_PLANE, FAR_PLANE)
 				},
 				Lights = new List<Light>
@@ -66,7 +65,7 @@ namespace Raytracer
 
 		public static void Render(Scene scene, Bitmap buffer)
 		{
-			float scale = (float)System.Math.Tan(DEG2RAD * FOV * 0.5f);
+			float scale = (float)System.Math.Tan(MathUtils.DEG2RAD * FOV * 0.5f);
 
 			for (int y = 0; y < buffer.Height; y++)
 			{
