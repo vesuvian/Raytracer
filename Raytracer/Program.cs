@@ -14,14 +14,14 @@ namespace Raytracer
 {
 	public static class Program
 	{
-		const int WIDTH = 1920;
-		const int HEIGHT = 1080;
-		const float NEAR_PLANE = 0.01f;
-		const float FAR_PLANE = 1000.0f;
-		const float ASPECT = (float)WIDTH / HEIGHT;
-		const float FOV = 100;
+		private const int WIDTH = 1920;
+		private const int HEIGHT = 1080;
+		private const float NEAR_PLANE = 0.01f;
+		private const float FAR_PLANE = 1000.0f;
+		private const float FOV = 100;
+		private const float RENDER_SCALE = 2.0f;
 
-		const string PATH = @"C:\\Temp\\raytrace.bmp";
+		private const string PATH = @"C:\\Temp\\raytrace.bmp";
 
 		public static void Main()
 		{
@@ -52,13 +52,20 @@ namespace Raytracer
 				}
 			};
 
-			using (Bitmap buffer = new Bitmap(WIDTH, HEIGHT))
+			using (Bitmap buffer = new Bitmap((int)(WIDTH * RENDER_SCALE), (int)(HEIGHT * RENDER_SCALE)))
 			{
 				Render(scene, buffer);
 
 				if (File.Exists(PATH))
 					File.Delete(PATH);
-				buffer.Save(PATH, ImageFormat.Bmp);
+
+				using (Bitmap output = new Bitmap(WIDTH, HEIGHT))
+				{
+					using (Graphics graphics = Graphics.FromImage(output))
+						graphics.DrawImage(buffer, 0, 0, WIDTH, HEIGHT);
+
+					output.Save(PATH, ImageFormat.Bmp);
+				}
 			}
 
 			Process.Start("cmd.exe", $"/c {PATH}");
@@ -66,14 +73,15 @@ namespace Raytracer
 
 		public static void Render(Scene scene, Bitmap buffer)
 		{
+			float aspect = (float)buffer.Width / buffer.Height;
 			float scale = (float)System.Math.Tan(MathUtils.DEG2RAD * FOV * 0.5f);
 
 			for (int y = 0; y < buffer.Height; y++)
 			{
 				for (int x = 0; x < buffer.Width; x++)
 				{
-					float rayX = (2 * (x + 0.5f) / (float)WIDTH - 1) * ASPECT * scale;
-					float rayY = (1 - 2 * (y + 0.5f) / (float)HEIGHT) * scale;
+					float rayX = (2 * (x + 0.5f) / buffer.Width - 1) * aspect * scale;
+					float rayY = (1 - 2 * (y + 0.5f) / buffer.Height) * scale;
 					Vector3 direction = scene.Camera.LocalToWorld.MultiplyDirection(new Vector3(rayX, rayY, -1));
 
 					Ray ray = new Ray
