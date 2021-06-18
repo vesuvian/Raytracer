@@ -13,7 +13,7 @@ namespace Raytracer.Math
 			return new Ray
 			{
 				Origin = matrix.MultiplyPoint(Origin),
-				Direction = Vector3.Normalize(matrix.MultiplyNormal(Direction))
+				Direction = Vector3.Normalize(matrix.MultiplyDirection(Direction))
 			};
 		}
 	}
