@@ -4,7 +4,8 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Numerics;
-using Raytracer.Math;
+using System.Threading.Tasks;
+using Raytracer.Layers;
 using Raytracer.SceneObjects;
 using Raytracer.SceneObjects.Geometry;
 using Raytracer.Utils;
@@ -18,7 +19,7 @@ namespace Raytracer
 		private const int HEIGHT = 1080;
 		private const float RENDER_SCALE = 2.0f;
 
-		private const string PATH = @"C:\\Temp\\raytrace.bmp";
+		private const string PATH = @"C:\\Temp\\Raytracer\\";
 
 		public static void Main()
 		{
@@ -50,71 +51,38 @@ namespace Raytracer
 						Radius = 5
 					},
 					new Plane()
+				},
+				Layers = new List<ILayer>
+				{
+					new DepthLayer()
 				}
 			};
 
+			Parallel.ForEach(scene.Layers, layer => Render(scene, layer));
+		}
+
+		private static void Render(Scene scene, ILayer layer)
+		{
+			string path = Path.Combine(PATH, layer.GetType().Name + ".bmp");
+
 			using (Bitmap buffer = new Bitmap((int)(WIDTH * RENDER_SCALE), (int)(HEIGHT * RENDER_SCALE)))
 			{
-				Render(scene, buffer);
+				layer.Render(scene, buffer);
 
-				if (File.Exists(PATH))
-					File.Delete(PATH);
+				Directory.CreateDirectory(PATH);
+				if (File.Exists(path))
+					File.Delete(path);
 
 				using (Bitmap output = new Bitmap(WIDTH, HEIGHT))
 				{
 					using (Graphics graphics = Graphics.FromImage(output))
 						graphics.DrawImage(buffer, 0, 0, WIDTH, HEIGHT);
 
-					output.Save(PATH, ImageFormat.Bmp);
+					output.Save(path, ImageFormat.Bmp);
 				}
 			}
 
-			Process.Start("cmd.exe", $"/c {PATH}");
-		}
-
-		private static void Render(Scene scene, Bitmap buffer)
-		{
-			for (int y = 0; y < buffer.Height; y++)
-			{
-				for (int x = 0; x < buffer.Width; x++)
-				{
-					float xViewport = (x + 0.5f) / buffer.Width;
-					float yViewport = (y + 0.5f) / buffer.Height;
-
-					Ray ray = scene.Camera.CreateRay(xViewport, yViewport);
-
-					Color pixel = CastRay(scene, ray);
-					buffer.SetPixel(x, y, pixel);
-				}
-			}
-		}
-
-		private static Color CastRay(Scene scene, Ray ray)
-		{
-			IGeometry closest = null;
-			Intersection? closestIntersection = null;
-
-			foreach (IGeometry obj in scene.Geometry)
-			{
-				Intersection intersection;
-				if (!obj.GetIntersection(ray, out intersection))
-					continue;
-
-				if (closestIntersection != null &&
-					closestIntersection.Value.Distance <= intersection.Distance)
-					continue;
-
-				closest = obj;
-				closestIntersection = intersection;
-			}
-
-			if (closest == null)
-				return Color.Black;
-
-			float planarDistance = Plane.Distance(scene.Camera.Position, scene.Camera.Forward, closestIntersection.Value.Position, out _);
-			float t = MathUtils.Clamp(planarDistance, scene.Camera.NearPlane, scene.Camera.FarPlane) /
-			          (scene.Camera.FarPlane - scene.Camera.NearPlane);
-			return ColorUtils.Lerp(Color.White, Color.Black, t);
+			Process.Start("cmd.exe", $"/c {path}");
 		}
 	}
 }
