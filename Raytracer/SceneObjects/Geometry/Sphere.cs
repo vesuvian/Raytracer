@@ -38,26 +38,22 @@ namespace Raytracer.SceneObjects.Geometry
 
 			// Find the intersect
 			float t;
-			return HitSphere(Vector3.Zero, Radius, ray, out t);
+			if (!HitSphere(Vector3.Zero, Radius, ray, out t))
+				return false;
 
-			//		Vector3 position = t0 < t1 ? Position + ray.Direction * t0 : Position + ray.Direction * t1;
-			//		Vector3 normal = Vector3.Normalize(position);
-			//		
-			//		HitSphere(Position, Radius, ray).Dump();
-			//
-			//		// Transform back into world space
-			//		position = MultiplyPoint(position, Transform);
-			//		normal = MultiplyDirection(normal, Transform);
-			//		normal = Vector3.Normalize(normal);
-			//
-			//		intersection = new Intersection
-			//		{
-			//			Position = position,
-			//			Normal = normal,
-			//			Distance = Vector3.Distance(ray.Origin, position)
-			//		};
-			//		
-			//		return true;
+			Vector3 position = ray.PositionAtDelta(t);
+			Vector3 normal = Vector3.Normalize(position);
+
+			intersection = new Intersection
+			{
+				Position = position,
+				Normal = normal,
+				RayOrigin = ray.Origin
+			};
+
+			// Transform intersection from local to world space
+			intersection = intersection.Multiply(LocalToWorld);
+			return true;
 		}
 	}
 }
