@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Numerics;
 using Raytracer.Math;
-using Raytracer.Utils;
 
 namespace Raytracer.SceneObjects.Geometry
 {
@@ -16,15 +15,15 @@ namespace Raytracer.SceneObjects.Geometry
 			// First transform the ray into local space
 			ray = ray.Multiply(WorldToLocal);
 
-			float vdot = Vector3.Dot(ray.Direction, s_Normal);
-			float ndot = -Vector3.Dot(ray.Origin, s_Normal);
-
-			if (MathUtils.Approximately(vdot, 0.0f))
+			float denom = Vector3.Dot(s_Normal, ray.Direction);
+			if (MathF.Abs(denom) <= 0.00001f)
 				return false;
 
-			float t = ndot / vdot;
-			if (t <= 0.0f)
+			float t = -Vector3.Dot(s_Normal, ray.Origin) / denom;
+			if (t <= 0.00001f)
 				return false;
+
+			Vector3 position = ray.Origin + t * ray.Direction;
 
 			// Plane normal is flipped if the ray comes from behind
 			Vector3 normal = Vector3.Dot(s_Normal, ray.Direction) < 0 ? s_Normal : s_Normal * -1;
@@ -32,7 +31,7 @@ namespace Raytracer.SceneObjects.Geometry
 			intersection = new Intersection
 			{
 				Normal = normal,
-				Position = ray.Direction * MathF.Abs(ndot) + ray.Origin,
+				Position = position,
 				RayOrigin = ray.Origin
 			};
 
