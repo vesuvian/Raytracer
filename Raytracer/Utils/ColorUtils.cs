@@ -26,6 +26,7 @@ namespace Raytracer.Utils
             float r = color.R / 255.0f;
             float g = color.G / 255.0f;
             float b = color.B / 255.0f;
+            float a = color.A / 255.0f;
 
             float max = System.Math.Max(r, System.Math.Max(g, b));
             float min = System.Math.Min(r, System.Math.Min(g, b));
@@ -58,7 +59,7 @@ namespace Raytracer.Utils
             return new Vector4(MathUtils.Clamp(h, 0, 360),
                                MathUtils.Clamp(s, 0, 1),
                                MathUtils.Clamp(l, 0, 1),
-                               color.A);
+                               MathUtils.Clamp(a, 0, 1));
         }
         /// <summary>
         /// Converts HSL to RGB.
