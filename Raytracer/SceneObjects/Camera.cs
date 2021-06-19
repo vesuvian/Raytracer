@@ -15,6 +15,14 @@ namespace Raytracer.SceneObjects
 
 		public float Aspect { get; set; } = 2.0f;
 
+		public Matrix4x4 Projection
+		{
+			get
+			{
+				return Matrix4x4.CreatePerspectiveFieldOfView(MathUtils.DEG2RAD * Fov, Aspect, NearPlane, FarPlane);
+			}
+		}
+
 		/// <summary>
 		/// Creates a camera ray for the given viewport co-ordinates in the range 0 - 1 (bottom left to top right).
 		/// </summary>

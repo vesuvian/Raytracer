@@ -50,12 +50,19 @@ namespace Raytracer
 						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 15, MathUtils.DEG2RAD * 30),
 						Radius = 5
 					},
+					new Sphere
+					{
+						Position = new Vector3(-3, 10, 0),
+						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 15, MathUtils.DEG2RAD * 30),
+						Radius = 5
+					},
 					new Plane()
 				},
 				Layers = new List<ILayer>
 				{
 					new DepthLayer(),
-					new WorldNormalsLayer()
+					new WorldNormalsLayer(),
+					new ViewNormalsLayer()
 				}
 			};
 

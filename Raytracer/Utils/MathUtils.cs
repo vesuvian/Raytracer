@@ -4,6 +4,7 @@ namespace Raytracer.Utils
 {
 	public static class MathUtils
 	{
+		public const float RAD2DEG = (float)System.Math.PI * 180;
 		public const float DEG2RAD = (float)System.Math.PI / 180;
 
 		/// <summary>
