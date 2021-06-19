@@ -25,8 +25,43 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 				    Position = Vector3.Zero,
 				    RayOrigin = new Vector3(0, 1, 0)
 			    }
-		    }
-	    };
+		    },
+			new object[]
+			{
+				new Plane
+				{
+					Position = new Vector3(0, -1, 0)
+				},
+				new Ray
+				{
+					Origin = new Vector3(0, 0, 0),
+					Direction = new Vector3(0, -1, 0)
+				},
+				true,
+				new Intersection
+				{
+					Normal = new Vector3(0, 1, 0),
+					Position = new Vector3(0, -1, 0),
+					RayOrigin = new Vector3(0, 0, 0)
+				}
+			},
+			new object[]
+			{
+				new Plane(),
+				new Ray
+				{
+					Origin = new Vector3(0, -1, 0),
+					Direction = new Vector3(0, 1, 0)
+				},
+				true,
+				new Intersection
+				{
+					Normal = new Vector3(0, -1, 0),
+					Position = Vector3.Zero,
+					RayOrigin = new Vector3(0, -1, 0)
+				}
+			},
+		};
 
 
 		[TestCaseSource(nameof(s_GetIntersectionTestCases))]

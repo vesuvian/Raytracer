@@ -7,7 +7,7 @@ namespace Raytracer.SceneObjects.Geometry
 {
 	public sealed class Plane : AbstractGeometry
 	{
-		private static Vector3 VECTOR3_UP = new Vector3(0,1,0);
+		private static readonly Vector3 s_Normal = new Vector3(0, 1, 0);
 
 		public override bool GetIntersection(Ray ray, out Intersection intersection)
 		{
@@ -16,8 +16,8 @@ namespace Raytracer.SceneObjects.Geometry
 			// First transform the ray into local space
 			ray = ray.Multiply(WorldToLocal);
 
-			float vdot = Vector3.Dot(ray.Direction, VECTOR3_UP);
-			float ndot = -Vector3.Dot(ray.Origin, VECTOR3_UP);
+			float vdot = Vector3.Dot(ray.Direction, s_Normal);
+			float ndot = -Vector3.Dot(ray.Origin, s_Normal);
 
 			if (MathUtils.Approximately(vdot, 0.0f))
 				return false;
@@ -26,9 +26,12 @@ namespace Raytracer.SceneObjects.Geometry
 			if (t <= 0.0f)
 				return false;
 
+			// Plane normal is flipped if the ray comes from behind
+			Vector3 normal = Vector3.Dot(s_Normal, ray.Direction) < 0 ? s_Normal : s_Normal * -1;
+
 			intersection = new Intersection
 			{
-				Normal = VECTOR3_UP,
+				Normal = normal,
 				Position = ray.Direction * MathF.Abs(ndot) + ray.Origin,
 				RayOrigin = ray.Origin
 			};
