@@ -50,9 +50,9 @@ namespace Raytracer.SceneObjects
 			{
 				if (m_LocalToWorld == null)
 				{
-					m_LocalToWorld = Matrix4x4.CreateTranslation(Position) *
+					m_LocalToWorld = Matrix4x4.CreateScale(Scale) *
 					                 Matrix4x4.CreateFromQuaternion(Rotation) *
-					                 Matrix4x4.CreateScale(Scale);
+					                 Matrix4x4.CreateTranslation(Position);
 				}
 				return m_LocalToWorld.Value;
 			}
