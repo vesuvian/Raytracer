@@ -125,10 +125,8 @@ namespace Raytracer
 			if (closest == null)
 				return Color.Black;
 
-			if (closestIntersection == null)
-				return Color.Red;
-
-			float t = MathUtils.Clamp(closestIntersection.Value.Distance, NEAR_PLANE, FAR_PLANE) / (FAR_PLANE - NEAR_PLANE);
+			float planarDistance = Plane.Distance(scene.Camera.Position, scene.Camera.Forward, closestIntersection.Value.Position, out _);
+			float t = MathUtils.Clamp(planarDistance, NEAR_PLANE, FAR_PLANE) / (FAR_PLANE - NEAR_PLANE);
 			return ColorUtils.Lerp(Color.White, Color.Black, t);
 		}
 	}

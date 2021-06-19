@@ -9,5 +9,6 @@ namespace Raytracer.SceneObjects
 		Quaternion Rotation { get; set; }
 		Matrix4x4 LocalToWorld { get; }
 		Matrix4x4 WorldToLocal { get; }
+		Vector3 Forward { get; }
 	}
 }

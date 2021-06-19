@@ -16,5 +16,15 @@ namespace Raytracer.Math
 				Direction = Vector3.Normalize(matrix.MultiplyDirection(Direction))
 			};
 		}
+
+		/// <summary>
+		/// Gets the position at the delta along the ray.
+		/// </summary>
+		/// <param name="delta"></param>
+		/// <returns></returns>
+		public Vector3 PositionAtDelta(float delta)
+		{
+			return Origin + delta * Direction;
+		}
 	}
 }

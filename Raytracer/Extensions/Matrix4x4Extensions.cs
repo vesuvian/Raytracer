@@ -10,7 +10,8 @@ namespace Raytracer.Extensions
 		public static Vector3 MultiplyNormal(this Matrix4x4 matrix, Vector3 vector)
 		{
 			Matrix4x4.Invert(Matrix4x4.Transpose(matrix), out matrix);
-			return MultiplyDirection(matrix, vector);
+			Vector3 direction = MultiplyDirection(matrix, vector);
+			return Vector3.Normalize(direction);
 		}
 
 		public static Vector3 MultiplyDirection(this Matrix4x4 matrix, Vector3 vector)

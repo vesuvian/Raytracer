@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Raytracer.Extensions;
 
 namespace Raytracer.SceneObjects
 {
@@ -70,6 +71,8 @@ namespace Raytracer.SceneObjects
 				return m_WorldToLocal.Value;
 			}
 		}
+
+		public Vector3 Forward { get { return LocalToWorld.MultiplyNormal(new Vector3(0, 0, 1)); } }
 
 		protected AbstractSceneObject()
 		{
