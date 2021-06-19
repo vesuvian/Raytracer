@@ -54,7 +54,8 @@ namespace Raytracer
 				},
 				Layers = new List<ILayer>
 				{
-					new DepthLayer()
+					new DepthLayer(),
+					new WorldNormalsLayer()
 				}
 			};
 
