@@ -11,7 +11,7 @@ namespace Raytracer.SceneObjects
 	{
 		private float m_NearPlane = 0.001f;
 		private float m_FarPlane = 1000.0f;
-		private float m_Fov = 100.0f;
+		private float m_Fov = 90.0f;
 		private float m_Aspect = 2.0f;
 		private Matrix4x4? m_Projection;
 
@@ -57,9 +57,9 @@ namespace Raytracer.SceneObjects
 
 		public float FocalLength { get; set; } = 10.0f;
 
-		public float ApertureSize { get; set; } = 0.5f;
+		public float ApertureSize { get; set; } = 0;
 
-		public int Samples { get; set; } = 32;
+		public int Samples { get; set; } = 1;
 
 		public Matrix4x4 Projection
 		{
@@ -87,8 +87,19 @@ namespace Raytracer.SceneObjects
 
 			for (int index = 0; index < Samples; index++)
 			{
-				float x = random.NextFloat(minX, maxX);
-				float y = random.NextFloat(minY, maxY);
+				float x;
+				float y;
+
+				if (Samples == 1)
+				{
+					x = (minX + maxX) / 2;
+					y = (minY + maxY) / 2;
+				}
+				else
+				{
+					x = random.NextFloat(minX, maxX);
+					y = random.NextFloat(minY, maxY);
+				}
 
 				// Calculate the local viewport ray
 				float rayX = (2 * x - 1) * Aspect * scale;

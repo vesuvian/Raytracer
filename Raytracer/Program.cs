@@ -17,7 +17,7 @@ namespace Raytracer
 	{
 		private const int WIDTH = 1920;
 		private const int HEIGHT = 1080;
-		private const float RENDER_SCALE = 2.0f;
+		private const float RENDER_SCALE = 1.0f;
 
 		private const string PATH = @"C:\\Temp\\Raytracer\\";
 
