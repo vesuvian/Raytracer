@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Numerics;
 
 namespace Raytracer.Utils
@@ -113,5 +114,28 @@ namespace Raytracer.Utils
                                   (int)MathUtils.Clamp(rgb[1] * 255, 0, 255),
                                   (int)MathUtils.Clamp(rgb[2] * 255, 0, 255));
         }
-    }
+
+        public static Color Average(IEnumerable<Color> colors)
+        {
+	        int count = 0;
+	        int r = 0;
+	        int g = 0;
+	        int b = 0;
+	        int a = 0;
+
+	        foreach (Color color in colors)
+	        {
+		        count++;
+		        r += color.R;
+		        g += color.G;
+		        b += color.B;
+		        a += color.A;
+	        }
+
+	        return Color.FromArgb((int)(a / (float)count),
+	                              (int)(r / (float)count),
+	                              (int)(g / (float)count),
+	                              (int)(b / (float)count));
+        }
+	}
 }

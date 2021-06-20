@@ -53,10 +53,14 @@ namespace Raytracer
 					new Sphere
 					{
 						Position = new Vector3(-3, 10, 0),
-						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 15, MathUtils.DEG2RAD * 30),
 						Radius = 5
 					},
-					new Plane()
+					new Plane(),
+					new Plane
+					{
+						Position = new Vector3(-10, 0, 0),
+						Rotation = Quaternion.CreateFromYawPitchRoll(0, 0, MathUtils.DEG2RAD * 90)
+					}
 				},
 				Layers = new List<ILayer>
 				{

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using Raytracer.Extensions;
 using Raytracer.Math;
@@ -20,6 +21,8 @@ namespace Raytracer.SceneObjects
 
 		public float ApertureSize { get; set; } = 0.5f;
 
+		public int Samples { get; set; } = 32;
+
 		public Matrix4x4 Projection
 		{
 			get
@@ -34,8 +37,11 @@ namespace Raytracer.SceneObjects
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <returns></returns>
-		public Ray CreateRay(float x, float y)
+		public IEnumerable<Ray> CreateRays(float x, float y)
 		{
+			int seed = HashCode.Combine(x, y);
+			Random random = new Random(seed);
+
 			// Calculate the local viewport ray
 			float scale = (float)System.Math.Tan(MathUtils.DEG2RAD * Fov * 0.5f);
 			float rayX = (2 * x - 1) * Aspect * scale;
@@ -43,24 +49,25 @@ namespace Raytracer.SceneObjects
 			Vector3 direction = Vector3.Normalize(new Vector3(rayX, rayY, -1));
 
 			// Find the focal point
-			Vector3 focalpoint = new Ray {Direction = direction}.PositionAtDelta(FocalLength);
+			Vector3 focalpoint = new Ray { Direction = direction }.PositionAtDelta(FocalLength);
 
-			// Offset the start position by a random amount for depth of field
-			int seed = HashCode.Combine(x, y);
-			Random random = new Random(seed);
-			Vector3 apertureOffset =
-				new Vector3(random.NextFloat(-0.5f, 0.5f),
-				            random.NextFloat(-0.5f, 0.5f),
-				            random.NextFloat(-0.5f, 0.5f)) * ApertureSize;
-
-			// Direction is now the direction from the offset position to the focal point
-			direction = Vector3.Normalize(focalpoint - apertureOffset);
-
-			return new Ray
+			for (int index = 0; index < Samples; index++)
 			{
-				Origin = apertureOffset,
-				Direction = direction
-			}.Multiply(LocalToWorld);
+				// Offset the start position by a random amount for depth of field
+				Vector3 apertureOffset =
+					new Vector3(random.NextFloat(-0.5f, 0.5f),
+					            random.NextFloat(-0.5f, 0.5f),
+					            random.NextFloat(-0.5f, 0.5f)) * ApertureSize;
+
+				// Direction is now the direction from the offset position to the focal point
+				Vector3 apertureOffsetDirection = Vector3.Normalize(focalpoint - apertureOffset);
+
+				yield return new Ray
+				{
+					Origin = apertureOffset,
+					Direction = apertureOffsetDirection
+				}.Multiply(LocalToWorld);
+			}
 		}
 	}
 }

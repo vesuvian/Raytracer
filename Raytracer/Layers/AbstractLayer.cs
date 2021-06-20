@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
 using Raytracer.Math;
+using Raytracer.Utils;
 
 namespace Raytracer.Layers
 {
@@ -27,8 +29,12 @@ namespace Raytracer.Layers
 						float xViewport = (x + 0.5f) / width;
 						float yViewport = (y + 0.5f) / height;
 
-						Ray ray = scene.Camera.CreateRay(xViewport, yViewport);
-						Color pixel = CastRay(scene, ray);
+						IEnumerable<Color> samples =
+							scene.Camera
+							     .CreateRays(xViewport, yViewport)
+							     .Select(r => CastRay(scene, r));
+
+						Color pixel = ColorUtils.Average(samples);
 						lock (buffer)
 							buffer.SetPixel(x, y, pixel);
 					}
