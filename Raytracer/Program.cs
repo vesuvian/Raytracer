@@ -43,6 +43,12 @@ namespace Raytracer
 				},
 				Geometry = new List<IGeometry>
 				{
+					new Cube
+					{
+						Position = new Vector3(13f, 5, 0),
+						Scale = new Vector3(2, 2, 2),
+						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45)
+					},
 					new Sphere
 					{
 						Position = new Vector3(3, 1, 7.5f),

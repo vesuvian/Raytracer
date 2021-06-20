@@ -33,5 +33,12 @@ namespace Raytracer.Utils
 		{
 			return a * (1 - t) + b * t;
 		}
+
+		public static float SmoothStep(float from, float to, float t)
+		{
+			t = Clamp(t, 0.0f, 1.0f);
+			t = -2.0f * t * t * t + 3.0f * t * t;
+			return to * t + from * (1.0f - t);
+		}
 	}
 }
