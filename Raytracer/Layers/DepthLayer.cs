@@ -9,10 +9,10 @@ namespace Raytracer.Layers
 	{
 		protected override Color CastRay(Scene scene, Ray ray)
 		{
-			IGeometry closest = null;
+			ISceneGeometry closest = null;
 			Intersection? closestIntersection = null;
 
-			foreach (IGeometry obj in scene.Geometry)
+			foreach (ISceneGeometry obj in scene.Geometry)
 			{
 				Intersection intersection;
 				if (!obj.GetIntersection(ray, out intersection))

@@ -4,7 +4,7 @@ using Raytracer.Math;
 
 namespace Raytracer.SceneObjects.Geometry
 {
-	public sealed class Plane : AbstractGeometry
+	public sealed class Plane : AbstractSceneGeometry
 	{
 		private static readonly Vector3 s_Normal = new Vector3(0, 1, 0);
 

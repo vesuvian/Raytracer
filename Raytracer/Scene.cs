@@ -9,7 +9,7 @@ namespace Raytracer
 	{
 		public Camera Camera { get; set; }
 		public List<Light> Lights { get; set; }
-		public List<IGeometry> Geometry { get; set; }
+		public List<ISceneGeometry> Geometry { get; set; }
 		public List<ILayer> Layers { get; set; }
 	}
 }

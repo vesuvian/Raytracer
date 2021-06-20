@@ -2,7 +2,7 @@
 
 namespace Raytracer.SceneObjects.Geometry
 {
-	public interface IGeometry : ISceneObject
+	public interface ISceneGeometry : ISceneObject
 	{
 		bool GetIntersection(Ray ray, out Intersection intersection);
 	}

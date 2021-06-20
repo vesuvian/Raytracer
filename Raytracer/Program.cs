@@ -41,7 +41,7 @@ namespace Raytracer
 						Position = new Vector3(0, 1, 0)
 					}
 				},
-				Geometry = new List<IGeometry>
+				Geometry = new List<ISceneGeometry>
 				{
 					new Cube
 					{

@@ -3,7 +3,7 @@ using Raytracer.Math;
 
 namespace Raytracer.SceneObjects.Geometry
 {
-	public sealed class Sphere : AbstractGeometry
+	public sealed class Sphere : AbstractSceneGeometry
 	{
 		public float Radius { get; set; }
 
@@ -12,13 +12,13 @@ namespace Raytracer.SceneObjects.Geometry
 			Radius = 1;
 		}
 
-		private static bool HitSphere(Vector3 center, float radius, Ray r, out float t)
+		private static bool HitSphere(float radius, Ray ray, out float t)
 		{
 			t = default;
 
-			Vector3 oc = r.Origin - center;
-			float a = Vector3.Dot(r.Direction, r.Direction);
-			float b = 2.0f * Vector3.Dot(oc, r.Direction);
+			Vector3 oc = ray.Origin;
+			float a = Vector3.Dot(ray.Direction, ray.Direction);
+			float b = 2.0f * Vector3.Dot(oc, ray.Direction);
 			float c = Vector3.Dot(oc, oc) - radius * radius;
 
 			float discriminant = b * b - 4 * a * c;
@@ -38,7 +38,7 @@ namespace Raytracer.SceneObjects.Geometry
 
 			// Find the intersect
 			float t;
-			if (!HitSphere(Vector3.Zero, Radius, ray, out t))
+			if (!HitSphere(Radius, ray, out t))
 				return false;
 
 			Vector3 position = ray.PositionAtDelta(t);

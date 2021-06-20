@@ -5,7 +5,7 @@ using Raytracer.Utils;
 
 namespace Raytracer.SceneObjects.Geometry
 {
-    public sealed class Cube : AbstractGeometry
+    public sealed class Cube : AbstractSceneGeometry
     {
 	    public override bool GetIntersection(Ray ray, out Intersection intersection)
 	    {
