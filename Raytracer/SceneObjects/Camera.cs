@@ -74,25 +74,30 @@ namespace Raytracer.SceneObjects
 		/// <summary>
 		/// Creates a camera ray for the given viewport co-ordinates in the range 0 - 1 (bottom left to top right).
 		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
+		/// <param name="minX"></param>
+		/// <param name="maxX"></param>
+		/// <param name="minY"></param>
+		/// <param name="maxY"></param>
 		/// <returns></returns>
-		public IEnumerable<Ray> CreateRays(float x, float y)
+		public IEnumerable<Ray> CreateRays(float minX, float maxX, float minY, float maxY)
 		{
-			int seed = HashCode.Combine(x, y);
+			int seed = HashCode.Combine(minX, maxX, minY, maxY);
 			Random random = new Random(seed);
-
-			// Calculate the local viewport ray
 			float scale = (float)System.Math.Tan(MathUtils.DEG2RAD * Fov * 0.5f);
-			float rayX = (2 * x - 1) * Aspect * scale;
-			float rayY = (1 - 2 * y) * scale;
-			Vector3 direction = Vector3.Normalize(new Vector3(rayX, rayY, -1));
-
-			// Find the focal point
-			Vector3 focalpoint = new Ray { Direction = direction }.PositionAtDelta(FocalLength);
 
 			for (int index = 0; index < Samples; index++)
 			{
+				float x = random.NextFloat(minX, maxX);
+				float y = random.NextFloat(minY, maxY);
+
+				// Calculate the local viewport ray
+				float rayX = (2 * x - 1) * Aspect * scale;
+				float rayY = (1 - 2 * y) * scale;
+				Vector3 direction = Vector3.Normalize(new Vector3(rayX, rayY, -1));
+
+				// Find the focal point
+				Vector3 focalpoint = new Ray { Direction = direction }.PositionAtDelta(FocalLength);
+
 				// Offset the start position by a random amount for depth of field
 				Vector3 apertureOffset =
 					new Vector3(random.NextFloat(-0.5f, 0.5f),

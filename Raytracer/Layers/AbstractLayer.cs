@@ -26,12 +26,14 @@ namespace Raytracer.Layers
 				{
 					for (int x = bucket.Left; x < bucket.Right; x++)
 					{
-						float xViewport = (x + 0.5f) / width;
-						float yViewport = (y + 0.5f) / height;
+						float xViewportMin = x / (float)width;
+						float xViewportMax = (x + 1) / (float)width;
+						float yViewportMin = y / (float)height;
+						float yViewportMax = (y + 1) / (float)height;
 
 						IEnumerable<Color> samples =
 							scene.Camera
-							     .CreateRays(xViewport, yViewport)
+							     .CreateRays(xViewportMin, xViewportMax, yViewportMin, yViewportMax)
 							     .Select(r => CastRay(scene, r));
 
 						Color pixel = ColorUtils.Average(samples);
