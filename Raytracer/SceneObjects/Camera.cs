@@ -104,7 +104,7 @@ namespace Raytracer.SceneObjects
 				// Calculate the local viewport ray
 				float rayX = (2 * x - 1) * Aspect * scale;
 				float rayY = (1 - 2 * y) * scale;
-				Vector3 direction = Vector3.Normalize(new Vector3(rayX, rayY, -1));
+				Vector3 direction = Vector3.Normalize(new Vector3(rayX, rayY, 1));
 
 				// Find the focal point
 				Vector3 focalpoint = new Ray { Direction = direction }.PositionAtDelta(FocalLength);
