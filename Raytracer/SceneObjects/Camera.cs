@@ -9,13 +9,51 @@ namespace Raytracer.SceneObjects
 {
 	public sealed class Camera : AbstractSceneObject
 	{
-		public float NearPlane { get; set; } = 0.001f;
+		private float m_NearPlane = 0.001f;
+		private float m_FarPlane = 1000.0f;
+		private float m_Fov = 100.0f;
+		private float m_Aspect = 2.0f;
+		private Matrix4x4? m_Projection;
 
-		public float FarPlane { get; set; } = 1000.0f;
+		public float NearPlane
+		{
+			get { return m_NearPlane; }
+			set
+			{
+				m_NearPlane = value;
+				m_Projection = null;
+			}
+		}
 
-		public float Fov { get; set; } = 100.0f;
+		public float FarPlane
+		{
+			get { return m_FarPlane; }
+			set
+			{
+				m_FarPlane = value;
+				m_Projection = null;
+			}
+		}
 
-		public float Aspect { get; set; } = 2.0f;
+		public float Fov
+		{
+			get { return m_Fov; }
+			set
+			{
+				m_Fov = value;
+				m_Projection = null;
+			}
+		}
+
+		public float Aspect
+		{
+			get { return m_Aspect; }
+			set
+			{
+				m_Aspect = value;
+				m_Projection = null;
+			}
+		}
 
 		public float FocalLength { get; set; } = 10.0f;
 
@@ -27,7 +65,9 @@ namespace Raytracer.SceneObjects
 		{
 			get
 			{
-				return Matrix4x4.CreatePerspectiveFieldOfView(MathUtils.DEG2RAD * Fov, Aspect, NearPlane, FarPlane);
+				if (m_Projection == null)
+					m_Projection = Matrix4x4.CreatePerspectiveFieldOfView(MathUtils.DEG2RAD * Fov, Aspect, NearPlane, FarPlane);
+				return m_Projection.Value;
 			}
 		}
 
