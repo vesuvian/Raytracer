@@ -27,10 +27,10 @@ namespace Raytracer
 			{
 				Camera = new Camera
 				{
-					Position = new Vector3(0, 2, -10),
+					Position = new Vector3(5, 2, -20),
 					NearPlane = 0.01f,
 					FarPlane = 20.0f,
-					Fov = 100,
+					Fov = 40,
 					Aspect = WIDTH / (float)HEIGHT
 				},
 				Lights = new List<Light>

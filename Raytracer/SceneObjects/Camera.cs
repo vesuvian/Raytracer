@@ -11,7 +11,7 @@ namespace Raytracer.SceneObjects
 	{
 		private float m_NearPlane = 0.001f;
 		private float m_FarPlane = 1000.0f;
-		private float m_Fov = 90.0f;
+		private float m_Fov = 40.0f;
 		private float m_Aspect = 2.0f;
 		private Matrix4x4? m_Projection;
 
