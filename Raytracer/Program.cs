@@ -28,7 +28,6 @@ namespace Raytracer
 				Camera = new Camera
 				{
 					Position = new Vector3(0, 2, -10),
-					Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 180, 0, 0),
 					NearPlane = 0.01f,
 					FarPlane = 20.0f,
 					Fov = 100,

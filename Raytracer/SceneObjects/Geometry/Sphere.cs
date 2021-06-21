@@ -26,7 +26,7 @@ namespace Raytracer.SceneObjects.Geometry
 				return false;
 
 			t = (-b - (float)System.Math.Sqrt(discriminant)) / (2.0f * a);
-			return true;
+			return t >= 0;
 		}
 
 		public override bool GetIntersection(Ray ray, out Intersection intersection)
