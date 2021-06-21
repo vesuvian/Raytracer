@@ -37,8 +37,14 @@ namespace Raytracer
 				{
 					new Light
 					{
-						Position = new Vector3(0, 1, 0)
-					}
+						Position = new Vector3(10, 100, -5),
+						Color = Color.Red
+					},
+					new Light
+					{
+						Position = new Vector3(-5, 10, 10),
+						Color = Color.Green
+					},
 				},
 				Geometry = new List<ISceneGeometry>
 				{
@@ -65,13 +71,19 @@ namespace Raytracer
 					{
 						Position = new Vector3(-10, 0, 0),
 						Rotation = Quaternion.CreateFromYawPitchRoll(0, 0, MathUtils.DEG2RAD * 90)
-					}
+					},
+					new Plane
+					{
+						Position = new Vector3(0, 0, 40),
+						Rotation = Quaternion.CreateFromYawPitchRoll(0, MathUtils.DEG2RAD * 90, 0)
+					},
 				},
 				Layers = new List<ILayer>
 				{
 					new DepthLayer(),
 					new WorldNormalsLayer(),
-					new ViewNormalsLayer()
+					new ViewNormalsLayer(),
+					new LightsLayer()
 				}
 			};
 
