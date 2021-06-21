@@ -12,19 +12,35 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 	    {
 		    new object[]
 		    {
-				new Cube(),
-				new Ray
-				{
-					Origin = new Vector3(0,-1,0),
-					Direction = new Vector3(0,1,0)
-				},
-				true,
-				new Intersection
-				{
-					Normal = new Vector3(0, -1, 0),
-					Position = new Vector3(0, -0.5f, 0),
-					RayOrigin = new Vector3(0, -1, 0)
-				}
+			    new Cube(),
+			    new Ray
+			    {
+				    Origin = new Vector3(0, -1, 0),
+				    Direction = new Vector3(0, 1, 0)
+			    },
+			    true,
+			    new Intersection
+			    {
+				    Normal = new Vector3(0, -1, 0),
+				    Position = new Vector3(0, -0.5f, 0),
+				    RayOrigin = new Vector3(0, -1, 0)
+			    }
+		    },
+		    new object[]
+		    {
+			    new Cube(),
+			    new Ray
+			    {
+				    Origin = new Vector3(0, 0, -10),
+				    Direction = new Vector3(0, 0, 1)
+			    },
+			    true,
+			    new Intersection
+			    {
+				    Normal = new Vector3(0, 0, -1),
+				    Position = new Vector3(0, 0, -0.5f),
+				    RayOrigin = new Vector3(0, 0, -10)
+			    }
 		    }
 	    };
 

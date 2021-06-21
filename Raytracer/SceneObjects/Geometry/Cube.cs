@@ -39,8 +39,8 @@ namespace Raytracer.SceneObjects.Geometry
 
 		private static Vector3 GetNormal(Vector3 pos)
 		{
-			Vector3 cubeMin = Vector3.One * -1;
-			Vector3 cubeMax = Vector3.One;
+			Vector3 cubeMin = Vector3.One * -0.5f;
+			Vector3 cubeMax = Vector3.One * 0.5f;
 			Vector3 pointToMin = pos - cubeMin;
 			Vector3 pointToMax = pos - cubeMax;
 
@@ -64,8 +64,8 @@ namespace Raytracer.SceneObjects.Geometry
 		{
 			float[] t = new float[2];
 
-			float tMinNumerator = (-1 - origin);
-			float tMaxNumerator = (1 - origin);
+			float tMinNumerator = (-0.5f - origin);
+			float tMaxNumerator = (0.5f - origin);
 
 			//Infinities might pop here due to division by zero
 			if (MathF.Abs(direction) >= 0.000001f)
