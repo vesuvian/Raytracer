@@ -33,7 +33,7 @@ namespace Raytracer.SceneObjects.Geometry
 				RayOrigin = ray.Origin
 			};
 
-			intersection.Multiply(LocalToWorld);
+			intersection = intersection.Multiply(LocalToWorld);
 			return true;
 		}
 

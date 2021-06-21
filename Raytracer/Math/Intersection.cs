@@ -27,7 +27,7 @@ namespace Raytracer.Math
 			return new Intersection
 			{
 				Position = matrix.MultiplyPoint(Position),
-				Normal = Vector3.Normalize(matrix.MultiplyNormal(Normal)),
+				Normal = matrix.MultiplyNormal(Normal),
 				RayOrigin = matrix.MultiplyPoint(RayOrigin)
 			};
 		}

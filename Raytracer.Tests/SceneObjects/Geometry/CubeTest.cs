@@ -41,8 +41,27 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 				    Position = new Vector3(0, 0, -0.5f),
 				    RayOrigin = new Vector3(0, 0, -10)
 			    }
+		    },
+		    new object[]
+		    {
+			    new Cube
+			    {
+					Scale = new Vector3(2, 2, 2)
+			    },
+			    new Ray
+			    {
+				    Origin = new Vector3(0, 0, -10),
+				    Direction = new Vector3(0, 0, 1)
+			    },
+			    true,
+			    new Intersection
+			    {
+				    Normal = new Vector3(0, 0, -1),
+				    Position = new Vector3(0, 0, -1f),
+				    RayOrigin = new Vector3(0, 0, -10)
+			    }
 		    }
-	    };
+		};
 
 		[TestCaseSource(nameof(s_GetIntersectionTestCases))]
 	    public static void GetIntersection(Cube cube, Ray ray, bool expected, Intersection expectedIntersection)
