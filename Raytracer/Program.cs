@@ -29,7 +29,7 @@ namespace Raytracer
 				{
 					Position = new Vector3(5, 2, -20),
 					NearPlane = 0.01f,
-					FarPlane = 20.0f,
+					FarPlane = 40.0f,
 					Fov = 40,
 					Aspect = WIDTH / (float)HEIGHT
 				},
