@@ -18,7 +18,7 @@ namespace Raytracer.Layers
 			int width = buffer.Width;
 			int height = buffer.Height;
 
-			IEnumerable<Rectangle> buckets = GetBuckets(width, height, BUCKETS_X, BUCKETS_Y);
+			IEnumerable<Rectangle> buckets = GetBuckets(0, 0, width, height, BUCKETS_X, BUCKETS_Y);
 
 			Parallel.ForEach(buckets, bucket =>
 			{
@@ -44,17 +44,30 @@ namespace Raytracer.Layers
 			});
 		}
 
-		private static IEnumerable<Rectangle> GetBuckets(int width, int height, int bucketsX, int bucketsY)
+		private static IEnumerable<Rectangle> GetBuckets(int x, int y, int width, int height, int bucketsX, int bucketsY)
 		{
+			bucketsX = System.Math.Min(bucketsX, width);
+			bucketsY = System.Math.Min(bucketsY, height);
+
 			int bucketWidth = width / bucketsX;
 			int bucketHeight = height / bucketsY;
 
-			for (int x = 0; x < bucketsX; x++)
+			for (int bucketX = 0; bucketX < bucketsX; bucketX++)
 			{
-				for (int y = 0; y < bucketsY; y++)
+				for (int bucketY = 0; bucketY < bucketsY; bucketY++)
 				{
-					// TODO - Better handle rects that don't divide evenly?
-					yield return new Rectangle(x * bucketWidth, y * bucketHeight, bucketWidth, bucketHeight);
+					int left = x + bucketX * bucketWidth;
+					int top = y + bucketY * bucketHeight;
+					int rectWidth = bucketWidth;
+					int rectHeight = bucketHeight;
+
+					if (bucketX == bucketsX - 1)
+						rectWidth = width - (left - x);
+
+					if (bucketY == bucketsY - 1)
+						rectHeight = height - (top - y);
+					
+					yield return new Rectangle(left, top, rectWidth, rectHeight);
 				}
 			}
 		}
