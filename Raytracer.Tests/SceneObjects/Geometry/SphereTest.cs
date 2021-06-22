@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using NUnit.Framework;
 using Raytracer.Math;
 using Raytracer.SceneObjects.Geometry;
@@ -18,12 +19,14 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 					Origin = new Vector3(0, 0, -10),
 					Direction = new Vector3(0, 0, 1)
 				},
-				true,
-				new Intersection
+				new[]
 				{
-					Normal = new Vector3(0, 0, -1),
-					Position = new Vector3(0, 0, -1),
-					RayOrigin = new Vector3(0, 0, -10)
+					new Intersection
+					{
+						Normal = new Vector3(0, 0, -1),
+						Position = new Vector3(0, 0, -1),
+						RayOrigin = new Vector3(0, 0, -10)
+					}
 				}
 			},
 			new object[]
@@ -37,24 +40,23 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 					Origin = new Vector3(0, 0, -10),
 					Direction = new Vector3(0, 0, 1)
 				},
-				true,
-				new Intersection
+				new[]
 				{
-					Normal = new Vector3(0, 0, -1),
-					Position = new Vector3(0, 0, -2f),
-					RayOrigin = new Vector3(0, 0, -10)
+					new Intersection
+					{
+						Normal = new Vector3(0, 0, -1),
+						Position = new Vector3(0, 0, -2f),
+						RayOrigin = new Vector3(0, 0, -10)
+					}
 				}
 			}
 		};
 
 		[TestCaseSource(nameof(s_GetIntersectionTestCases))]
-		public static void GetIntersection(Sphere sphere, Ray ray, bool expected, Intersection expectedIntersection)
+		public static void GetIntersection(Sphere sphere, Ray ray, IEnumerable<Intersection> expectedIntersections)
 		{
-			Intersection intersection;
-			bool result = sphere.GetIntersection(ray, out intersection);
-
-			Assert.AreEqual(expected, result);
-			Assert.AreEqual(expectedIntersection, intersection);
+			IEnumerable<Intersection> intersections = sphere.GetIntersections(ray);
+			CollectionAssert.AreEqual(expectedIntersections, intersections);
 		}
 	}
 }

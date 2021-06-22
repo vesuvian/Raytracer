@@ -1,7 +1,9 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using NUnit.Framework;
 using Raytracer.Math;
 using Raytracer.SceneObjects.Geometry;
+using Raytracer.Utils;
 
 namespace Raytracer.Tests.SceneObjects.Geometry
 {
@@ -18,13 +20,15 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 				    Origin = new Vector3(0, -1, 0),
 				    Direction = new Vector3(0, 1, 0)
 			    },
-			    true,
-			    new Intersection
-			    {
-				    Normal = new Vector3(0, -1, 0),
-				    Position = new Vector3(0, -0.5f, 0),
-				    RayOrigin = new Vector3(0, -1, 0)
-			    }
+				new []
+				{
+				    new Intersection
+				    {
+					    Normal = new Vector3(0, -1, 0),
+					    Position = new Vector3(0, -0.5f, 0),
+					    RayOrigin = new Vector3(0, -1, 0)
+				    }
+				}
 		    },
 		    new object[]
 		    {
@@ -34,13 +38,15 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 				    Origin = new Vector3(0, 0, -10),
 				    Direction = new Vector3(0, 0, 1)
 			    },
-			    true,
-			    new Intersection
+			    new []
 			    {
-				    Normal = new Vector3(0, 0, -1),
-				    Position = new Vector3(0, 0, -0.5f),
-				    RayOrigin = new Vector3(0, 0, -10)
-			    }
+					new Intersection
+				    {
+					    Normal = new Vector3(0, 0, -1),
+					    Position = new Vector3(0, 0, -0.5f),
+					    RayOrigin = new Vector3(0, 0, -10)
+				    }
+				}
 		    },
 		    new object[]
 		    {
@@ -53,24 +59,44 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 				    Origin = new Vector3(0, 0, -10),
 				    Direction = new Vector3(0, 0, 1)
 			    },
-			    true,
-			    new Intersection
+			    new []
 			    {
-				    Normal = new Vector3(0, 0, -1),
-				    Position = new Vector3(0, 0, -1f),
-				    RayOrigin = new Vector3(0, 0, -10)
-			    }
-		    }
+					new Intersection
+				    {
+					    Normal = new Vector3(0, 0, -1),
+					    Position = new Vector3(0, 0, -1f),
+					    RayOrigin = new Vector3(0, 0, -10)
+				    }
+				}
+		    },
+		    new object[]
+		    {
+			    new Cube
+			    {
+					Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 90, MathUtils.DEG2RAD * 90, MathUtils.DEG2RAD * 90)
+			    },
+			    new Ray
+			    {
+				    Origin = new Vector3(0, 0, -10),
+				    Direction = new Vector3(0, 0, 1)
+			    },
+			    new []
+			    {
+					new Intersection
+				    {
+					    Normal = new Vector3(0, 0, -1),
+					    Position = new Vector3(0, 0, -0.5f),
+					    RayOrigin = new Vector3(0, 0, -10)
+				    }
+				}
+		    },
 		};
 
 		[TestCaseSource(nameof(s_GetIntersectionTestCases))]
-	    public static void GetIntersection(Cube cube, Ray ray, bool expected, Intersection expectedIntersection)
+	    public static void GetIntersections(Cube cube, Ray ray, IEnumerable<Intersection> expectedIntersections)
 	    {
-		    Intersection intersection;
-		    bool result = cube.GetIntersection(ray, out intersection);
-
-			Assert.AreEqual(expected, result);
-			Assert.AreEqual(expectedIntersection, intersection);
+		    IEnumerable<Intersection> intersections = cube.GetIntersections(ray);
+		    CollectionAssert.AreEqual(expectedIntersections, intersections);
 	    }
     }
 }

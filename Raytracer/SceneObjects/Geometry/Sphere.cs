@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using Raytracer.Math;
 
 namespace Raytracer.SceneObjects.Geometry
@@ -29,31 +30,26 @@ namespace Raytracer.SceneObjects.Geometry
 			return t >= 0;
 		}
 
-		public override bool GetIntersection(Ray ray, out Intersection intersection)
+		public override IEnumerable<Intersection> GetIntersections(Ray ray)
 		{
-			intersection = default;
-
 			// First transform the ray into local space
 			ray = ray.Multiply(WorldToLocal);
 
 			// Find the intersect
+			// TODO - Find both intersections
 			float t;
 			if (!HitSphere(Radius, ray, out t))
-				return false;
+				yield break;
 
 			Vector3 position = ray.PositionAtDelta(t);
 			Vector3 normal = Vector3.Normalize(position);
 
-			intersection = new Intersection
+			yield return new Intersection
 			{
 				Position = position,
 				Normal = normal,
 				RayOrigin = ray.Origin
-			};
-
-			// Transform intersection from local to world space
-			intersection = intersection.Multiply(LocalToWorld);
-			return true;
+			}.Multiply(LocalToWorld);
 		}
 	}
 }

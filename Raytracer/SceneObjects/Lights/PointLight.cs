@@ -39,6 +39,8 @@ namespace Raytracer.SceneObjects.Lights
 
 		public override bool CanSee(Scene scene, Vector3 position)
 		{
+			float distanceToLight = Vector3.Distance(Position, position);
+
 			Ray toLight =
 				new Ray
 				{
@@ -46,15 +48,8 @@ namespace Raytracer.SceneObjects.Lights
 					Direction = Vector3.Normalize(Position - position)
 				};
 
-			return
-				scene.Geometry
-				     .All(g =>
-				     {
-					     Intersection intersection;
-					     return !g.GetIntersection(toLight, out intersection) ||
-					            intersection.Distance >
-					            Vector3.Distance(Position, position);
-				     });
+			return !scene.GetIntersections(toLight)
+			             .Any(i => i.Distance > distanceToLight);
 		}
 	}
 }

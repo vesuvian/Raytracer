@@ -1,8 +1,8 @@
 ﻿using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using Raytracer.Extensions;
 using Raytracer.Math;
-using Raytracer.SceneObjects.Geometry;
 
 namespace Raytracer.Layers
 {
@@ -10,24 +10,10 @@ namespace Raytracer.Layers
 	{
 		protected override Color CastRay(Scene scene, Ray ray)
 		{
-			ISceneGeometry closest = null;
-			Intersection? closestIntersection = null;
+			Intersection? closestIntersection =
+				scene.GetIntersections(ray).Select(i => (Intersection?)i).FirstOrDefault();
 
-			foreach (ISceneGeometry obj in scene.Geometry)
-			{
-				Intersection intersection;
-				if (!obj.GetIntersection(ray, out intersection))
-					continue;
-
-				if (closestIntersection != null &&
-				    closestIntersection.Value.Distance <= intersection.Distance)
-					continue;
-
-				closest = obj;
-				closestIntersection = intersection;
-			}
-
-			if (closest == null)
+			if (closestIntersection == null)
 				return Color.Black;
 
 			Matrix4x4 matrix;

@@ -25,7 +25,7 @@ namespace Raytracer.SceneObjects.Lights
 					Direction = Forward * -1
 				};
 
-			return !scene.Geometry.Any(g => g.GetIntersection(toLight, out _));
+			return !scene.GetIntersections(toLight).Any();
 		}
 	}
 }

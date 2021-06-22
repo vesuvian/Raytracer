@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using Raytracer.Math;
 
@@ -6,10 +7,8 @@ namespace Raytracer.SceneObjects.Geometry
 {
 	public sealed class Cube : AbstractSceneGeometry
 	{
-		public override bool GetIntersection(Ray ray, out Intersection intersection)
+		public override IEnumerable<Intersection> GetIntersections(Ray ray)
 		{
-			intersection = default;
-
 			// First transform ray to local space.
 			ray = ray.Multiply(WorldToLocal);
 
@@ -21,20 +20,27 @@ namespace Raytracer.SceneObjects.Geometry
 			float tMax = MathF.Min(MathF.Min(xt[1], yt[1]), zt[1]);
 
 			if (tMin > tMax)
-				return false;
+				yield break;
 
-			Vector3 pos = ray.PositionAtDelta(tMin);
-			Vector3 normal = GetNormal(pos);
+			Vector3 posMin = ray.PositionAtDelta(tMin);
+			Vector3 normalMin = GetNormal(posMin);
 
-			intersection = new Intersection
+			yield return new Intersection
 			{
-				Normal = normal,
-				Position = pos,
+				Normal = normalMin,
+				Position = posMin,
 				RayOrigin = ray.Origin
-			};
+			}.Multiply(LocalToWorld);
 
-			intersection = intersection.Multiply(LocalToWorld);
-			return true;
+			Vector3 posMax = ray.PositionAtDelta(tMax);
+			Vector3 normalMax = GetNormal(posMax);
+
+			yield return new Intersection
+			{
+				Normal = normalMax,
+				Position = posMax,
+				RayOrigin = ray.Origin
+			}.Multiply(LocalToWorld);
 		}
 
 		private static Vector3 GetNormal(Vector3 pos)
