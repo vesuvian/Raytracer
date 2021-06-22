@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using System.Linq;
-using System.Numerics;
 using Raytracer.Math;
 using Raytracer.SceneObjects.Geometry;
 using Raytracer.Utils;
@@ -33,26 +32,8 @@ namespace Raytracer.Layers
 
 			Color[] illumination =
 				scene.Lights
-				     .Where(l =>
-				     {
-					     Ray toLight =
-						     new Ray
-						     {
-							     Origin = closestIntersection.Value.Position,
-							     Direction = Vector3.Normalize(l.Position - closestIntersection.Value.Position)
-						     };
-
-						 return
-							 scene.Geometry
-							       .All(g =>
-							       {
-								       Intersection intersection;
-								       return !g.GetIntersection(toLight, out intersection) ||
-								              intersection.Distance >
-								              Vector3.Distance(l.Position, closestIntersection.Value.Position);
-							       });
-				     })
-				     .Select(l => l.Sample(closestIntersection.Value.Position, closestIntersection.Value.Position))
+				     .Where(l => l.CanSee(scene, closestIntersection.Value.Position))
+				     .Select(l => l.Sample(closestIntersection.Value.Position, closestIntersection.Value.Normal))
 				     .ToArray();
 
 			return illumination.Length == 0 ? Color.Black : ColorUtils.Sum(illumination);
