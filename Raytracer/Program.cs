@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Raytracer.Layers;
 using Raytracer.SceneObjects;
 using Raytracer.SceneObjects.Geometry;
+using Raytracer.SceneObjects.Lights;
 using Raytracer.Utils;
 using Plane = Raytracer.SceneObjects.Geometry.Plane;
 
@@ -33,17 +34,21 @@ namespace Raytracer
 					Fov = 40,
 					Aspect = WIDTH / (float)HEIGHT
 				},
-				Lights = new List<Light>
+				Lights = new List<ILight>
 				{
-					new Light
+					new PointLight
 					{
 						Position = new Vector3(10, 100, -5),
-						Color = Color.Red
+						Color = Color.Red,
+						Range = 100,
+						Falloff = eFalloff.Linear
 					},
-					new Light
+					new PointLight
 					{
 						Position = new Vector3(-5, 10, 10),
-						Color = Color.Green
+						Color = Color.Green,
+						Range = 10,
+						Falloff = eFalloff.Linear
 					},
 				},
 				Geometry = new List<ISceneGeometry>

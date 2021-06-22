@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Raytracer.Math;
@@ -53,16 +52,7 @@ namespace Raytracer.Layers
 								              Vector3.Distance(l.Position, closestIntersection.Value.Position);
 							       });
 				     })
-				     .Select(l =>
-				     {
-					     float lightAmount = Vector3.Dot(closestIntersection.Value.Normal, Vector3.Normalize(l.Position - closestIntersection.Value.Position));
-					     if (lightAmount <= 0)
-						     return Color.Black;
-
-					     return Color.FromArgb((int)(lightAmount * l.Color.R),
-					                           (int)(lightAmount * l.Color.G),
-					                           (int)(lightAmount * l.Color.B));
-				     })
+				     .Select(l => l.Sample(closestIntersection.Value.Position, closestIntersection.Value.Position))
 				     .ToArray();
 
 			return illumination.Length == 0 ? Color.Black : ColorUtils.Sum(illumination);

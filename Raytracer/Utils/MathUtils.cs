@@ -29,6 +29,17 @@ namespace Raytracer.Utils
 			return value;
 		}
 
+		public static int Clamp(int value, int min, int max)
+		{
+			if (value < min)
+				return min;
+
+			if (value > max)
+				return max;
+
+			return value;
+		}
+
 		public static float Lerp(float a, float b, float t)
 		{
 			return a * (1 - t) + b * t;

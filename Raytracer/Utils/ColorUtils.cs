@@ -147,5 +147,13 @@ namespace Raytracer.Utils
 			                                                   System.Math.Min(sum.G + c.G, 255),
 			                                                   System.Math.Min(sum.B + c.B, 255)));
 		}
+
+		public static Color Multiply(Color color, float scalar, bool alpha = false)
+		{
+			return Color.FromArgb(alpha ? MathUtils.Clamp((int)(color.A * scalar), 0, 255) : color.A,
+			                      MathUtils.Clamp((int)(color.R * scalar), 0, 255),
+			                      MathUtils.Clamp((int)(color.G * scalar), 0, 255),
+			                      MathUtils.Clamp((int)(color.B * scalar), 0, 255));
+		}
 	}
 }
