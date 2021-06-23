@@ -6,7 +6,7 @@ namespace Raytracer.SceneObjects.Lights
 	public abstract class AbstractLight : AbstractSceneObject, ILight
 	{
 		public Color Color { get; set; } = Color.White;
-		public float Intensity { get; set; } = 10;
+		public float Intensity { get; set; } = 1;
 
 		public abstract Color Sample(Vector3 position, Vector3 normal);
 		public abstract bool CanSee(Scene scene, Vector3 position);

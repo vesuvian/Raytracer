@@ -49,7 +49,7 @@ namespace Raytracer.SceneObjects.Lights
 				};
 
 			return !scene.GetIntersections(toLight)
-			             .Any(i => i.Distance > distanceToLight);
+			             .Any(i => i.Distance < distanceToLight);
 		}
 	}
 }
