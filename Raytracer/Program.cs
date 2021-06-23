@@ -93,7 +93,12 @@ namespace Raytracer
 					new DepthLayer(),
 					new WorldNormalsLayer(),
 					new ViewNormalsLayer(),
-					new LightsLayer()
+					new LightsLayer(),
+					new WorldPositionLayer
+					{
+						Min = new Vector3(10f, 2, -3),
+						Max = new Vector3(16f, 8, 3),
+					}
 				}
 			};
 
