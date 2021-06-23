@@ -15,10 +15,11 @@ namespace Raytracer
 		public List<ISceneGeometry> Geometry { get; set; }
 		public List<ILayer> Layers { get; set; }
 
-		public IEnumerable<Intersection> GetIntersections(Ray ray)
+		public IEnumerable<KeyValuePair<ISceneGeometry, Intersection>> GetIntersections(Ray ray)
 		{
-			return Geometry.SelectMany(g => g.GetIntersections(ray))
-			               .OrderBy(i => i.Distance);
+			return Geometry.SelectMany(g => g.GetIntersections(ray)
+			                                 .Select(i => new KeyValuePair<ISceneGeometry, Intersection>(g, i)))
+			               .OrderBy(kvp => kvp.Value.Distance);
 		}
 	}
 }
