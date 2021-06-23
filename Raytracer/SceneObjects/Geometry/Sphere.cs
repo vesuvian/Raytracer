@@ -13,10 +13,8 @@ namespace Raytracer.SceneObjects.Geometry
 			Radius = 1;
 		}
 
-		private static bool HitSphere(float radius, Ray ray, out float t)
+		private static IEnumerable<float> HitSphere(float radius, Ray ray)
 		{
-			t = default;
-
 			Vector3 oc = ray.Origin;
 			float a = Vector3.Dot(ray.Direction, ray.Direction);
 			float b = 2.0f * Vector3.Dot(oc, ray.Direction);
@@ -24,10 +22,16 @@ namespace Raytracer.SceneObjects.Geometry
 
 			float discriminant = b * b - 4 * a * c;
 			if (discriminant < 0)
-				return false;
+				yield break;
 
-			t = (-b - (float)System.Math.Sqrt(discriminant)) / (2.0f * a);
-			return t >= 0;
+			float t1 = (-b - (float)System.Math.Sqrt(discriminant)) / (2.0f * a);
+			float t2 = (-b + (float)System.Math.Sqrt(discriminant)) / (2.0f * a);
+
+			if (t1 > 0)
+				yield return t1;
+
+			if (t2 > 0 && System.Math.Abs(t1 - t2) > 0.00001f)
+				yield return t2;
 		}
 
 		public override IEnumerable<Intersection> GetIntersections(Ray ray)
@@ -35,21 +39,22 @@ namespace Raytracer.SceneObjects.Geometry
 			// First transform the ray into local space
 			ray = ray.Multiply(WorldToLocal);
 
-			// Find the intersect
-			// TODO - Find both intersections
-			float t;
-			if (!HitSphere(Radius, ray, out t))
-				yield break;
-
-			Vector3 position = ray.PositionAtDelta(t);
-			Vector3 normal = Vector3.Normalize(position);
-
-			yield return new Intersection
+			// Find the intersects
+			foreach (float intersect in HitSphere(Radius, ray))
 			{
-				Position = position,
-				Normal = normal,
-				RayOrigin = ray.Origin
-			}.Multiply(LocalToWorld);
+				if (intersect < 0)
+					continue;
+
+				Vector3 position = ray.PositionAtDelta(intersect);
+				Vector3 normal = Vector3.Normalize(position);
+
+				yield return new Intersection
+				{
+					Position = position,
+					Normal = normal,
+					RayOrigin = ray.Origin
+				}.Multiply(LocalToWorld);
+			}
 		}
 	}
 }
