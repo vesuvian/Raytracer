@@ -22,25 +22,31 @@ namespace Raytracer.SceneObjects.Geometry
 			if (tMin > tMax)
 				yield break;
 
-			Vector3 posMin = ray.PositionAtDelta(tMin);
-			Vector3 normalMin = GetNormal(posMin);
-
-			yield return new Intersection
+			if (tMin > 0)
 			{
-				Normal = normalMin,
-				Position = posMin,
-				RayOrigin = ray.Origin
-			}.Multiply(LocalToWorld);
+				Vector3 posMin = ray.PositionAtDelta(tMin);
+				Vector3 normalMin = GetNormal(posMin);
 
-			Vector3 posMax = ray.PositionAtDelta(tMax);
-			Vector3 normalMax = GetNormal(posMax);
+				yield return new Intersection
+				{
+					Normal = normalMin,
+					Position = posMin,
+					RayOrigin = ray.Origin
+				}.Multiply(LocalToWorld);
+			}
 
-			yield return new Intersection
+			if (tMax > 0)
 			{
-				Normal = normalMax,
-				Position = posMax,
-				RayOrigin = ray.Origin
-			}.Multiply(LocalToWorld);
+				Vector3 posMax = ray.PositionAtDelta(tMax);
+				Vector3 normalMax = GetNormal(posMax);
+
+				yield return new Intersection
+				{
+					Normal = normalMax,
+					Position = posMax,
+					RayOrigin = ray.Origin
+				}.Multiply(LocalToWorld);
+			}
 		}
 
 		private static Vector3 GetNormal(Vector3 pos)

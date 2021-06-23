@@ -59,8 +59,7 @@ namespace Raytracer
 					{
 						Position = new Vector3(13f, 5, 0),
 						Scale = new Vector3(2, 2, 2),
-						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45),
-						RayMask = eRayMask.Visible
+						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45)
 					},
 					new Sphere
 					{
