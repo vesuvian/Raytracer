@@ -25,7 +25,8 @@ namespace Raytracer.SceneObjects.Lights
 					Direction = Forward * -1
 				};
 
-			return !CastShadows || !scene.GetIntersections(toLight, eRayMask.CastShadows).Any();
+			return !CastShadows || !scene.GetIntersections(toLight, eRayMask.CastShadows)
+			                             .Any(kvp => kvp.Value.Distance > SELF_SHADOW_TOLERANCE);
 		}
 	}
 }

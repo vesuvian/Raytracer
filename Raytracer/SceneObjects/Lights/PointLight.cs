@@ -49,7 +49,8 @@ namespace Raytracer.SceneObjects.Lights
 				};
 
 			return !CastShadows || !scene.GetIntersections(toLight, eRayMask.CastShadows)
-			                             .Any(kvp => kvp.Value.Distance < distanceToLight);
+			                             .Any(kvp => kvp.Value.Distance > SELF_SHADOW_TOLERANCE &&
+			                                         kvp.Value.Distance < distanceToLight);
 		}
 	}
 }
