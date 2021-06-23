@@ -59,14 +59,16 @@ namespace Raytracer
 					{
 						Position = new Vector3(13f, 5, 0),
 						Scale = new Vector3(2, 2, 2),
-						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45)
+						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45),
+						RayMask = eRayMask.Visible
 					},
 					new Sphere
 					{
 						Position = new Vector3(3, 1, 7.5f),
 						Scale = new Vector3(2, 1, 1),
 						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 15, MathUtils.DEG2RAD * 30),
-						Radius = 5
+						Radius = 5,
+						RayMask = eRayMask.CastShadows
 					},
 					new Sphere
 					{
@@ -77,12 +79,14 @@ namespace Raytracer
 					new Plane
 					{
 						Position = new Vector3(-10, 0, 0),
-						Rotation = Quaternion.CreateFromYawPitchRoll(0, 0, MathUtils.DEG2RAD * 90)
+						Rotation = Quaternion.CreateFromYawPitchRoll(0, 0, MathUtils.DEG2RAD * 90),
+						RayMask = eRayMask.Visible
 					},
 					new Plane
 					{
 						Position = new Vector3(0, 0, 40),
-						Rotation = Quaternion.CreateFromYawPitchRoll(0, MathUtils.DEG2RAD * 90, 0)
+						Rotation = Quaternion.CreateFromYawPitchRoll(0, MathUtils.DEG2RAD * 90, 0),
+						RayMask = eRayMask.Visible
 					},
 				},
 				Layers = new List<ILayer>

@@ -48,7 +48,8 @@ namespace Raytracer.SceneObjects.Lights
 					Direction = Vector3.Normalize(Position - position)
 				};
 
-			return !CastShadows || !scene.GetIntersections(toLight).Any(kvp => kvp.Value.Distance < distanceToLight);
+			return !CastShadows || !scene.GetIntersections(toLight, eRayMask.CastShadows)
+			                             .Any(kvp => kvp.Value.Distance < distanceToLight);
 		}
 	}
 }

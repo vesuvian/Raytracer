@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Numerics;
 using Raytracer.Math;
+using Raytracer.SceneObjects;
 
 namespace Raytracer.Layers
 {
@@ -10,7 +11,7 @@ namespace Raytracer.Layers
 		protected override Color CastRay(Scene scene, Ray ray)
 		{
 			Intersection? closestIntersection =
-				scene.GetIntersections(ray).Select(kvp => (Intersection?)kvp.Value).FirstOrDefault();
+				scene.GetIntersections(ray, eRayMask.Visible).Select(kvp => (Intersection?)kvp.Value).FirstOrDefault();
 
 			if (closestIntersection == null)
 				return Color.Black;
