@@ -40,16 +40,18 @@ namespace Raytracer
 					{
 						Position = new Vector3(10, 100, -5),
 						Color = Color.Red,
-						Range = 100,
+						Range = 200,
+						Intensity = 2,
 						Falloff = eFalloff.Linear
 					},
 					new PointLight
 					{
-						Position = new Vector3(-5, 10, 10),
+						Position = new Vector3(0, 10, 10),
 						Color = Color.Green,
-						Range = 10,
+						Range = 40,
+						Intensity = 2,
 						Falloff = eFalloff.Linear
-					},
+					}
 				},
 				Geometry = new List<ISceneGeometry>
 				{
