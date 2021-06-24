@@ -7,6 +7,7 @@ using System.IO;
 using System.Numerics;
 using System.Threading.Tasks;
 using Raytracer.Layers;
+using Raytracer.Parsers;
 using Raytracer.SceneObjects;
 using Raytracer.SceneObjects.Geometry;
 using Raytracer.SceneObjects.Lights;
@@ -87,6 +88,10 @@ namespace Raytracer
 						Rotation = Quaternion.CreateFromYawPitchRoll(0, MathUtils.DEG2RAD * 90, 0),
 						RayMask = eRayMask.Visible
 					},
+					new Model
+					{
+						Mesh = new ObjMeshParser().Parse("Resources\\teapot.obj")
+					}
 				},
 				Layers = new List<ILayer>
 				{

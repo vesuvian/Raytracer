@@ -13,7 +13,7 @@ namespace Raytracer.SceneObjects.Geometry
 			Radius = 1;
 		}
 
-		private static IEnumerable<float> HitSphere(float radius, Ray ray)
+		public static IEnumerable<float> HitSphere(float radius, Ray ray)
 		{
 			Vector3 oc = ray.Origin;
 			float a = Vector3.Dot(ray.Direction, ray.Direction);
@@ -42,9 +42,6 @@ namespace Raytracer.SceneObjects.Geometry
 			// Find the intersects
 			foreach (float intersect in HitSphere(Radius, ray))
 			{
-				if (intersect < 0)
-					continue;
-
 				Vector3 position = ray.PositionAtDelta(intersect);
 				Vector3 normal = Vector3.Normalize(position);
 
