@@ -16,9 +16,16 @@ namespace Raytracer.SceneObjects.Geometry
 			return Vector3.Normalize(Vector3.Cross(b - a, c - a));
 		}
 
-		public static bool HitTriangle(Vector3 a, Vector3 b, Vector3 c, Ray ray, out float t)
+		public static Vector3 GetInterpolatedVertexNormal(Vector3 a, Vector3 b, Vector3 c, float u, float v)
+		{
+			return (1 - u - v) * a + u * b + v * c;
+		}
+
+		public static bool HitTriangle(Vector3 a, Vector3 b, Vector3 c, Ray ray, out float t, out float u, out float v)
 		{
 			t = default;
+			u = default;
+			v = default;
 
 			// Get the plane normal
 			Vector3 ab = b - a;
@@ -33,12 +40,12 @@ namespace Raytracer.SceneObjects.Geometry
 			float invDet = 1 / det;
 
 			Vector3 tvec = ray.Origin - a;
-			float u = Vector3.Dot(tvec, pvec) * invDet;
+			u = Vector3.Dot(tvec, pvec) * invDet;
 			if (u < 0 || u > 1)
 				return false;
 
 			Vector3 qvec = Vector3.Cross(tvec, ab);
-			float v = Vector3.Dot(ray.Direction, qvec) * invDet;
+			v = Vector3.Dot(ray.Direction, qvec) * invDet;
 			if (v < 0 || u + v > 1)
 				return false;
 
@@ -52,7 +59,7 @@ namespace Raytracer.SceneObjects.Geometry
 			ray = ray.Multiply(WorldToLocal);
 
 			float t;
-			if (!HitTriangle(A, B, C, ray, out t))
+			if (!HitTriangle(A, B, C, ray, out t, out _, out _))
 				yield break;
 
 			yield return new Intersection
