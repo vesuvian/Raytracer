@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -66,8 +67,7 @@ namespace Raytracer
 						Position = new Vector3(3, 1, 7.5f),
 						Scale = new Vector3(2, 1, 1),
 						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 15, MathUtils.DEG2RAD * 30),
-						Radius = 5,
-						RayMask = eRayMask.CastShadows
+						Radius = 5
 					},
 					new Sphere
 					{
@@ -102,7 +102,13 @@ namespace Raytracer
 				}
 			};
 
-			Parallel.ForEach(scene.Layers, layer => Render(scene, layer));
+			Parallel.ForEach(scene.Layers,
+			                 layer =>
+			                 {
+								 Stopwatch stopwatch = Stopwatch.StartNew();
+								 Render(scene, layer);
+								 Console.WriteLine("{0} to render {1}", stopwatch.Elapsed, layer.GetType().Name);
+			                 });
 		}
 
 		private static void Render(Scene scene, ILayer layer)

@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using Raytracer.Math;
 using Raytracer.SceneObjects;
@@ -10,19 +11,20 @@ namespace Raytracer.Layers
 	{
 		protected override Color CastRay(Scene scene, Ray ray)
 		{
+			if (scene.Lights.Count == 0)
+				return Color.Black;
+
 			Intersection? closestIntersection =
 				scene.GetIntersections(ray, eRayMask.Visible).Select(kvp => (Intersection?)kvp.Value).FirstOrDefault();
 
 			if (closestIntersection == null)
 				return Color.Black;
 
-			Color[] illumination =
+			IEnumerable<Color> illumination =
 				scene.Lights
-				     .Where(l => l.CanSee(scene, closestIntersection.Value.Position))
-				     .Select(l => l.Sample(closestIntersection.Value.Position, closestIntersection.Value.Normal))
-				     .ToArray();
+				     .Select(l => l.Sample(scene, closestIntersection.Value.Position, closestIntersection.Value.Normal));
 
-			return illumination.Length == 0 ? Color.Black : ColorUtils.Sum(illumination);
+			return ColorUtils.Sum(illumination);
 		}
 	}
 }

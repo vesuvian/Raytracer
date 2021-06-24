@@ -9,7 +9,6 @@ namespace Raytracer.SceneObjects.Lights
 		float Intensity { get; set; }
 		bool CastShadows { get; set; }
 
-		Color Sample(Vector3 position, Vector3 normal);
-		bool CanSee(Scene scene, Vector3 position);
+		Color Sample(Scene scene, Vector3 position, Vector3 normal);
 	}
 }
