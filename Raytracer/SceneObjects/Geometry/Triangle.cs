@@ -13,59 +13,38 @@ namespace Raytracer.SceneObjects.Geometry
 
 		public static Vector3 GetNormal(Vector3 a, Vector3 b, Vector3 c)
 		{
-			return Vector3.Cross(b - a, c - a);
+			return Vector3.Normalize(Vector3.Cross(b - a, c - a));
 		}
 
 		public static bool HitTriangle(Vector3 a, Vector3 b, Vector3 c, Ray ray, out float t)
 		{
 			t = default;
 
-			// compute plane's normal
-			Vector3 n = GetNormal(a, b, c);
+			// Get the plane normal
+			Vector3 ab = b - a;
+			Vector3 ac = c - a;
+			Vector3 pvec = Vector3.Cross(ray.Direction, ac);
 
-			// Step 1: finding P
-
-			// check if ray and plane are parallel ?
-			float ndotRayDirection = Vector3.Dot(n, ray.Direction);
-			if (MathF.Abs(ndotRayDirection) < 0.00001f)
+			// Ray and triangle are parallel if det is close to 0
+			float det = Vector3.Dot(ab, pvec);
+			if (MathF.Abs(det) < 0.00001f)
 				return false;
 
-			// compute d parameter using equation 2
-			float d = Vector3.Dot(n, a);
+			float invDet = 1 / det;
 
-			// compute t (equation 3)
-			t = (Vector3.Dot(n, ray.Origin) + d) / ndotRayDirection;
-			if (t < 0)
+			Vector3 tvec = ray.Origin - a;
+			float u = Vector3.Dot(tvec, pvec) * invDet;
+			if (u < 0 || u > 1)
 				return false;
 
-			// compute the intersection point using equation 1
-			Vector3 p = ray.Origin + t * ray.Direction;
-
-			// Step 2: inside-outside test
-
-			// edge 0
-			Vector3 edge0 = b - a;
-			Vector3 vp0 = p - a;
-			var C = Vector3.Cross(edge0, vp0);
-			if (Vector3.Dot(n, C) < 0)
+			Vector3 qvec = Vector3.Cross(tvec, ab);
+			float v = Vector3.Dot(ray.Direction, qvec) * invDet;
+			if (v < 0 || u + v > 1)
 				return false;
 
-			// edge 1
-			Vector3 edge1 = c - b;
-			Vector3 vp1 = p - b;
-			C = Vector3.Cross(edge1, vp1);
-			if (Vector3.Dot(n, C) < 0)
-				return false;
-
-			// edge 2
-			Vector3 edge2 = a - c;
-			Vector3 vp2 = p - c;
-			C = Vector3.Cross(edge2, vp2);
-			if (Vector3.Dot(n, C) < 0)
-				return false;
-
-			return true;
-        }
+			t = Vector3.Dot(ac, qvec) * invDet;
+			return t > 0;
+		}
 
 		public override IEnumerable<Intersection> GetIntersections(Ray ray)
 		{
