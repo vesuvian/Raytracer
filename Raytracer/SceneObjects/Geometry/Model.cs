@@ -10,6 +10,7 @@ namespace Raytracer.SceneObjects.Geometry
 	{
 		private Mesh m_Mesh;
 		private float m_SphereRadius;
+		private Vector3 m_SphereCentroid;
 
 		public Mesh Mesh
 		{
@@ -21,7 +22,8 @@ namespace Raytracer.SceneObjects.Geometry
 
 				m_Mesh = value;
 
-				m_SphereRadius = m_Mesh == null ? 0 : m_Mesh.Vertices.Select(v => v.Length()).Max();
+				m_SphereCentroid = m_Mesh == null ? Vector3.Zero : m_Mesh.Vertices.Aggregate((sum, v) => sum + v) / m_Mesh.Vertices.Count; 
+				m_SphereRadius = m_Mesh == null ? 0 : m_Mesh.Vertices.Select(v => (v - m_SphereCentroid).Length()).Max();
 			}
 		}
 
@@ -31,7 +33,7 @@ namespace Raytracer.SceneObjects.Geometry
 			ray = ray.Multiply(WorldToLocal);
 
 			// Does the ray hit the sphere?
-			if (!Sphere.HitSphere(m_SphereRadius, ray).Any())
+			if (!Sphere.HitSphere(m_SphereCentroid, m_SphereRadius, ray).Any())
 				yield break;
 
 			for (int faceIndex = 0; faceIndex < m_Mesh.Triangles.Count; faceIndex += 3)

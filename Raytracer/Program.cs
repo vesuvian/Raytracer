@@ -92,6 +92,9 @@ namespace Raytracer
 					},
 					new Model
 					{
+						Scale = Vector3.One * 0.2f,
+						Position = new Vector3(3, 2, -5),
+						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * -45, MathUtils.DEG2RAD * -15, MathUtils.DEG2RAD * 30),
 						Mesh = new ObjMeshParser().Parse("Resources\\teapot.obj")
 					}
 				},
@@ -100,8 +103,8 @@ namespace Raytracer
 					new DepthLayer(),
 					new WorldNormalsLayer(),
 					new ViewNormalsLayer(),
+					new WorldPositionLayer(),
 					new LightsLayer(),
-					new WorldPositionLayer()
 				}
 			};
 
