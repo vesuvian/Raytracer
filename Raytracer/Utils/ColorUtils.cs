@@ -155,5 +155,13 @@ namespace Raytracer.Utils
 			                      MathUtils.Clamp((int)(color.G * scalar), 0, 255),
 			                      MathUtils.Clamp((int)(color.B * scalar), 0, 255));
 		}
+
+		public static Color Multiply(Color a, Color b)
+		{
+			return Color.FromArgb((int)((a.A / 255.0f) * (b.A / 255.0f) * 255.0f),
+			                      (int)((a.R / 255.0f) * (b.R / 255.0f) * 255.0f),
+			                      (int)((a.G / 255.0f) * (b.G / 255.0f) * 255.0f),
+			                      (int)((a.B / 255.0f) * (b.B / 255.0f) * 255.0f));
+		}
 	}
 }

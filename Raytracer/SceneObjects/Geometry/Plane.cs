@@ -31,7 +31,8 @@ namespace Raytracer.SceneObjects.Geometry
 			{
 				Normal = normal,
 				Position = position,
-				RayOrigin = ray.Origin
+				RayOrigin = ray.Origin,
+				Uv = new Vector2(position.X, position.Z)
 			}.Multiply(LocalToWorld);
 		}
 

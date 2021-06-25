@@ -26,12 +26,14 @@ namespace Raytracer.SceneObjects.Geometry
 			{
 				Vector3 posMin = ray.PositionAtDelta(tMin);
 				Vector3 normalMin = GetNormal(posMin);
+				Vector2 uv = GetUv(posMin);
 
 				yield return new Intersection
 				{
 					Normal = normalMin,
 					Position = posMin,
-					RayOrigin = ray.Origin
+					RayOrigin = ray.Origin,
+					Uv = uv
 				}.Multiply(LocalToWorld);
 			}
 
@@ -39,14 +41,44 @@ namespace Raytracer.SceneObjects.Geometry
 			{
 				Vector3 posMax = ray.PositionAtDelta(tMax);
 				Vector3 normalMax = GetNormal(posMax);
+				Vector2 uv = GetUv(posMax);
 
 				yield return new Intersection
 				{
 					Normal = normalMax,
 					Position = posMax,
-					RayOrigin = ray.Origin
+					RayOrigin = ray.Origin,
+					Uv = uv
 				}.Multiply(LocalToWorld);
 			}
+		}
+
+		private static Vector2 GetUv(Vector3 pos)
+		{
+			Vector3 cubeMin = Vector3.One * -0.5f;
+			Vector3 cubeMax = Vector3.One * 0.5f;
+			Vector3 pointToMin = pos - cubeMin;
+			Vector3 pointToMax = pos - cubeMax;
+
+			Vector2 output = default;
+
+			if (MathF.Abs(pointToMin.X) < 0.0001f)
+				output = new Vector2(-pos.Z, pos.Y); // left
+			else if (MathF.Abs(pointToMax.X) < 0.0001f)
+				output = new Vector2(pos.Z, pos.Y); // right
+			else if (MathF.Abs(pointToMin.Y) < 0.0001f)
+				output = new Vector2(pos.X, -pos.Z); // bottom
+			else if (MathF.Abs(pointToMax.Y) < 0.0001f)
+				output = new Vector2(pos.X, pos.Z); // top
+			else if (MathF.Abs(pointToMin.Z) < 0.0001f)
+				output = new Vector2(pos.X, pos.Y); // front
+			else if (MathF.Abs(pointToMax.Z) < 0.0001f)
+				output = new Vector2(-pos.X, pos.Y); // back
+
+			// At this point we're in the range -0.5 to 0.5
+			output += Vector2.One * 0.5f;
+
+			return output;
 		}
 
 		private static Vector3 GetNormal(Vector3 pos)
@@ -57,17 +89,17 @@ namespace Raytracer.SceneObjects.Geometry
 			Vector3 pointToMax = pos - cubeMax;
 
 			if (MathF.Abs(pointToMin.X) < 0.0001f)
-				return new Vector3(-1, 0, 0);
+				return new Vector3(-1, 0, 0); // left
 			if (MathF.Abs(pointToMax.X) < 0.0001f)
-				return new Vector3(1, 0, 0);
+				return new Vector3(1, 0, 0); // right
 			if (MathF.Abs(pointToMin.Y) < 0.0001f)
-				return new Vector3(0, -1, 0);
+				return new Vector3(0, -1, 0); // bottom
 			if (MathF.Abs(pointToMax.Y) < 0.0001f)
-				return new Vector3(0, 1, 0);
+				return new Vector3(0, 1, 0); // top
 			if (MathF.Abs(pointToMin.Z) < 0.0001f)
-				return new Vector3(0, 0, -1);
+				return new Vector3(0, 0, -1); // front
 			if (MathF.Abs(pointToMax.Z) < 0.0001f)
-				return new Vector3(0, 0, 1);
+				return new Vector3(0, 0, 1); // back
 
 			return default;
 		}

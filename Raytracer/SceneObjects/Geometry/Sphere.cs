@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using Raytracer.Math;
 
@@ -34,6 +35,17 @@ namespace Raytracer.SceneObjects.Geometry
 				yield return t2;
 		}
 
+		private static Vector2 GetUv(Vector3 position)
+		{
+			position = Vector3.Normalize(position);
+
+			float u = MathF.Atan2(position.Y, position.X) / (2.0f * MathF.PI);
+
+			return new Vector2(
+				u >= 0 ? u : u + 1,
+				MathF.Acos(position.Z) / MathF.PI);
+		}
+
 		public override IEnumerable<Intersection> GetIntersections(Ray ray)
 		{
 			// First transform the ray into local space
@@ -49,7 +61,8 @@ namespace Raytracer.SceneObjects.Geometry
 				{
 					Position = position,
 					Normal = normal,
-					RayOrigin = ray.Origin
+					RayOrigin = ray.Origin,
+					Uv = GetUv(position)
 				}.Multiply(LocalToWorld);
 			}
 		}

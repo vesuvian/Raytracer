@@ -46,6 +46,10 @@ namespace Raytracer.SceneObjects.Geometry
 				Vector3 vertex1 = m_Mesh.Vertices[vertexIndex1];
 				Vector3 vertex2 = m_Mesh.Vertices[vertexIndex2];
 
+				float t, u, v;
+				if (!Triangle.HitTriangle(vertex0, vertex1, vertex2, ray, out t, out u, out v))
+					continue;
+
 				int vertexNormalIndex0 = m_Mesh.TriangleNormals[faceIndex];
 				int vertexNormalIndex1 = m_Mesh.TriangleNormals[faceIndex + 1];
 				int vertexNormalIndex2 = m_Mesh.TriangleNormals[faceIndex + 2];
@@ -54,15 +58,20 @@ namespace Raytracer.SceneObjects.Geometry
 				Vector3 vertexNormal1 = m_Mesh.VertexNormals[vertexNormalIndex1];
 				Vector3 vertexNormal2 = m_Mesh.VertexNormals[vertexNormalIndex2];
 
-				float t, u, v;
-				if (!Triangle.HitTriangle(vertex0, vertex1, vertex2, ray, out t, out u, out v))
-					continue;
+				int vertexUvIndex0 = m_Mesh.TriangleUvs[faceIndex];
+				int vertexUvIndex1 = m_Mesh.TriangleUvs[faceIndex + 1];
+				int vertexUvIndex2 = m_Mesh.TriangleUvs[faceIndex + 2];
+
+				Vector3 vertexUv0 = m_Mesh.VertexUvs[vertexUvIndex0];
+				Vector3 vertexUv1 = m_Mesh.VertexUvs[vertexUvIndex1];
+				Vector3 vertexUv2 = m_Mesh.VertexUvs[vertexUvIndex2];
 
 				yield return new Intersection
 				{
 					Position = ray.PositionAtDelta(t),
 					Normal = Triangle.GetInterpolatedVertexNormal(vertexNormal0, vertexNormal1, vertexNormal2, u, v),
-					RayOrigin = ray.Origin
+					RayOrigin = ray.Origin,
+					Uv = Triangle.GetInterpolatedVertexUv(vertexUv0, vertexUv1, vertexUv2, u, v)
 				}.Multiply(LocalToWorld);
 			}
 		}

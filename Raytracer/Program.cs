@@ -7,6 +7,7 @@ using System.IO;
 using System.Numerics;
 using System.Threading.Tasks;
 using Raytracer.Layers;
+using Raytracer.Materials;
 using Raytracer.Parsers;
 using Raytracer.SceneObjects;
 using Raytracer.SceneObjects.Geometry;
@@ -28,6 +29,9 @@ namespace Raytracer
 		{
 			Console.CursorVisible = false;
 
+			Image checkerboardImage = Image.FromFile("Resources\\checkerboard.png");
+			Bitmap checkerboard = new Bitmap(checkerboardImage);
+			
 			Scene scene = new Scene
 			{
 				Camera = new Camera
@@ -63,39 +67,76 @@ namespace Raytracer
 					{
 						Position = new Vector3(13f, 5, 0),
 						Scale = new Vector3(2, 2, 2),
-						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45)
+						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45),
+						Material = new Material
+						{
+							Color = Color.Red,
+							Diffuse = checkerboard
+						}
 					},
 					new Sphere
 					{
 						Position = new Vector3(3, 1, 7.5f),
 						Scale = new Vector3(2, 1, 1),
 						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 15, MathUtils.DEG2RAD * 30),
-						Radius = 5
+						Radius = 5,
+						Material = new Material
+						{
+							Color = Color.Green,
+							Diffuse = checkerboard
+						}
 					},
 					new Sphere
 					{
 						Position = new Vector3(-3, 10, 0),
-						Radius = 5
+						Radius = 5,
+						Material = new Material
+						{
+							Color = Color.Blue,
+							Diffuse = checkerboard
+						}
 					},
-					new Plane(),
+					new Plane
+					{
+						Material = new Material
+						{
+							Color = Color.Yellow,
+							Diffuse = checkerboard
+						}
+					},
 					new Plane
 					{
 						Position = new Vector3(-10, 0, 0),
 						Rotation = Quaternion.CreateFromYawPitchRoll(0, 0, MathUtils.DEG2RAD * 90),
-						RayMask = eRayMask.Visible
+						RayMask = eRayMask.Visible,
+						Material = new Material
+						{
+							Color = Color.Orange,
+							Diffuse = checkerboard
+						}
 					},
 					new Plane
 					{
 						Position = new Vector3(0, 0, 40),
 						Rotation = Quaternion.CreateFromYawPitchRoll(0, MathUtils.DEG2RAD * 90, 0),
-						RayMask = eRayMask.Visible
+						RayMask = eRayMask.Visible,
+						Material = new Material
+						{
+							Color = Color.Purple,
+							Diffuse = checkerboard
+						}
 					},
 					new Model
 					{
 						Scale = Vector3.One * 0.2f,
 						Position = new Vector3(3, 2, -5),
 						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * -45, MathUtils.DEG2RAD * -15, MathUtils.DEG2RAD * 30),
-						Mesh = new ObjMeshParser().Parse("Resources\\teapot.obj")
+						Mesh = new ObjMeshParser().Parse("Resources\\teapot.obj"),
+						Material = new Material
+						{
+							Color = Color.Aqua,
+							Diffuse = checkerboard
+						}
 					}
 				},
 				Layers = new List<ILayer>
@@ -105,6 +146,7 @@ namespace Raytracer
 					new ViewNormalsLayer(),
 					new WorldPositionLayer(),
 					new LightsLayer(),
+					new UnlitLayer()
 				}
 			};
 

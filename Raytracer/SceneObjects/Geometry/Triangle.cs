@@ -21,6 +21,12 @@ namespace Raytracer.SceneObjects.Geometry
 			return (1 - u - v) * a + u * b + v * c;
 		}
 
+		public static Vector2 GetInterpolatedVertexUv(Vector3 a, Vector3 b, Vector3 c, float u, float v)
+		{
+			Vector3 output = (1 - u - v) * a + u * b + v * c;
+			return new Vector2(output.X, output.Y);
+		}
+
 		public static bool HitTriangle(Vector3 a, Vector3 b, Vector3 c, Ray ray, out float t, out float u, out float v)
 		{
 			t = default;
@@ -58,15 +64,16 @@ namespace Raytracer.SceneObjects.Geometry
 			// First transform the ray into local space
 			ray = ray.Multiply(WorldToLocal);
 
-			float t;
-			if (!HitTriangle(A, B, C, ray, out t, out _, out _))
+			float t, u, v;
+			if (!HitTriangle(A, B, C, ray, out t, out u, out v))
 				yield break;
 
 			yield return new Intersection
 			{
 				Position = ray.PositionAtDelta(t),
 				Normal = GetNormal(A, B, C),
-				RayOrigin = ray.Origin
+				RayOrigin = ray.Origin,
+				Uv = new Vector2(u, v)
 			}.Multiply(LocalToWorld);
 		}
 	}

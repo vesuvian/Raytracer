@@ -12,6 +12,7 @@ namespace Raytracer.Math
 		public Vector3 Position { get; set; }
 		public Vector3 Normal { get; set; }
 		public Vector3 RayOrigin { get; set; }
+		public Vector2 Uv { get; set; }
 
 		public float Distance
 		{
@@ -28,7 +29,8 @@ namespace Raytracer.Math
 			{
 				Position = matrix.MultiplyPoint(Position),
 				Normal = matrix.MultiplyNormal(Normal),
-				RayOrigin = matrix.MultiplyPoint(RayOrigin)
+				RayOrigin = matrix.MultiplyPoint(RayOrigin),
+				Uv = Uv
 			};
 		}
 
@@ -61,7 +63,8 @@ namespace Raytracer.Math
 		{
 			return Position.Equals(other.Position) &&
 			       Normal.Equals(other.Normal) &&
-			       RayOrigin.Equals(other.RayOrigin);
+			       RayOrigin.Equals(other.RayOrigin) &&
+			       Uv.Equals(other.Uv);
 		}
 
 		public override bool Equals(object obj)
@@ -71,7 +74,7 @@ namespace Raytracer.Math
 
 		public override int GetHashCode()
 		{
-			return HashCode.Combine(Position, Normal, RayOrigin);
+			return HashCode.Combine(Position, Normal, RayOrigin, Uv);
 		}
 
 		#endregion

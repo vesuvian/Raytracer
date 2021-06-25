@@ -51,5 +51,10 @@ namespace Raytracer.Utils
 			t = -2.0f * t * t * t + 3.0f * t * t;
 			return to * t + from * (1.0f - t);
 		}
+
+		public static int ModPositive(int value, int mod)
+		{
+			return (value % mod + mod) % mod;
+		}
 	}
 }
