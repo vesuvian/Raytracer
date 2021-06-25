@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,12 +14,38 @@ namespace Raytracer.Layers
 		private const int BUCKETS_X = 16;
 		private const int BUCKETS_Y = 16;
 
+		public event EventHandler OnProgressChanged;
+
+		private int m_Progress;
+
+		public DateTime Start { get; private set; }
+		public DateTime End { get; private set; }
+
+		public int Progress
+		{
+			get { return m_Progress; }
+			private set
+			{
+				m_Progress = value;
+
+				OnProgressChanged?.Invoke(this, EventArgs.Empty);
+			}
+		}
+
+		public int RenderSize { get; private set; }
+
 		public void Render(Scene scene, Bitmap buffer)
 		{
 			int width = buffer.Width;
 			int height = buffer.Height;
 
 			IEnumerable<Rectangle> buckets = GetBuckets(0, 0, width, height, BUCKETS_X, BUCKETS_Y);
+
+			Start = DateTime.UtcNow;
+			Progress = 0;
+			RenderSize = width * height;
+
+			int pixelsComplete = 0;
 
 			Parallel.ForEach(buckets, bucket =>
 			{
@@ -38,10 +65,15 @@ namespace Raytracer.Layers
 
 						Color pixel = ColorUtils.Average(samples);
 						lock (buffer)
+						{
 							buffer.SetPixel(x, y, pixel);
+							Progress = pixelsComplete++;
+						}
 					}
 				}
 			});
+
+			End = DateTime.UtcNow;
 		}
 
 		private static IEnumerable<Rectangle> GetBuckets(int x, int y, int width, int height, int bucketsX, int bucketsY)

@@ -26,6 +26,8 @@ namespace Raytracer
 
 		public static void Main()
 		{
+			Console.CursorVisible = false;
+
 			Scene scene = new Scene
 			{
 				Camera = new Camera
@@ -99,21 +101,50 @@ namespace Raytracer
 					new WorldNormalsLayer(),
 					new ViewNormalsLayer(),
 					new LightsLayer(),
-					new WorldPositionLayer
-					{
-						Min = new Vector3(10f, 2, -3),
-						Max = new Vector3(16f, 8, 3),
-					}
+					new WorldPositionLayer()
 				}
 			};
+
+			for (int index = 0; index < scene.Layers.Count; index++)
+			{
+				int index1 = index;
+				scene.Layers[index].OnProgressChanged += (sender, args) => PrintProgress(scene, index1);
+			}
 
 			Parallel.ForEach(scene.Layers,
 			                 layer =>
 			                 {
-								 Stopwatch stopwatch = Stopwatch.StartNew();
-								 Render(scene, layer);
-								 Console.WriteLine("{0} to render {1}", stopwatch.Elapsed, layer.GetType().Name);
+				                 Render(scene, layer);
 			                 });
+		}
+
+		private static void PrintProgress(Scene scene, int layerIndex)
+		{
+			ILayer layer = scene.Layers[layerIndex];
+
+			char spin = (layer.Progress % 4) switch
+			{
+				0 => '/',
+				1 => '-',
+				2 => '\\',
+				3 => '|',
+				_ => default
+			};
+
+			TimeSpan elapsed = DateTime.UtcNow - layer.Start;
+			float percent = layer.RenderSize == 0 ? 0 : (layer.Progress / (float)layer.RenderSize);
+
+			TimeSpan remaining =
+				System.Math.Abs(layer.Progress) < 0.0001f
+					? TimeSpan.MaxValue
+					: (elapsed / percent) * (1 - percent);
+
+			lock (scene)
+			{
+				Console.SetCursorPosition(0, layerIndex);
+				Console.Write("{0} {1} - {2:P} ({3} remaining)           ", spin, layer.GetType().Name, percent, remaining);
+				Console.SetCursorPosition(0, scene.Layers.Count);
+			}
 		}
 
 		private static void Render(Scene scene, ILayer layer)
