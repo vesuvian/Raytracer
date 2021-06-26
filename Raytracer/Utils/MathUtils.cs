@@ -56,5 +56,10 @@ namespace Raytracer.Utils
 		{
 			return (value % mod + mod) % mod;
 		}
+
+		public static float ModPositive(float value, float mod)
+		{
+			return (value % mod + mod) % mod;
+		}
 	}
 }

@@ -11,17 +11,11 @@ namespace Raytracer.Materials
 			if (Diffuse == null)
 				return Color;
 
-			lock (Diffuse)
-			{
-				int x = (int)(Diffuse.Width * uv.X * Scale.X);
-				int y = (int)(Diffuse.Height * uv.Y * Scale.Y);
+			float x = uv.X * Scale.Y;
+			float y = uv.Y * Scale.Y;
 
-				x = MathUtils.ModPositive(x, Diffuse.Width);
-				y = MathUtils.ModPositive(y, Diffuse.Height);
-
-				Color diffuse = Diffuse.GetPixel(x, y);
-				return ColorUtils.Multiply(Color, diffuse);
-			}
+			Color diffuse = Diffuse.Sample(x, y);
+			return ColorUtils.Multiply(Color, diffuse);
 		}
 	}
 }

@@ -29,8 +29,7 @@ namespace Raytracer
 		{
 			Console.CursorVisible = false;
 
-			Image checkerboardImage = Image.FromFile("Resources\\checkerboard.png");
-			Bitmap checkerboard = new Bitmap(checkerboardImage);
+			Texture checkerboard = Texture.FromPath("Resources\\checkerboard.png");
 			
 			Scene scene = new Scene
 			{

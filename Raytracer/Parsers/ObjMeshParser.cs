@@ -38,7 +38,7 @@ namespace Raytracer.Parsers
 							break;
 
 						case "vt":
-							vertexUvs.Add(new Vector3(float.Parse(split[1]), float.Parse(split[2]), split.Length > 3 ? float.Parse(split[3]) : 0));
+							vertexUvs.Add(new Vector3(1 - float.Parse(split[1]), float.Parse(split[2]), split.Length > 3 ? float.Parse(split[3]) : 0));
 							break;
 
 						case "f":
