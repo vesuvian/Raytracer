@@ -66,12 +66,20 @@ namespace Raytracer.SceneObjects.Geometry
 				Vector3 vertexUv1 = m_Mesh.VertexUvs[vertexUvIndex1];
 				Vector3 vertexUv2 = m_Mesh.VertexUvs[vertexUvIndex2];
 
+				Vector3 position = ray.PositionAtDelta(t);
+				Vector3 normal = Triangle.GetInterpolatedVertexNormal(vertexNormal0, vertexNormal1, vertexNormal2, u, v);
+				Vector2 uv = Triangle.GetInterpolatedVertexUv(vertexUv0, vertexUv1, vertexUv2, u, v);
+
+				// Flip normals if the ray comes from behind
+				if (Vector3.Dot(ray.Direction, normal) > 0)
+					normal *= -1;
+
 				yield return new Intersection
 				{
-					Position = ray.PositionAtDelta(t),
-					Normal = Triangle.GetInterpolatedVertexNormal(vertexNormal0, vertexNormal1, vertexNormal2, u, v),
+					Position = position,
+					Normal = normal,
 					RayOrigin = ray.Origin,
-					Uv = Triangle.GetInterpolatedVertexUv(vertexUv0, vertexUv1, vertexUv2, u, v)
+					Uv = uv
 				}.Multiply(LocalToWorld);
 			}
 		}
