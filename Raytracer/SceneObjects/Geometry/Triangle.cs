@@ -21,10 +21,9 @@ namespace Raytracer.SceneObjects.Geometry
 			return (1 - u - v) * a + u * b + v * c;
 		}
 
-		public static Vector2 GetInterpolatedVertexUv(Vector3 a, Vector3 b, Vector3 c, float u, float v)
+		public static Vector2 GetInterpolatedVertexUv(Vector2 a, Vector2 b, Vector2 c, float u, float v)
 		{
-			Vector3 output = (1 - u - v) * a + u * b + v * c;
-			return new Vector2(output.X, output.Y);
+			return (1 - u - v) * a + u * b + v * c;
 		}
 
 		public static bool HitTriangle(Vector3 a, Vector3 b, Vector3 c, Ray ray, out float t, out float u, out float v)

@@ -12,7 +12,7 @@ namespace Raytracer.Parsers
 		{
 			List<Vector3> vertices = new List<Vector3>();
 			List<Vector3> vertexNormals = new List<Vector3>();
-			List<Vector3> vertexUvs = new List<Vector3>();
+			List<Vector2> vertexUvs = new List<Vector2>();
 			List<int> triangles = new List<int>();
 			List<int> triangleNormals = new List<int>();
 			List<int> triangleUvs = new List<int>();
@@ -38,7 +38,7 @@ namespace Raytracer.Parsers
 							break;
 
 						case "vt":
-							vertexUvs.Add(new Vector3(1 - float.Parse(split[1]), float.Parse(split[2]), split.Length > 3 ? float.Parse(split[3]) : 0));
+							vertexUvs.Add(new Vector2(1 - float.Parse(split[1]), float.Parse(split[2])));
 							break;
 
 						case "f":

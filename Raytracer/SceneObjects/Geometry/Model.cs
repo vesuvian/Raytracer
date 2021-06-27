@@ -62,9 +62,9 @@ namespace Raytracer.SceneObjects.Geometry
 				int vertexUvIndex1 = m_Mesh.TriangleUvs[faceIndex + 1];
 				int vertexUvIndex2 = m_Mesh.TriangleUvs[faceIndex + 2];
 
-				Vector3 vertexUv0 = m_Mesh.VertexUvs[vertexUvIndex0];
-				Vector3 vertexUv1 = m_Mesh.VertexUvs[vertexUvIndex1];
-				Vector3 vertexUv2 = m_Mesh.VertexUvs[vertexUvIndex2];
+				Vector2 vertexUv0 = m_Mesh.VertexUvs[vertexUvIndex0];
+				Vector2 vertexUv1 = m_Mesh.VertexUvs[vertexUvIndex1];
+				Vector2 vertexUv2 = m_Mesh.VertexUvs[vertexUvIndex2];
 
 				Vector3 position = ray.PositionAtDelta(t);
 				Vector3 normal = Triangle.GetInterpolatedVertexNormal(vertexNormal0, vertexNormal1, vertexNormal2, u, v);

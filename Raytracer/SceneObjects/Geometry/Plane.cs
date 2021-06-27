@@ -9,17 +9,25 @@ namespace Raytracer.SceneObjects.Geometry
 	{
 		private static readonly Vector3 s_Normal = new Vector3(0, 1, 0);
 
+		public static bool HitPlane(Ray ray, out float t)
+		{
+			t = default;
+
+			float denom = Vector3.Dot(s_Normal, ray.Direction);
+			if (MathF.Abs(denom) <= 0.00001f)
+				return false;
+
+			t = -Vector3.Dot(s_Normal, ray.Origin) / denom;
+			return t > 0.00001f;
+		}
+
 		public override IEnumerable<Intersection> GetIntersections(Ray ray)
 		{
 			// First transform the ray into local space
 			ray = ray.Multiply(WorldToLocal);
 
-			float denom = Vector3.Dot(s_Normal, ray.Direction);
-			if (MathF.Abs(denom) <= 0.00001f)
-				yield break;
-
-			float t = -Vector3.Dot(s_Normal, ray.Origin) / denom;
-			if (t <= 0.00001f)
+			float t;
+			if (!HitPlane(ray, out t))
 				yield break;
 
 			Vector3 position = ray.PositionAtDelta(t);
