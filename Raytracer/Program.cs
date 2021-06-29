@@ -30,6 +30,7 @@ namespace Raytracer
 			Console.CursorVisible = false;
 
 			Texture checkerboard = Texture.FromPath("Resources\\checkerboard.png");
+			Texture normal = Texture.FromPath("Resources\\sci_fi_normal.jpg");
 			
 			Scene scene = new Scene
 			{
@@ -82,7 +83,8 @@ namespace Raytracer
 						Material = new Material
 						{
 							Color = Color.Green,
-							Diffuse = checkerboard
+							Diffuse = checkerboard,
+							Normal = normal
 						}
 					},
 					new Sphere
@@ -92,7 +94,8 @@ namespace Raytracer
 						Material = new Material
 						{
 							Color = Color.Blue,
-							Diffuse = checkerboard
+							Diffuse = checkerboard,
+							Normal = normal
 						}
 					},
 					new Plane
@@ -100,7 +103,8 @@ namespace Raytracer
 						Material = new Material
 						{
 							Color = Color.Yellow,
-							Diffuse = checkerboard
+							Diffuse = checkerboard,
+							Normal = normal
 						}
 					},
 					new Plane

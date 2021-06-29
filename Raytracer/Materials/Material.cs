@@ -17,5 +17,20 @@ namespace Raytracer.Materials
 			Color diffuse = Diffuse.Sample(x, y);
 			return ColorUtils.Multiply(Color, diffuse);
 		}
+
+		public override Vector3 SampleNormal(Vector2 uv)
+		{
+			if (Normal == null)
+				return new Vector3(0, 1, 0);
+
+			float x = uv.X * Scale.Y;
+			float y = uv.Y * Scale.Y;
+
+			Color diffuse = Diffuse.Sample(x, y);
+
+			return Vector3.Normalize(new Vector3(diffuse.R / 255.0f - 0.5f,
+			                                     diffuse.G / 255.0f - 0.5f,
+			                                     diffuse.B / -255.0f - 0.5f) * 2);
+		}
 	}
 }
