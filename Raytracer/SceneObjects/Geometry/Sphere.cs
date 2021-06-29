@@ -56,10 +56,17 @@ namespace Raytracer.SceneObjects.Geometry
 			{
 				Vector3 position = ray.PositionAtDelta(intersect);
 				Vector3 normal = Vector3.Normalize(position);
+				Vector3 tangent =
+					normal == new Vector3(0, 1, 0) || normal == new Vector3(0, -1, 0)
+						? new Vector3(1, 0, 0)
+						: Vector3.Normalize(Vector3.Cross(normal, new Vector3(0, 1, 0)));
+				Vector3 bitangent = Vector3.Normalize(Vector3.Cross(tangent, normal));
 
 				yield return new Intersection
 				{
 					Position = position,
+					Tangent = tangent,
+					Bitangent = bitangent,
 					Normal = normal,
 					RayOrigin = ray.Origin,
 					Uv = GetUv(position)

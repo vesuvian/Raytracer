@@ -9,6 +9,10 @@ namespace Raytracer.Parsers
 		public List<int> Triangles { get; set; } = new List<int>();
 		public List<Vector3> VertexNormals { get; set; } = new List<Vector3>();
 		public List<int> TriangleNormals { get; set; } = new List<int>();
+		public List<Vector3> VertexTangents { get; set; } = new List<Vector3>();
+		public List<int> TriangleTangents { get; set; } = new List<int>();
+		public List<Vector3> VertexBitangents { get; set; } = new List<Vector3>();
+		public List<int> TriangleBitangents { get; set; } = new List<int>();
 		public List<Vector2> VertexUvs { get; set; } = new List<Vector2>();
 		public List<int> TriangleUvs { get; set; } = new List<int>();
 	}

@@ -67,7 +67,7 @@ namespace Raytracer.Parsers
 				}
 			}
 
-			return new Mesh
+			Mesh output = new Mesh
 			{
 				Vertices = vertices,
 				VertexNormals = vertexNormals,
@@ -76,6 +76,33 @@ namespace Raytracer.Parsers
 				TriangleNormals = triangleNormals,
 				TriangleUvs = triangleUvs
 			};
+
+			FillTangents(output);
+			FillBitangents(output);
+
+			return output;
+		}
+
+		private static void FillTangents(Mesh mesh)
+		{
+			List<Vector3> vertexTangents = new List<Vector3>();
+			List<int> triangleTangents = new List<int>();
+
+			throw new NotImplementedException();
+
+			mesh.VertexTangents = vertexTangents;
+			mesh.TriangleTangents = triangleTangents;
+		}
+
+		private static void FillBitangents(Mesh mesh)
+		{
+			List<Vector3> vertexBitangents = new List<Vector3>();
+			List<int> triangleBitangents = new List<int>();
+
+			throw new NotImplementedException();
+
+			mesh.VertexBitangents = vertexBitangents;
+			mesh.TriangleBitangents = triangleBitangents;
 		}
 
 		private static IEnumerable<T> Triangulate<T>(IEnumerable<T> vertices)

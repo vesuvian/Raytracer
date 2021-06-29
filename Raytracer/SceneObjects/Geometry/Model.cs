@@ -38,6 +38,7 @@ namespace Raytracer.SceneObjects.Geometry
 
 			for (int faceIndex = 0; faceIndex < m_Mesh.Triangles.Count; faceIndex += 3)
 			{
+				// Positions
 				int vertexIndex0 = m_Mesh.Triangles[faceIndex];
 				int vertexIndex1 = m_Mesh.Triangles[faceIndex + 1];
 				int vertexIndex2 = m_Mesh.Triangles[faceIndex + 2];
@@ -50,6 +51,7 @@ namespace Raytracer.SceneObjects.Geometry
 				if (!Triangle.HitTriangle(vertex0, vertex1, vertex2, ray, out t, out u, out v))
 					continue;
 
+				// Normals
 				int vertexNormalIndex0 = m_Mesh.TriangleNormals[faceIndex];
 				int vertexNormalIndex1 = m_Mesh.TriangleNormals[faceIndex + 1];
 				int vertexNormalIndex2 = m_Mesh.TriangleNormals[faceIndex + 2];
@@ -58,6 +60,25 @@ namespace Raytracer.SceneObjects.Geometry
 				Vector3 vertexNormal1 = m_Mesh.VertexNormals[vertexNormalIndex1];
 				Vector3 vertexNormal2 = m_Mesh.VertexNormals[vertexNormalIndex2];
 
+				// Tangents
+				int vertexTangentIndex0 = m_Mesh.TriangleTangents[faceIndex];
+				int vertexTangentIndex1 = m_Mesh.TriangleTangents[faceIndex + 1];
+				int vertexTangentIndex2 = m_Mesh.TriangleTangents[faceIndex + 2];
+
+				Vector3 vertexTangent0 = m_Mesh.VertexTangents[vertexTangentIndex0];
+				Vector3 vertexTangent1 = m_Mesh.VertexTangents[vertexTangentIndex1];
+				Vector3 vertexTangent2 = m_Mesh.VertexTangents[vertexTangentIndex2];
+
+				// Bitangents
+				int vertexBitangentIndex0 = m_Mesh.TriangleBitangents[faceIndex];
+				int vertexBitangentIndex1 = m_Mesh.TriangleBitangents[faceIndex + 1];
+				int vertexBitangentIndex2 = m_Mesh.TriangleBitangents[faceIndex + 2];
+
+				Vector3 vertexBitangent0 = m_Mesh.VertexBitangents[vertexBitangentIndex0];
+				Vector3 vertexBitangent1 = m_Mesh.VertexBitangents[vertexBitangentIndex1];
+				Vector3 vertexBitangent2 = m_Mesh.VertexBitangents[vertexBitangentIndex2];
+
+				// Uvs
 				int vertexUvIndex0 = m_Mesh.TriangleUvs[faceIndex];
 				int vertexUvIndex1 = m_Mesh.TriangleUvs[faceIndex + 1];
 				int vertexUvIndex2 = m_Mesh.TriangleUvs[faceIndex + 2];
@@ -68,6 +89,8 @@ namespace Raytracer.SceneObjects.Geometry
 
 				Vector3 position = ray.PositionAtDelta(t);
 				Vector3 normal = Triangle.GetInterpolatedVertexNormal(vertexNormal0, vertexNormal1, vertexNormal2, u, v);
+				Vector3 tangent = Triangle.GetInterpolatedVertexNormal(vertexTangent0, vertexTangent1, vertexTangent2, u, v);
+				Vector3 bitangent = Triangle.GetInterpolatedVertexNormal(vertexBitangent0, vertexBitangent1, vertexBitangent2, u, v);
 				Vector2 uv = Triangle.GetInterpolatedVertexUv(vertexUv0, vertexUv1, vertexUv2, u, v);
 
 				// Flip normals if the ray comes from behind
@@ -78,6 +101,8 @@ namespace Raytracer.SceneObjects.Geometry
 				{
 					Position = position,
 					Normal = normal,
+					Tangent = tangent,
+					Bitangent = bitangent,
 					RayOrigin = ray.Origin,
 					Uv = uv
 				}.Multiply(LocalToWorld);

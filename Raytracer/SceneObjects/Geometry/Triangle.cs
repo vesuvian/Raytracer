@@ -76,6 +76,8 @@ namespace Raytracer.SceneObjects.Geometry
 			{
 				Position = ray.PositionAtDelta(t),
 				Normal = normal,
+				Tangent = Vector3.Normalize(B - A),
+				Bitangent = Vector3.Normalize(C - A),
 				RayOrigin = ray.Origin,
 				Uv = new Vector2(u, v)
 			}.Multiply(LocalToWorld);

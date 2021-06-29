@@ -26,11 +26,15 @@ namespace Raytracer.SceneObjects.Geometry
 			{
 				Vector3 posMin = ray.PositionAtDelta(tMin);
 				Vector3 normalMin = GetNormal(posMin);
+				Vector3 tangent = GetTangent(posMin);
+				Vector3 bitangent = GetBitangent(posMin);
 				Vector2 uv = GetUv(posMin);
 
 				yield return new Intersection
 				{
 					Normal = normalMin,
+					Tangent = tangent,
+					Bitangent = bitangent,
 					Position = posMin,
 					RayOrigin = ray.Origin,
 					Uv = uv
@@ -41,16 +45,66 @@ namespace Raytracer.SceneObjects.Geometry
 			{
 				Vector3 posMax = ray.PositionAtDelta(tMax);
 				Vector3 normalMax = GetNormal(posMax);
+				Vector3 tangent = GetTangent(posMax);
+				Vector3 bitangent = GetBitangent(posMax);
 				Vector2 uv = GetUv(posMax);
 
 				yield return new Intersection
 				{
 					Normal = normalMax,
+					Tangent = tangent,
+					Bitangent = bitangent,
 					Position = posMax,
 					RayOrigin = ray.Origin,
 					Uv = uv
 				}.Multiply(LocalToWorld);
 			}
+		}
+
+		private static Vector3 GetTangent(Vector3 pos)
+		{
+			Vector3 cubeMin = Vector3.One * -0.5f;
+			Vector3 cubeMax = Vector3.One * 0.5f;
+			Vector3 pointToMin = pos - cubeMin;
+			Vector3 pointToMax = pos - cubeMax;
+
+			if (MathF.Abs(pointToMin.X) < 0.0001f)
+				return new Vector3(0, 0, -1); // left
+			if (MathF.Abs(pointToMax.X) < 0.0001f)
+				return new Vector3(0, 0, 1); // right
+			if (MathF.Abs(pointToMin.Y) < 0.0001f)
+				return new Vector3(1, 0, 0); // bottom
+			if (MathF.Abs(pointToMax.Y) < 0.0001f)
+				return new Vector3(1, 0, 0); // top
+			if (MathF.Abs(pointToMin.Z) < 0.0001f)
+				return new Vector3(1, 0, 0); // front
+			if (MathF.Abs(pointToMax.Z) < 0.0001f)
+				return new Vector3(-1, 0, 0); // back
+
+			return default;
+		}
+
+		private static Vector3 GetBitangent(Vector3 pos)
+		{
+			Vector3 cubeMin = Vector3.One * -0.5f;
+			Vector3 cubeMax = Vector3.One * 0.5f;
+			Vector3 pointToMin = pos - cubeMin;
+			Vector3 pointToMax = pos - cubeMax;
+
+			if (MathF.Abs(pointToMin.X) < 0.0001f)
+				return new Vector3(0, 1, 0); // left
+			if (MathF.Abs(pointToMax.X) < 0.0001f)
+				return new Vector3(0, 1, 0); // right
+			if (MathF.Abs(pointToMin.Y) < 0.0001f)
+				return new Vector3(0, 0, -1); // bottom
+			if (MathF.Abs(pointToMax.Y) < 0.0001f)
+				return new Vector3(0, 0, 1); // top
+			if (MathF.Abs(pointToMin.Z) < 0.0001f)
+				return new Vector3(0, 1, 0); // front
+			if (MathF.Abs(pointToMax.Z) < 0.0001f)
+				return new Vector3(0, 1, 0); // back
+
+			return default;
 		}
 
 		private static Vector2 GetUv(Vector3 pos)

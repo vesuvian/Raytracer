@@ -33,6 +33,8 @@ namespace Raytracer.SceneObjects.Geometry
 			yield return new Intersection
 			{
 				Normal = normal,
+				Tangent = new Vector3(1, 0, 0),
+				Bitangent = new Vector3(0, 0, 1),
 				Position = position,
 				RayOrigin = ray.Origin,
 				Uv = uv
