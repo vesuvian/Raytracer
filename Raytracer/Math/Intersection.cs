@@ -31,8 +31,8 @@ namespace Raytracer.Math
 			{
 				Position = matrix.MultiplyPoint(Position),
 				Normal = matrix.MultiplyNormal(Normal),
-				Tangent = matrix.MultiplyNormal(Tangent),
-				Bitangent = matrix.MultiplyNormal(Bitangent),
+				Tangent = Vector3.Normalize(matrix.MultiplyDirection(Tangent)),
+				Bitangent = Vector3.Normalize(matrix.MultiplyDirection(Bitangent)),
 				RayOrigin = matrix.MultiplyPoint(RayOrigin),
 				Uv = Uv
 			};

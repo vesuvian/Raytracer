@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using Raytracer.Extensions;
+using Raytracer.Utils;
 
 namespace Raytracer.SceneObjects
 {
@@ -49,11 +50,7 @@ namespace Raytracer.SceneObjects
 			get
 			{
 				if (m_LocalToWorld == null)
-				{
-					m_LocalToWorld = Matrix4x4.CreateScale(Scale) *
-					                 Matrix4x4.CreateFromQuaternion(Rotation) *
-					                 Matrix4x4.CreateTranslation(Position);
-				}
+					m_LocalToWorld = Matrix4x4Utils.Trs(Position, Rotation, Scale);
 				return m_LocalToWorld.Value;
 			}
 		}

@@ -18,14 +18,13 @@ namespace Raytracer.Layers
 			if (geometry == null)
 				return Color.Black;
 
-			Vector3 normalMap = geometry.Material.SampleNormal(intersection.Uv);
-			Vector3 intersectionNormal = intersection.Normal;
-			// TODO - Modify normal by normal map
+			Vector3 worldNormal = geometry.GetSurfaceNormal(intersection);
 
-			Matrix4x4 matrix;
-			Matrix4x4.Invert(scene.Camera.Projection, out matrix);
+			// Get the camera matrix
+			Matrix4x4 cameraToWorld;
+			Matrix4x4.Invert(scene.Camera.Projection, out cameraToWorld);
 
-			Vector3 faceNormal = matrix.MultiplyNormal(intersectionNormal);
+			Vector3 faceNormal = cameraToWorld.MultiplyNormal(worldNormal);
 			Vector3 normalPositive = (faceNormal / 2) + (Vector3.One / 2);
 
 			return Color.FromArgb((int)(normalPositive.X * 255),

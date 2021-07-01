@@ -3,6 +3,7 @@ using System.Linq;
 using System.Numerics;
 using Raytracer.Math;
 using Raytracer.SceneObjects;
+using Raytracer.SceneObjects.Geometry;
 
 namespace Raytracer.Layers
 {
@@ -10,13 +11,15 @@ namespace Raytracer.Layers
 	{
 		protected override Color CastRay(Scene scene, Ray ray)
 		{
-			Intersection? closestIntersection =
-				scene.GetIntersections(ray, eRayMask.Visible).Select(kvp => (Intersection?)kvp.Value).FirstOrDefault();
+			(ISceneGeometry geometry, Intersection intersection) =
+				scene.GetIntersections(ray, eRayMask.Visible).FirstOrDefault();
 
-			if (closestIntersection == null)
+			if (geometry == null)
 				return Color.Black;
 
-			Vector3 normalPositive = (closestIntersection.Value.Normal / 2) + (Vector3.One / 2);
+			Vector3 worldNormal = geometry.GetSurfaceNormal(intersection);
+
+			Vector3 normalPositive = (worldNormal / 2) + (Vector3.One / 2);
 
 			return Color.FromArgb((int)(normalPositive.X * 255),
 			                      (int)(normalPositive.Y * 255),

@@ -84,7 +84,8 @@ namespace Raytracer
 						{
 							Color = Color.Green,
 							Diffuse = checkerboard,
-							Normal = normal
+							Normal = normal,
+							Scale = new Vector2(1 / 3.0f, 1)
 						}
 					},
 					new Sphere
@@ -95,7 +96,8 @@ namespace Raytracer
 						{
 							Color = Color.Blue,
 							Diffuse = checkerboard,
-							Normal = normal
+							Normal = normal,
+							Scale = new Vector2(1 / 3.0f, 1)
 						}
 					},
 					new Plane

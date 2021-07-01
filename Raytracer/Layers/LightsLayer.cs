@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using Raytracer.Math;
 using Raytracer.SceneObjects;
+using Raytracer.SceneObjects.Geometry;
 using Raytracer.Utils;
 
 namespace Raytracer.Layers
@@ -14,15 +16,17 @@ namespace Raytracer.Layers
 			if (scene.Lights.Count == 0)
 				return Color.Black;
 
-			Intersection? closestIntersection =
-				scene.GetIntersections(ray, eRayMask.Visible).Select(kvp => (Intersection?)kvp.Value).FirstOrDefault();
+			(ISceneGeometry geometry, Intersection intersection) =
+				scene.GetIntersections(ray, eRayMask.Visible).FirstOrDefault();
 
-			if (closestIntersection == null)
+			if (geometry == null)
 				return Color.Black;
+
+			Vector3 worldNormal = geometry.GetSurfaceNormal(intersection);
 
 			IEnumerable<Color> illumination =
 				scene.Lights
-				     .Select(l => l.Sample(scene, closestIntersection.Value.Position, closestIntersection.Value.Normal));
+				     .Select(l => l.Sample(scene, intersection.Position, worldNormal));
 
 			return ColorUtils.Sum(illumination);
 		}
