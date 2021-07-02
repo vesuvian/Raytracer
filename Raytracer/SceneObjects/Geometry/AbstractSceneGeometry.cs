@@ -19,9 +19,9 @@ namespace Raytracer.SceneObjects.Geometry
 		{
 			// Hack - flip Z and Y since normal map uses Z for "towards"
 			Vector3 normalMap = Material.SampleNormal(intersection.Uv);
-			normalMap = Vector3.Normalize(new Vector3(normalMap.X * Material.NormalIntensity,
+			normalMap = Vector3.Normalize(new Vector3(normalMap.X * Material.NormalScale,
 			                                          normalMap.Z * -1,
-			                                          normalMap.Y * Material.NormalIntensity));
+			                                          normalMap.Y * Material.NormalScale));
 
 			// Get the normal in world space
 			Matrix4x4 surface = Matrix4x4Utils.Tbn(intersection.Tangent, intersection.Bitangent, intersection.Normal);

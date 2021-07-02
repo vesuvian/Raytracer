@@ -7,9 +7,10 @@ namespace Raytracer.Materials
 	{
 		Color Color { get; set; }
 		Vector2 Scale { get; set; }
+		Vector2 Offset { get; set; }
 		Texture Diffuse { get; set; }
 		Texture Normal { get; set; }
-		public float NormalIntensity { get; set; }
+		public float NormalScale { get; set; }
 
 		Color Sample(Vector2 uv);
 		Vector3 SampleNormal(Vector2 uv);

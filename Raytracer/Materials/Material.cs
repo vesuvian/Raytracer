@@ -11,8 +11,8 @@ namespace Raytracer.Materials
 			if (Diffuse == null)
 				return Color;
 
-			float x = uv.X / Scale.X;
-			float y = uv.Y / Scale.Y;
+			float x = uv.X / Scale.X - Offset.X;
+			float y = uv.Y / Scale.Y - Offset.Y;
 
 			Color diffuse = Diffuse.Sample(x, y);
 			return ColorUtils.Multiply(Color, diffuse);
@@ -23,8 +23,8 @@ namespace Raytracer.Materials
 			if (Normal == null)
 				return new Vector3(0, 0, -1);
 
-			float x = uv.X / Scale.X;
-			float y = uv.Y / Scale.Y;
+			float x = uv.X / Scale.X - Offset.X;
+			float y = uv.Y / Scale.Y - Offset.Y;
 
 			Color diffuse = Normal.Sample(x, y);
 
