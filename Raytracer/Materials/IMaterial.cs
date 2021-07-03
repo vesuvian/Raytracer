@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Numerics;
+using Raytracer.Materials.Textures;
 
 namespace Raytracer.Materials
 {
@@ -8,8 +9,8 @@ namespace Raytracer.Materials
 		Color Color { get; set; }
 		Vector2 Scale { get; set; }
 		Vector2 Offset { get; set; }
-		Texture Diffuse { get; set; }
-		Texture Normal { get; set; }
+		ITexture Diffuse { get; set; }
+		ITexture Normal { get; set; }
 		public float NormalScale { get; set; }
 
 		Color Sample(Vector2 uv);

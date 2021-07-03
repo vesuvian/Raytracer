@@ -2,18 +2,18 @@
 using Raytracer.Extensions;
 using Raytracer.Utils;
 
-namespace Raytracer.Materials
+namespace Raytracer.Materials.Textures
 {
-	public sealed class Texture
+	public sealed class BitmapTexture : AbstractTexture
 	{
 		private readonly Bitmap m_Bitmap;
 
-		private Texture(Bitmap bitmap)
+		private BitmapTexture(Bitmap bitmap)
 		{
 			m_Bitmap = bitmap;
 		}
 
-		public Color Sample(float u, float v)
+		public override Color Sample(float u, float v)
 		{
 			lock (m_Bitmap)
 			{
@@ -23,11 +23,11 @@ namespace Raytracer.Materials
 			}
 		}
 
-		public static Texture FromPath(string path)
+		public static BitmapTexture FromPath(string path)
 		{
 			Image checkerboardImage = Image.FromFile(path);
 			Bitmap checkerboardBitmap = new Bitmap(checkerboardImage);
-			return new Texture(checkerboardBitmap);
+			return new BitmapTexture(checkerboardBitmap);
 		}
 	}
 }

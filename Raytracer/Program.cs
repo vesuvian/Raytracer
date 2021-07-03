@@ -8,6 +8,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Raytracer.Layers;
 using Raytracer.Materials;
+using Raytracer.Materials.Textures;
 using Raytracer.Parsers;
 using Raytracer.SceneObjects;
 using Raytracer.SceneObjects.Geometry;
@@ -29,8 +30,8 @@ namespace Raytracer
 		{
 			Console.CursorVisible = false;
 
-			Texture checkerboard = Texture.FromPath("Resources\\checkerboard.png");
-			Texture normal = Texture.FromPath("Resources\\sci_fi_normal.jpg");
+			BitmapTexture checkerboard = BitmapTexture.FromPath("Resources\\TexturesCom_Wall_Stone2_3x3_1K_albedo.tif");
+			BitmapTexture normal = BitmapTexture.FromPath("Resources\\TexturesCom_Wall_Stone2_3x3_1K_normal.tif");
 			
 			Scene scene = new Scene
 			{
