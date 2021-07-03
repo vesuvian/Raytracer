@@ -30,8 +30,7 @@ namespace Raytracer
 		{
 			Console.CursorVisible = false;
 
-			BitmapTexture checkerboard = BitmapTexture.FromPath("Resources\\TexturesCom_Wall_Stone2_3x3_1K_albedo.tif");
-			BitmapTexture normal = BitmapTexture.FromPath("Resources\\TexturesCom_Wall_Stone2_3x3_1K_normal.tif");
+			BitmapTexture normal = BitmapTexture.FromPath("Resources\\sci_fi_normal.jpg");
 			
 			Scene scene = new Scene
 			{
@@ -50,7 +49,7 @@ namespace Raytracer
 						Position = new Vector3(10, 100, -5),
 						Color = Color.Red,
 						Range = 200,
-						Intensity = 2,
+						Intensity = 4,
 						Falloff = eFalloff.Linear
 					},
 					new PointLight
@@ -58,7 +57,15 @@ namespace Raytracer
 						Position = new Vector3(0, 10, 10),
 						Color = Color.Green,
 						Range = 40,
-						Intensity = 2,
+						Intensity = 4,
+						Falloff = eFalloff.Linear
+					},
+					new PointLight
+					{
+						Position = new Vector3(0, 1, -20),
+						Color = Color.White,
+						Range = 80,
+						Intensity = 4,
 						Falloff = eFalloff.Linear
 					}
 				},
@@ -71,8 +78,8 @@ namespace Raytracer
 						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45),
 						Material = new Material
 						{
-							Color = Color.Red,
-							Diffuse = checkerboard
+							Diffuse = new CheckerboardTexture(),
+							Normal = normal,
 						}
 					},
 					new Sphere
@@ -83,9 +90,9 @@ namespace Raytracer
 						Radius = 5,
 						Material = new Material
 						{
-							Color = Color.Green,
-							Diffuse = checkerboard,
-							Normal = normal,
+							Diffuse = new SolidColorTexture { Color = Color.SlateGray },
+							Reflectivity = new SolidColorTexture { Color = Color.Gray },
+							Roughness = new SolidColorTexture { Color = Color.Gray },
 							Scale = new Vector2(1 / 3.0f, 1)
 						}
 					},
@@ -95,8 +102,7 @@ namespace Raytracer
 						Radius = 5,
 						Material = new Material
 						{
-							Color = Color.Blue,
-							Diffuse = checkerboard,
+							Diffuse = new CheckerboardTexture(),
 							Normal = normal,
 							Scale = new Vector2(1 / 3.0f, 1)
 						}
@@ -105,20 +111,21 @@ namespace Raytracer
 					{
 						Material = new Material
 						{
-							Color = Color.Yellow,
-							Diffuse = checkerboard,
-							Normal = normal
+							Diffuse = new CheckerboardTexture(),
+							Normal = normal,
+							Scale = new Vector2(5, 5)
 						}
 					},
 					new Plane
 					{
 						Position = new Vector3(-10, 0, 0),
-						Rotation = Quaternion.CreateFromYawPitchRoll(0, 0, MathUtils.DEG2RAD * 90),
+						Rotation = Quaternion.CreateFromYawPitchRoll(0, MathUtils.DEG2RAD * 90, MathUtils.DEG2RAD * 90),
 						RayMask = eRayMask.Visible,
 						Material = new Material
 						{
-							Color = Color.Orange,
-							Diffuse = checkerboard
+							Diffuse = new SolidColorTexture { Color = Color.Orange},
+							Normal = normal,
+							Scale = new Vector2(5, 5)
 						}
 					},
 					new Plane
@@ -128,31 +135,33 @@ namespace Raytracer
 						RayMask = eRayMask.Visible,
 						Material = new Material
 						{
-							Color = Color.Purple,
-							Diffuse = checkerboard
+							Diffuse = new SolidColorTexture { Color = Color.Purple},
+							Normal = normal,
+							Scale = new Vector2(5, 5)
 						}
 					},
-					new Model
-					{
-						Scale = Vector3.One * 0.2f,
-						Position = new Vector3(3, 2, -5),
-						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * -45, MathUtils.DEG2RAD * -15, MathUtils.DEG2RAD * 30),
-						Mesh = new ObjMeshParser().Parse("Resources\\teapot.obj"),
-						Material = new Material
-						{
-							Color = Color.Aqua,
-							Diffuse = checkerboard
-						}
-					}
+					//new Model
+					//{
+					//	Scale = Vector3.One * 0.2f,
+					//	Position = new Vector3(3, 2, -5),
+					//	Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * -45, MathUtils.DEG2RAD * -15, MathUtils.DEG2RAD * 30),
+					//	Mesh = new ObjMeshParser().Parse("Resources\\teapot.obj"),
+					//	Material = new Material
+					//	{
+					//		Color = Color.Aqua,
+					//		Diffuse = checkerboard
+					//	}
+					//}
 				},
 				Layers = new List<ILayer>
 				{
-					new DepthLayer(),
-					new WorldNormalsLayer(),
-					new ViewNormalsLayer(),
-					new WorldPositionLayer(),
-					new LightsLayer(),
-					new UnlitLayer()
+					//new DepthLayer(),
+					//new WorldNormalsLayer(),
+					//new ViewNormalsLayer(),
+					//new WorldPositionLayer(),
+					//new LightsLayer(),
+					//new UnlitLayer(),
+					new FullLayer()
 				}
 			};
 

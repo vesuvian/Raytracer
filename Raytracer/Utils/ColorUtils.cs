@@ -9,7 +9,16 @@ namespace Raytracer.Utils
 	{
 		private const float EPSILON = 0.00001f;
 
-		public static Color Lerp(Color a, Color b, float f)
+		public static Color LerpRgb(Color a, Color b, float f)
+		{
+			Vector4 rgbA = new Vector4(a.R, a.G, a.B, a.A);
+			Vector4 rgbB = new Vector4(b.R, b.G, b.B, b.A);
+			Vector4 rgbLerped = Vector4.Lerp(rgbA, rgbB, f);
+
+			return Color.FromArgb((int)rgbLerped.W, (int)rgbLerped.X, (int)rgbLerped.Y, (int)rgbLerped.Z);
+		}
+
+		public static Color LerpHsl(Color a, Color b, float f)
 		{
 			Vector4 hslA = RgbToHsl(a);
 			Vector4 hslB = RgbToHsl(b);

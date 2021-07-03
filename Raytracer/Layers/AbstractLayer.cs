@@ -61,7 +61,7 @@ namespace Raytracer.Layers
 						IEnumerable<Color> samples =
 							scene.Camera
 							     .CreateRays(xViewportMin, xViewportMax, yViewportMin, yViewportMax)
-							     .Select(r => CastRay(scene, r));
+							     .Select(r => CastRay(scene, r, 0));
 
 						Color pixel = ColorUtils.Average(samples);
 						lock (buffer)
@@ -104,6 +104,6 @@ namespace Raytracer.Layers
 			}
 		}
 
-		protected abstract Color CastRay(Scene scene, Ray ray);
+		protected abstract Color CastRay(Scene scene, Ray ray, int rayDepth);
 	}
 }

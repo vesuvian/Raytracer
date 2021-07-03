@@ -10,7 +10,7 @@ namespace Raytracer.Layers
 {
 	public sealed class ViewNormalsLayer : AbstractLayer
 	{
-		protected override Color CastRay(Scene scene, Ray ray)
+		protected override Color CastRay(Scene scene, Ray ray, int rayDepth)
 		{
 			(ISceneGeometry geometry, Intersection intersection) =
 				scene.GetIntersections(ray, eRayMask.Visible).FirstOrDefault();
@@ -18,7 +18,7 @@ namespace Raytracer.Layers
 			if (geometry == null)
 				return Color.Black;
 
-			Vector3 worldNormal = geometry.GetSurfaceNormal(intersection);
+			Vector3 worldNormal = geometry.Material.GetWorldNormal(intersection);
 
 			// Get the camera matrix
 			Matrix4x4 cameraToWorld;

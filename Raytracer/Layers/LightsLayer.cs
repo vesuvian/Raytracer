@@ -11,7 +11,7 @@ namespace Raytracer.Layers
 {
 	public sealed class LightsLayer : AbstractLayer
 	{
-		protected override Color CastRay(Scene scene, Ray ray)
+		protected override Color CastRay(Scene scene, Ray ray, int rayDepth)
 		{
 			if (scene.Lights.Count == 0)
 				return Color.Black;
@@ -22,7 +22,7 @@ namespace Raytracer.Layers
 			if (geometry == null)
 				return Color.Black;
 
-			Vector3 worldNormal = geometry.GetSurfaceNormal(intersection);
+			Vector3 worldNormal = geometry.Material.GetWorldNormal(intersection);
 
 			IEnumerable<Color> illumination =
 				scene.Lights

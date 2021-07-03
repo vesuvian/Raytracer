@@ -9,7 +9,7 @@ namespace Raytracer.Layers
 {
 	public sealed class DepthLayer : AbstractLayer
 	{
-		protected override Color CastRay(Scene scene, Ray ray)
+		protected override Color CastRay(Scene scene, Ray ray, int rayDepth)
 		{
 			Intersection? closestIntersection =
 				scene.GetIntersections(ray, eRayMask.Visible).Select(kvp => (Intersection?)kvp.Value).FirstOrDefault();
@@ -20,7 +20,7 @@ namespace Raytracer.Layers
 			float planarDistance = Plane.Distance(scene.Camera.Position, scene.Camera.Forward, closestIntersection.Value.Position, out _);
 			float t = MathUtils.Clamp(planarDistance, scene.Camera.NearPlane, scene.Camera.FarPlane) /
 			          (scene.Camera.FarPlane - scene.Camera.NearPlane);
-			return ColorUtils.Lerp(Color.White, Color.Black, t);
+			return ColorUtils.LerpHsl(Color.White, Color.Black, t);
 		}
 	}
 }

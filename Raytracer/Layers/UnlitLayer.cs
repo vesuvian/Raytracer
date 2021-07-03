@@ -8,12 +8,12 @@ namespace Raytracer.Layers
 {
 	public sealed class UnlitLayer : AbstractLayer
 	{
-		protected override Color CastRay(Scene scene, Ray ray)
+		protected override Color CastRay(Scene scene, Ray ray, int rayDepth)
 		{
 			(ISceneGeometry geometry, Intersection intersection) =
 				scene.GetIntersections(ray, eRayMask.Visible).FirstOrDefault();
 
-			return geometry == null ? Color.Black : geometry.Material.Sample(intersection.Uv);
+			return geometry == null ? Color.Black : geometry.Material.SampleDiffuse(intersection.Uv);
 		}
 	}
 }

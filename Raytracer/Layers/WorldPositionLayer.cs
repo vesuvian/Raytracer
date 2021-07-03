@@ -11,7 +11,7 @@ namespace Raytracer.Layers
 		public Vector3 Min { get; set; } = Vector3.One * -10;
 		public Vector3 Max { get; set; } = Vector3.One * 10;
 
-		protected override Color CastRay(Scene scene, Ray ray)
+		protected override Color CastRay(Scene scene, Ray ray, int rayDepth)
 		{
 			Intersection? closestIntersection =
 				scene.GetIntersections(ray, eRayMask.Visible).Select(kvp => (Intersection?)kvp.Value).FirstOrDefault();

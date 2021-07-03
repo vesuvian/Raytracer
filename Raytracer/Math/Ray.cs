@@ -26,5 +26,14 @@ namespace Raytracer.Math
 		{
 			return Origin + delta * Direction;
 		}
+
+		public Ray Reflect(Vector3 position, Vector3 normal)
+		{
+			return new Ray
+			{
+				Origin = position,
+				Direction = Vector3.Normalize(Vector3.Reflect(Direction, normal))
+			};
+		}
 	}
 }

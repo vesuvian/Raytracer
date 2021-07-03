@@ -16,7 +16,7 @@ namespace Raytracer.Materials.Textures
 		public override Color Sample(float u, float v)
 		{
 			float blend = (m_Noise.Calc(u, v, Scale) + 1) / 2;
-			return ColorUtils.Lerp(ColorA, ColorB, blend);
+			return ColorUtils.LerpHsl(ColorA, ColorB, blend);
 		}
 	}
 }

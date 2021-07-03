@@ -21,7 +21,7 @@ namespace Raytracer.Materials.Textures
 			Random random = new Random(seed);
 			float blend = random.NextFloat();
 
-			return ColorUtils.Lerp(ColorA, ColorB, blend);
+			return ColorUtils.LerpHsl(ColorA, ColorB, blend);
 		}
 	}
 }
