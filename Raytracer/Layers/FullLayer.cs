@@ -19,7 +19,8 @@ namespace Raytracer.Layers
 				return Color.Black;
 
 			(ISceneGeometry geometry, Intersection intersection) =
-				scene.GetIntersections(ray, eRayMask.Visible).FirstOrDefault();
+				scene.GetIntersections(ray, eRayMask.Visible)
+				     .FirstOrDefault(kvp => kvp.Value.Distance > 0.00001f);
 
 			if (geometry == null)
 				return Color.Black;
