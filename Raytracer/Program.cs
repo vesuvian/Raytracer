@@ -211,7 +211,7 @@ namespace Raytracer
 		{
 			string path = Path.Combine(PATH, layer.GetType().Name + ".bmp");
 
-			using (Bitmap buffer = new Bitmap((int)(WIDTH * RENDER_SCALE), (int)(HEIGHT * RENDER_SCALE)))
+			using (Buffer buffer = new Buffer((int)(WIDTH * RENDER_SCALE), (int)(HEIGHT * RENDER_SCALE)))
 			{
 				layer.Render(scene, buffer);
 
@@ -222,7 +222,7 @@ namespace Raytracer
 				using (Bitmap output = new Bitmap(WIDTH, HEIGHT))
 				{
 					using (Graphics graphics = Graphics.FromImage(output))
-						graphics.DrawImage(buffer, 0, 0, WIDTH, HEIGHT);
+						graphics.DrawImage(buffer.Bitmap, 0, 0, WIDTH, HEIGHT);
 
 					output.Save(path, ImageFormat.Bmp);
 				}

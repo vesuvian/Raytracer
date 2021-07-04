@@ -1,33 +1,31 @@
 ﻿using System.Drawing;
-using Raytracer.Extensions;
 using Raytracer.Utils;
 
 namespace Raytracer.Materials.Textures
 {
 	public sealed class BitmapTexture : AbstractTexture
 	{
-		private readonly Bitmap m_Bitmap;
+		private readonly Buffer m_Buffer;
 
-		private BitmapTexture(Bitmap bitmap)
+		private BitmapTexture(Buffer buffer)
 		{
-			m_Bitmap = bitmap;
+			m_Buffer = buffer;
 		}
 
 		public override Color Sample(float u, float v)
 		{
-			lock (m_Bitmap)
-			{
-				float x = MathUtils.ModPositive(u * m_Bitmap.Width, m_Bitmap.Width);
-				float y = MathUtils.ModPositive((1 - v) * m_Bitmap.Height, m_Bitmap.Height);
-				return m_Bitmap.GetPixelBilinear(x, y);
-			}
+			float x = MathUtils.ModPositive(u * m_Buffer.Width, m_Buffer.Width);
+			float y = MathUtils.ModPositive((1 - v) * m_Buffer.Height, m_Buffer.Height);
+			return m_Buffer.GetPixelBilinear(x, y);
 		}
 
 		public static BitmapTexture FromPath(string path)
 		{
-			Image checkerboardImage = Image.FromFile(path);
-			Bitmap checkerboardBitmap = new Bitmap(checkerboardImage);
-			return new BitmapTexture(checkerboardBitmap);
+			Image image = Image.FromFile(path);
+			Bitmap bitmap = new Bitmap(image);
+			Buffer buffer = Buffer.FromBitmap(bitmap);
+
+			return new BitmapTexture(buffer);
 		}
 	}
 }

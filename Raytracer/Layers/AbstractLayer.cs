@@ -34,7 +34,7 @@ namespace Raytracer.Layers
 
 		public int RenderSize { get; private set; }
 
-		public void Render(Scene scene, Bitmap buffer)
+		public void Render(Scene scene, Buffer buffer)
 		{
 			int width = buffer.Width;
 			int height = buffer.Height;
@@ -64,11 +64,8 @@ namespace Raytracer.Layers
 							     .Select(r => CastRay(scene, r, 0));
 
 						Color pixel = ColorUtils.Average(samples);
-						lock (buffer)
-						{
-							buffer.SetPixel(x, y, pixel);
-							Progress = pixelsComplete++;
-						}
+						buffer.SetPixel(x, y, pixel);
+						Progress = pixelsComplete++;
 					}
 				}
 			});

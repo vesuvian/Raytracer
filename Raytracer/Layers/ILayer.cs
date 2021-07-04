@@ -13,6 +13,6 @@ namespace Raytracer.Layers
 		int Progress { get; }
 		int RenderSize { get; }
 
-		void Render(Scene scene, Bitmap buffer);
+		void Render(Scene scene, Buffer buffer);
 	}
 }
