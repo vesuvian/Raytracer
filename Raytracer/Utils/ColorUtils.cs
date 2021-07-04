@@ -151,7 +151,23 @@ namespace Raytracer.Utils
 
 		public static Color Sum(IEnumerable<Color> colors)
 		{
-			return colors.Aggregate(Add);
+			int r = 0;
+			int g = 0;
+			int b = 0;
+			int a = 0;
+
+			foreach (Color color in colors)
+			{
+				r += color.R;
+				g += color.G;
+				b += color.B;
+				a += color.A;
+			}
+
+			return Color.FromArgb(System.Math.Min(a, 255),
+			                      System.Math.Min(r, 255),
+			                      System.Math.Min(g, 255),
+			                      System.Math.Min(b, 255));
 		}
 
 		public static Color Multiply(Color color, float scalar, bool alpha = false)
