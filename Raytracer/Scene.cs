@@ -22,8 +22,7 @@ namespace Raytracer
 		{
 			return Geometry.Where(g => (g.RayMask & mask) != eRayMask.None)
 			               .SelectMany(g => g.GetIntersections(ray)
-			                                 .Select(i => new KeyValuePair<ISceneGeometry, Intersection>(g, i)))
-			               .OrderBy(kvp => kvp.Value.Distance);
+			                                 .Select(i => new KeyValuePair<ISceneGeometry, Intersection>(g, i)));
 		}
 	}
 }

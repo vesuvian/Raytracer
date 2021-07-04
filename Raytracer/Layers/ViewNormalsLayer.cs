@@ -13,7 +13,9 @@ namespace Raytracer.Layers
 		protected override Color CastRay(Scene scene, Ray ray, int rayDepth)
 		{
 			(ISceneGeometry geometry, Intersection intersection) =
-				scene.GetIntersections(ray, eRayMask.Visible).FirstOrDefault();
+				scene.GetIntersections(ray, eRayMask.Visible)
+				     .OrderBy(kvp => kvp.Value.Distance)
+				     .FirstOrDefault();
 
 			if (geometry == null)
 				return Color.Black;
