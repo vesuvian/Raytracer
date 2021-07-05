@@ -71,6 +71,15 @@ namespace Raytracer
 				},
 				Geometry = new List<ISceneGeometry>
 				{
+					new Sphere
+					{
+						Radius = 100000,
+						RayMask = eRayMask.Visible,
+						Material = new Material
+						{
+							Emission = BitmapTexture.FromPath("Resources\\skysphere.jpg")
+						}
+					},
 					new Cube
 					{
 						Position = new Vector3(13f, 5, 0),

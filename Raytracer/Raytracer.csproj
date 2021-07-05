@@ -13,6 +13,9 @@
     <None Update="Resources\sci_fi_normal.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\skysphere.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\teapot.obj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
