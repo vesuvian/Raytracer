@@ -181,27 +181,27 @@ namespace Raytracer
 
 		private static void PrintProgress(Scene scene, int layerIndex)
 		{
-			ILayer layer = scene.Layers[layerIndex];
-
-			char spin = (layer.Progress % 4) switch
-			{
-				0 => '/',
-				1 => '-',
-				2 => '\\',
-				3 => '|',
-				_ => default
-			};
-
-			TimeSpan elapsed = DateTime.UtcNow - layer.Start;
-			float percent = layer.RenderSize == 0 ? 0 : (layer.Progress / (float)layer.RenderSize);
-
-			TimeSpan remaining =
-				System.Math.Abs(layer.Progress) < 0.0001f
-					? TimeSpan.MaxValue
-					: (elapsed / percent) * (1 - percent);
-
 			lock (scene)
 			{
+				ILayer layer = scene.Layers[layerIndex];
+
+				char spin = (layer.Progress % 4) switch
+				{
+					0 => '/',
+					1 => '-',
+					2 => '\\',
+					3 => '|',
+					_ => default
+				};
+
+				TimeSpan elapsed = DateTime.UtcNow - layer.Start;
+				float percent = layer.RenderSize == 0 ? 0 : (layer.Progress / (float)layer.RenderSize);
+
+				TimeSpan remaining =
+					System.Math.Abs(layer.Progress) < 0.0001f
+						? TimeSpan.MaxValue
+						: (elapsed / percent) * (1 - percent);
+
 				Console.SetCursorPosition(0, layerIndex);
 				Console.Write("{0} {1} - {2:P} ({3} remaining)           ", spin, layer.GetType().Name, percent, remaining);
 				Console.SetCursorPosition(0, scene.Layers.Count);
