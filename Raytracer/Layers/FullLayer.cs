@@ -38,7 +38,9 @@ namespace Raytracer.Layers
 
 			// Calculate illumination
 			IEnumerable<Color> illumination =
-				System.Math.Abs(reflectivity - 1) < 0.001f || scene.Lights.Count == 0
+				System.Math.Abs(reflectivity - 1) < 0.001f ||
+				scene.Lights.Count == 0 ||
+				diffuse == Color.Black
 					? new[] {Color.Black}
 					: scene.Lights
 					       .Select(l =>
