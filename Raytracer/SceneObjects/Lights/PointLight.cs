@@ -18,10 +18,14 @@ namespace Raytracer.SceneObjects.Lights
 
 		public override Color Sample(Scene scene, Vector3 position, Vector3 normal)
 		{
-			float distance = Vector3.Distance(Position, position);
 			float faceAmount = Vector3.Dot(normal, Vector3.Normalize(Position - position));
 			faceAmount = MathUtils.Clamp(faceAmount, 0, 1);
+			float distance = Vector3.Distance(Position, position);
 			Color sample = Sample(distance, faceAmount);
+
+			// Don't bother finding intersections just to draw shadow
+			if (sample == Color.Black)
+				return Color.Black;
 
 			IEnumerable<Color> samples =
 				GetRays(position)
