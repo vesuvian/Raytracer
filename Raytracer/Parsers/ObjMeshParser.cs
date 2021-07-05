@@ -78,7 +78,6 @@ namespace Raytracer.Parsers
 			};
 
 			FillTangents(output);
-			FillBitangents(output);
 
 			return output;
 		}
@@ -88,21 +87,81 @@ namespace Raytracer.Parsers
 			List<Vector3> vertexTangents = new List<Vector3>();
 			List<int> triangleTangents = new List<int>();
 
-			throw new NotImplementedException();
+			Vector3[] tan1 = new Vector3[mesh.Triangles.Count];
+			Vector3[] tan2 = new Vector3[mesh.Triangles.Count];
+
+			for (int faceIndex = 0; faceIndex < mesh.Triangles.Count; faceIndex += 3)
+			{
+				// Positions
+				int vertexIndex0 = mesh.Triangles[faceIndex];
+				int vertexIndex1 = mesh.Triangles[faceIndex + 1];
+				int vertexIndex2 = mesh.Triangles[faceIndex + 2];
+
+				Vector3 vertex0 = mesh.Vertices[vertexIndex0];
+				Vector3 vertex1 = mesh.Vertices[vertexIndex1];
+				Vector3 vertex2 = mesh.Vertices[vertexIndex2];
+
+				// Uvs
+				int vertexUvIndex0 = mesh.TriangleUvs[faceIndex];
+				int vertexUvIndex1 = mesh.TriangleUvs[faceIndex + 1];
+				int vertexUvIndex2 = mesh.TriangleUvs[faceIndex + 2];
+
+				Vector2 vertexUv0 = mesh.VertexUvs[vertexUvIndex0];
+				Vector2 vertexUv1 = mesh.VertexUvs[vertexUvIndex1];
+				Vector2 vertexUv2 = mesh.VertexUvs[vertexUvIndex2];
+
+				float x1 = vertex1.X - vertex0.X;
+				float x2 = vertex2.X - vertex0.X;
+				float y1 = vertex1.Y - vertex0.Y;
+				float y2 = vertex2.Y - vertex0.Y;
+				float z1 = vertex1.Z - vertex0.Z;
+				float z2 = vertex2.Z - vertex0.Z;
+
+				float s1 = vertexUv1.X - vertexUv0.X;
+				float s2 = vertexUv2.X - vertexUv0.X;
+				float t1 = vertexUv1.Y - vertexUv0.Y;
+				float t2 = vertexUv2.Y - vertexUv0.Y;
+
+				float r = 1.0f / (s1 * t2 - s2 * t1);
+				Vector3 sdir = new Vector3((t2 * x1 - t1 * x2) * r,
+				                           (t2 * y1 - t1 * y2) * r,
+				                           (t2 * z1 - t1 * z2) * r);
+				Vector3 tdir = new Vector3((s1 * x2 - s2 * x1) * r,
+				                           (s1 * y2 - s2 * y1) * r,
+				                           (s1 * z2 - s2 * z1) * r);
+
+				tan1[faceIndex] = sdir;
+				tan1[faceIndex + 1] = sdir;
+				tan1[faceIndex + 2] = sdir;
+
+				tan2[faceIndex] = tdir;
+				tan2[faceIndex + 1] = tdir;
+				tan2[faceIndex + 2] = tdir;
+			}
+    
+			for (int a = 0; a < mesh.Triangles.Count; a++)
+			{
+				int vertexNormalIndex0 = mesh.TriangleNormals[a];
+				Vector3 vertexNormal0 = mesh.VertexNormals[vertexNormalIndex0];
+
+				Vector3 n = vertexNormal0;
+				Vector3 t = tan1[a];
+        
+				// Gram-Schmidt orthogonalize
+				Vector3 tangent = Vector3.Normalize(t - n * Vector3.Dot(n, t));
+
+				// Calculate handedness
+				tangent =
+					Vector3.Dot(Vector3.Cross(n, t), tan2[a]) < 0.0f
+						? tangent
+						: -tangent;
+
+				vertexTangents.Add(tangent);
+				triangleTangents.Add(a);
+			}
 
 			mesh.VertexTangents = vertexTangents;
 			mesh.TriangleTangents = triangleTangents;
-		}
-
-		private static void FillBitangents(Mesh mesh)
-		{
-			List<Vector3> vertexBitangents = new List<Vector3>();
-			List<int> triangleBitangents = new List<int>();
-
-			throw new NotImplementedException();
-
-			mesh.VertexBitangents = vertexBitangents;
-			mesh.TriangleBitangents = triangleBitangents;
 		}
 
 		private static IEnumerable<T> Triangulate<T>(IEnumerable<T> vertices)

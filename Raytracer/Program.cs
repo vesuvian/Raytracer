@@ -140,18 +140,19 @@ namespace Raytracer
 							Scale = new Vector2(5, 5)
 						}
 					},
-					//new Model
-					//{
-					//	Scale = Vector3.One * 0.2f,
-					//	Position = new Vector3(3, 2, -5),
-					//	Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * -45, MathUtils.DEG2RAD * -15, MathUtils.DEG2RAD * 30),
-					//	Mesh = new ObjMeshParser().Parse("Resources\\teapot.obj"),
-					//	Material = new Material
-					//	{
-					//		Color = Color.Aqua,
-					//		Diffuse = checkerboard
-					//	}
-					//}
+					new Model
+					{
+						Scale = Vector3.One * 0.2f,
+						Position = new Vector3(3, 2, -5),
+						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * -45, MathUtils.DEG2RAD * -15, MathUtils.DEG2RAD * 30),
+						Mesh = new ObjMeshParser().Parse("Resources\\teapot.obj"),
+						Material = new Material
+						{
+							Diffuse = new SolidColorTexture { Color = Color.LightSlateGray },
+							Normal = normal,
+							Reflectivity = new SolidColorTexture { Color = Color.Gray }
+						}
+					}
 				},
 				Layers = new List<ILayer>
 				{

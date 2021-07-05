@@ -69,14 +69,9 @@ namespace Raytracer.SceneObjects.Geometry
 				Vector3 vertexTangent1 = m_Mesh.VertexTangents[vertexTangentIndex1];
 				Vector3 vertexTangent2 = m_Mesh.VertexTangents[vertexTangentIndex2];
 
-				// Bitangents
-				int vertexBitangentIndex0 = m_Mesh.TriangleBitangents[faceIndex];
-				int vertexBitangentIndex1 = m_Mesh.TriangleBitangents[faceIndex + 1];
-				int vertexBitangentIndex2 = m_Mesh.TriangleBitangents[faceIndex + 2];
-
-				Vector3 vertexBitangent0 = m_Mesh.VertexBitangents[vertexBitangentIndex0];
-				Vector3 vertexBitangent1 = m_Mesh.VertexBitangents[vertexBitangentIndex1];
-				Vector3 vertexBitangent2 = m_Mesh.VertexBitangents[vertexBitangentIndex2];
+				Vector3 vertexBitangent0 = Vector3.Cross(vertexTangent0, vertexNormal0);
+				Vector3 vertexBitangent1 = Vector3.Cross(vertexTangent1, vertexNormal1);
+				Vector3 vertexBitangent2 = Vector3.Cross(vertexTangent2, vertexNormal2);
 
 				// Uvs
 				int vertexUvIndex0 = m_Mesh.TriangleUvs[faceIndex];
