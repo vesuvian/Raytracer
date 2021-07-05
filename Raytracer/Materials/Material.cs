@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.Numerics;
+﻿using System.Numerics;
 using Raytracer.Extensions;
 using Raytracer.Math;
 using Raytracer.Utils;
@@ -8,7 +7,7 @@ namespace Raytracer.Materials
 {
 	public sealed class Material : AbstractMaterial
 	{
-		public override Color SampleDiffuse(Vector2 uv)
+		public override Vector4 SampleDiffuse(Vector2 uv)
 		{
 			if (Diffuse == null)
 				return Color;
@@ -16,14 +15,14 @@ namespace Raytracer.Materials
 			float x = uv.X / Scale.X - Offset.X;
 			float y = uv.Y / Scale.Y - Offset.Y;
 
-			Color diffuse = Diffuse.Sample(x, y);
+			Vector4 diffuse = Diffuse.Sample(x, y);
 			return ColorUtils.Multiply(Color, diffuse);
 		}
 
-		public override Color SampleEmission(Vector2 uv)
+		public override Vector4 SampleEmission(Vector2 uv)
 		{
 			if (Emission == null)
-				return Color.Black;
+				return ColorUtils.RgbaBlack;
 
 			float x = uv.X / Scale.X - Offset.X;
 			float y = uv.Y / Scale.Y - Offset.Y;
@@ -39,11 +38,11 @@ namespace Raytracer.Materials
 			float x = uv.X / Scale.X - Offset.X;
 			float y = uv.Y / Scale.Y - Offset.Y;
 
-			Color normal = Normal.Sample(x, y);
+			Vector4 normal = Normal.Sample(x, y);
 
-			return Vector3.Normalize(new Vector3(normal.R / 255.0f - 0.5f,
-			                                     normal.G / 255.0f - 0.5f,
-			                                     normal.B / -255.0f - 0.5f) * 2);
+			return Vector3.Normalize(new Vector3(normal.X - 0.5f,
+			                                     normal.Y - 0.5f,
+			                                     -normal.Z - 0.5f) * 2);
 		}
 
 		public override Vector3 GetWorldNormal(Intersection intersection)
@@ -67,8 +66,8 @@ namespace Raytracer.Materials
 			float x = uv.X / Scale.X - Offset.X;
 			float y = uv.Y / Scale.Y - Offset.Y;
 
-			Color reflectivity = Reflectivity.Sample(x, y);
-			return reflectivity.R / 255.0f;
+			Vector4 reflectivity = Reflectivity.Sample(x, y);
+			return reflectivity.X;
 		}
 
 		public override float SampleRoughness(Vector2 uv)
@@ -79,8 +78,8 @@ namespace Raytracer.Materials
 			float x = uv.X / Scale.X - Offset.X;
 			float y = uv.Y / Scale.Y - Offset.Y;
 
-			Color roughness = Roughness.Sample(x, y);
-			return roughness.R / 255.0f;
+			Vector4 roughness = Roughness.Sample(x, y);
+			return roughness.X;
 		}
 	}
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Raytracer.Math;
@@ -15,18 +14,18 @@ namespace Raytracer.SceneObjects.Lights
 		public int Samples { get; set; } = 1;
 		public float SoftShadowRadius { get; set; }
 
-		public override Color Sample(Scene scene, Vector3 position, Vector3 normal)
+		public override Vector4 Sample(Scene scene, Vector3 position, Vector3 normal)
 		{
 			float faceAmount = Vector3.Dot(normal, Vector3.Normalize(Position - position));
 			faceAmount = MathUtils.Clamp(faceAmount, 0, 1);
 			float distance = Vector3.Distance(Position, position);
-			Color sample = Sample(distance, faceAmount);
+			Vector4 sample = Sample(distance, faceAmount);
 
 			// Don't bother finding intersections just to draw shadow
-			if (sample == Color.Black)
-				return Color.Black;
+			if (sample == ColorUtils.RgbaBlack)
+				return ColorUtils.RgbaBlack;
 
-			IEnumerable<Color> samples =
+			IEnumerable<Vector4> samples =
 				GetRays(position)
 					.Select(r =>
 					{
@@ -36,21 +35,21 @@ namespace Raytracer.SceneObjects.Lights
 							      .Any(kvp => kvp.Value.Distance > SELF_SHADOW_TOLERANCE &&
 							                  kvp.Value.Distance < distance);
 
-						return canSee ? sample : Color.Black;
+						return canSee ? sample : ColorUtils.RgbaBlack;
 					});
 
 			return ColorUtils.Average(samples);
 		}
 
-		private Color Sample(float distance, float faceAmount)
+		private Vector4 Sample(float distance, float faceAmount)
 		{
 			switch (Falloff)
 			{
 				case eFalloff.None:
-					return ColorUtils.Multiply(Color, faceAmount * Intensity);
+					return ColorUtils.Multiply(Color, faceAmount);
 				case eFalloff.Linear:
 					float linearFalloff = MathF.Max(Range - distance, 0) / Range;
-					return ColorUtils.Multiply(Color, faceAmount * Intensity * linearFalloff);
+					return ColorUtils.Multiply(Color, faceAmount * linearFalloff);
 				case eFalloff.Cubic:
 					break;
 				case eFalloff.Quadratic:

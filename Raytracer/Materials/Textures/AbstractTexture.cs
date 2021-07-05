@@ -1,9 +1,9 @@
-﻿using System.Drawing;
+﻿using System.Numerics;
 
 namespace Raytracer.Materials.Textures
 {
 	public abstract class AbstractTexture : ITexture
 	{
-		public abstract Color Sample(float u, float v);
+		public abstract Vector4 Sample(float u, float v);
 	}
 }

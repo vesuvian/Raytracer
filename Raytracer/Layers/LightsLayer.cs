@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Raytracer.Math;
@@ -11,22 +10,19 @@ namespace Raytracer.Layers
 {
 	public sealed class LightsLayer : AbstractLayer
 	{
-		protected override Color CastRay(Scene scene, Ray ray, int rayDepth)
+		protected override Vector4 CastRay(Scene scene, Ray ray, int rayDepth)
 		{
-			if (scene.Lights.Count == 0)
-				return Color.Black;
-
 			(ISceneGeometry geometry, Intersection intersection) =
 				scene.GetIntersections(ray, eRayMask.Visible)
 				     .OrderBy(kvp => kvp.Value.Distance)
 				     .FirstOrDefault();
 
 			if (geometry == null)
-				return Color.Black;
+				return ColorUtils.RgbaBlack;
 
 			Vector3 worldNormal = geometry.Material.GetWorldNormal(intersection);
 
-			IEnumerable<Color> illumination =
+			IEnumerable<Vector4> illumination =
 				scene.Lights
 				     .Select(l => l.Sample(scene, intersection.Position, worldNormal));
 

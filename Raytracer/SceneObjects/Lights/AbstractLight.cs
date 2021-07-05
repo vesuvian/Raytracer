@@ -1,5 +1,5 @@
-﻿using System.Drawing;
-using System.Numerics;
+﻿using System.Numerics;
+using Raytracer.Utils;
 
 namespace Raytracer.SceneObjects.Lights
 {
@@ -7,10 +7,9 @@ namespace Raytracer.SceneObjects.Lights
 	{
 		protected const float SELF_SHADOW_TOLERANCE = 0.0001f;
 
-		public Color Color { get; set; } = Color.White;
-		public float Intensity { get; set; } = 1;
+		public Vector4 Color { get; set; } = ColorUtils.RgbaWhite;
 		public bool CastShadows { get; set; } = true;
 
-		public abstract Color Sample(Scene scene, Vector3 position, Vector3 normal);
+		public abstract Vector4 Sample(Scene scene, Vector3 position, Vector3 normal);
 	}
 }

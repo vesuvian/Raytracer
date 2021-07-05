@@ -1,21 +1,24 @@
-﻿using System.Drawing;
-using System.Linq;
+﻿using System.Linq;
+using System.Numerics;
 using Raytracer.Math;
 using Raytracer.SceneObjects;
 using Raytracer.SceneObjects.Geometry;
+using Raytracer.Utils;
 
 namespace Raytracer.Layers
 {
 	public sealed class UnlitLayer : AbstractLayer
 	{
-		protected override Color CastRay(Scene scene, Ray ray, int rayDepth)
+		protected override Vector4 CastRay(Scene scene, Ray ray, int rayDepth)
 		{
 			(ISceneGeometry geometry, Intersection intersection) =
 				scene.GetIntersections(ray, eRayMask.Visible)
 				     .OrderBy(kvp => kvp.Value.Distance)
 				     .FirstOrDefault();
 
-			return geometry == null ? Color.Black : geometry.Material.SampleDiffuse(intersection.Uv);
+			return geometry == null
+				? ColorUtils.RgbaBlack
+				: geometry.Material.SampleDiffuse(intersection.Uv);
 		}
 	}
 }

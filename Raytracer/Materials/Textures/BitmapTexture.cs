@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Numerics;
 using Raytracer.Utils;
 
 namespace Raytracer.Materials.Textures
@@ -12,11 +13,11 @@ namespace Raytracer.Materials.Textures
 			m_Buffer = buffer;
 		}
 
-		public override Color Sample(float u, float v)
+		public override Vector4 Sample(float u, float v)
 		{
 			float x = MathUtils.ModPositive(u * m_Buffer.Width, m_Buffer.Width);
 			float y = MathUtils.ModPositive((1 - v) * m_Buffer.Height, m_Buffer.Height);
-			return m_Buffer.GetPixelBilinear(x, y);
+			return ColorUtils.ToVectorRgba(m_Buffer.GetPixelBilinear(x, y));
 		}
 
 		public static BitmapTexture FromPath(string path)

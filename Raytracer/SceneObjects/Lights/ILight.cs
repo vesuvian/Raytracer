@@ -1,14 +1,12 @@
-﻿using System.Drawing;
-using System.Numerics;
+﻿using System.Numerics;
 
 namespace Raytracer.SceneObjects.Lights
 {
 	public interface ILight : ISceneObject
 	{
-		Color Color { get; set; }
-		float Intensity { get; set; }
+		Vector4 Color { get; set; }
 		bool CastShadows { get; set; }
 
-		Color Sample(Scene scene, Vector3 position, Vector3 normal);
+		Vector4 Sample(Scene scene, Vector3 position, Vector3 normal);
 	}
 }

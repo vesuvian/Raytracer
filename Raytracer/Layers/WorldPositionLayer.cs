@@ -1,8 +1,8 @@
-﻿using System.Drawing;
-using System.Linq;
+﻿using System.Linq;
 using System.Numerics;
 using Raytracer.Math;
 using Raytracer.SceneObjects;
+using Raytracer.Utils;
 
 namespace Raytracer.Layers
 {
@@ -11,23 +11,25 @@ namespace Raytracer.Layers
 		public Vector3 Min { get; set; } = Vector3.One * -10;
 		public Vector3 Max { get; set; } = Vector3.One * 10;
 
-		protected override Color CastRay(Scene scene, Ray ray, int rayDepth)
+		protected override Vector4 CastRay(Scene scene, Ray ray, int rayDepth)
 		{
 			Intersection? closestIntersection =
 				scene.GetIntersections(ray, eRayMask.Visible)
 				     .OrderBy(kvp => kvp.Value.Distance)
-					 .Select(kvp => (Intersection?)kvp.Value)
+				     .Select(kvp => (Intersection?)kvp.Value)
 				     .FirstOrDefault();
 
 			if (closestIntersection == null)
-				return Color.Black;
+				return ColorUtils.RgbaBlack;
 
 			Vector3 position = Vector3.Clamp(closestIntersection.Value.Position, Min, Max) - Min;
 			Vector3 range = Max - Min;
 
-			return Color.FromArgb((int)((position.X / range.X) * 255),
-			                      (int)((position.Y / range.Y) * 255),
-			                      (int)((position.Z / range.Z) * 255));
+			Vector3 rgb = new Vector3(position.X / range.X,
+			                          position.Y / range.Y,
+			                          position.Z / range.Z);
+
+			return new Vector4(rgb, 1);
 		}
 	}
 }

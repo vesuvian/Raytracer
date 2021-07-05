@@ -16,6 +16,7 @@ namespace Raytracer
 		public List<ILayer> Layers { get; set; }
 
 		public int MaxReflectionRays { get; set; } = 2;
+		public int GlobalIlluminationSamples { get; set; } = 1;
 
 		public IEnumerable<KeyValuePair<ISceneGeometry, Intersection>> GetIntersections(
 			Ray ray, eRayMask mask = eRayMask.All)

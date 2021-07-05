@@ -1,15 +1,15 @@
-﻿using System.Drawing;
-using System.Linq;
+﻿using System.Linq;
+using System.Numerics;
 using Raytracer.Math;
 using Raytracer.SceneObjects;
-using Raytracer.SceneObjects.Geometry;
 using Raytracer.Utils;
+using Plane = Raytracer.SceneObjects.Geometry.Plane;
 
 namespace Raytracer.Layers
 {
 	public sealed class DepthLayer : AbstractLayer
 	{
-		protected override Color CastRay(Scene scene, Ray ray, int rayDepth)
+		protected override Vector4 CastRay(Scene scene, Ray ray, int rayDepth)
 		{
 			Intersection? closestIntersection =
 				scene.GetIntersections(ray, eRayMask.Visible)
@@ -18,12 +18,12 @@ namespace Raytracer.Layers
 				     .FirstOrDefault();
 
 			if (closestIntersection == null)
-				return Color.Black;
+				return ColorUtils.RgbaBlack;
 
 			float planarDistance = Plane.Distance(scene.Camera.Position, scene.Camera.Forward, closestIntersection.Value.Position, out _);
 			float t = MathUtils.Clamp(planarDistance, scene.Camera.NearPlane, scene.Camera.FarPlane) /
 			          (scene.Camera.FarPlane - scene.Camera.NearPlane);
-			return ColorUtils.LerpHsl(Color.White, Color.Black, t);
+			return ColorUtils.LerpHsl(new Vector4(1), ColorUtils.RgbaBlack, t);
 		}
 	}
 }

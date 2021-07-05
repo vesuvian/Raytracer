@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using Raytracer.Math;
 using Raytracer.Utils;
@@ -55,20 +55,20 @@ namespace Raytracer.Layers
 				float yViewportMin = y / (float)height;
 				float yViewportMax = (y + 1) / (float)height;
 
-				IEnumerable<Color> samples =
+				IEnumerable<Vector4> samples =
 					scene.Camera
 					     .CreateRays(xViewportMin, xViewportMax, yViewportMin, yViewportMax)
 					     .Select(r => CastRay(scene, r, 0));
 
-				Color pixel = ColorUtils.Average(samples);
-				buffer.SetPixel(x, y, pixel);
+				Vector4 pixel = ColorUtils.Average(samples);
+				buffer.SetPixel(x, y, ColorUtils.ToColorRgba(pixel));
 				Progress = pixelsComplete++;
 			});
 
 			End = DateTime.UtcNow;
 		}
 
-		protected abstract Color CastRay(Scene scene, Ray ray, int rayDepth);
+		protected abstract Vector4 CastRay(Scene scene, Ray ray, int rayDepth);
 
 		/// <summary>
 		/// Gets a "random" pixel for each input, only visiting each pixel once.

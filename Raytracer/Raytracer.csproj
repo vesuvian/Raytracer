@@ -19,6 +19,12 @@
     <None Update="Resources\teapot.obj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\TexturesCom_Wall_Stone2_3x3_1K_albedo.tif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\TexturesCom_Wall_Stone2_3x3_1K_normal.tif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
