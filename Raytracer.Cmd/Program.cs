@@ -16,7 +16,7 @@ using Raytracer.SceneObjects.Lights;
 using Raytracer.Utils;
 using Plane = Raytracer.SceneObjects.Geometry.Plane;
 
-namespace Raytracer
+namespace Raytracer.Cmd
 {
 	public static class Program
 	{
@@ -40,6 +40,9 @@ namespace Raytracer
 					NearPlane = 0.01f,
 					FarPlane = 40.0f,
 					Fov = 40,
+					//Samples = 32,
+					//FocalLength = 20,
+					//ApertureSize = 0.2f,
 					Aspect = WIDTH / (float)HEIGHT
 				},
 				Lights = new List<ILight>
@@ -49,6 +52,8 @@ namespace Raytracer
 						Position = new Vector3(10, 100, -5),
 						Color = new Vector4(10, 0, 0, 1),
 						Range = 200,
+						//SoftShadowRadius = 2,
+						//Samples = 8,
 						Falloff = eFalloff.Linear
 					},
 					new PointLight
@@ -56,6 +61,8 @@ namespace Raytracer
 						Position = new Vector3(0, 10, 10),
 						Color = new Vector4(0, 10, 0, 1),
 						Range = 40,
+						//SoftShadowRadius = 2,
+						//Samples = 8,
 						Falloff = eFalloff.Linear
 					},
 					new PointLight
@@ -63,6 +70,8 @@ namespace Raytracer
 						Position = new Vector3(0, 1, -20),
 						Color = new Vector4(10, 10, 10, 1),
 						Range = 80,
+						//SoftShadowRadius = 2,
+						//Samples = 8,
 						Falloff = eFalloff.Linear
 					}
 				},
