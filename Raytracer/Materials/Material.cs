@@ -20,6 +20,17 @@ namespace Raytracer.Materials
 			return ColorUtils.Multiply(Color, diffuse);
 		}
 
+		public override Color SampleEmission(Vector2 uv)
+		{
+			if (Emission == null)
+				return Color.Black;
+
+			float x = uv.X / Scale.X - Offset.X;
+			float y = uv.Y / Scale.Y - Offset.Y;
+
+			return Emission.Sample(x, y);
+		}
+
 		public override Vector3 SampleNormal(Vector2 uv)
 		{
 			if (Normal == null)

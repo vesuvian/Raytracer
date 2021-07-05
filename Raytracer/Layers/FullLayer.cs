@@ -30,6 +30,7 @@ namespace Raytracer.Layers
 			// Sample material
 			Vector3 worldNormal = geometry.Material.GetWorldNormal(intersection);
 			Color diffuse = geometry.Material.SampleDiffuse(intersection.Uv);
+			Color emission = geometry.Material.SampleEmission(intersection.Uv);
 			float reflectivity =
 				rayDepth > scene.MaxReflectionRays
 					? 0
@@ -49,6 +50,7 @@ namespace Raytracer.Layers
 						       return ColorUtils.Multiply(light, diffuse);
 					       });
 			Color illuminationSum = ColorUtils.Sum(illumination);
+			illuminationSum = ColorUtils.Clamp(illuminationSum, emission, Color.White);
 
 			// Calculate reflection
 			Random random = new Random();

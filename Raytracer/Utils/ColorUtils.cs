@@ -193,5 +193,13 @@ namespace Raytracer.Utils
 			                      System.Math.Min(a.G + b.G, 255),
 			                      System.Math.Min(a.B + b.B, 255));
 		}
+
+		public static Color Clamp(Color color, Color min, Color max)
+		{
+			return Color.FromArgb(MathUtils.Clamp(color.A, min.A, max.A),
+			                      MathUtils.Clamp(color.R, min.R, max.R),
+			                      MathUtils.Clamp(color.G, min.G, max.G),
+			                      MathUtils.Clamp(color.B, min.B, max.B));
+		}
 	}
 }
