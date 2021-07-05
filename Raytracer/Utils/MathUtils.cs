@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Numerics;
+using Raytracer.Extensions;
 
 namespace Raytracer.Utils
 {
@@ -6,6 +8,7 @@ namespace Raytracer.Utils
 	{
 		public const float RAD2DEG = (float)System.Math.PI * 180;
 		public const float DEG2RAD = (float)System.Math.PI / 180;
+		public const float TWOPI = (float)System.Math.PI * 2;
 
 		/// <summary>
 		/// Approximate floating point comparison.
@@ -60,6 +63,45 @@ namespace Raytracer.Utils
 		public static float ModPositive(float value, float mod)
 		{
 			return (value % mod + mod) % mod;
+		}
+
+		public static Vector3 RandomPointOnSphere()
+		{
+			return RandomPointOnSphere(new Random());
+		}
+
+		public static Vector3 RandomPointOnSphere(Random random)
+		{
+			Vector3 randomInSphere = RandomPointInSphere(random);
+			return Vector3.Normalize(randomInSphere);
+		}
+
+		public static Vector3 RandomPointInSphere()
+		{
+			return RandomPointInSphere(new Random());
+		}
+
+		public static Vector3 RandomPointInSphere(Random random)
+		{
+			float theta = random.NextFloat(0, TWOPI);
+			float v = random.NextFloat(0, 1);
+			float phi = MathF.Acos(2 * v - 1);
+			float r = MathF.Pow(random.NextFloat(0, 1), 1 / 3.0f);
+			float x = r * MathF.Sin(phi) * MathF.Cos(theta);
+			float y = r * MathF.Sin(phi) * MathF.Sin(theta);
+			float z = r * MathF.Cos(phi);
+			return new Vector3(x, y, z);
+		}
+
+		public static Vector3 RandomPointOnHemisphere()
+		{
+			return RandomPointOnHemisphere(new Random());
+		}
+
+		public static Vector3 RandomPointOnHemisphere(Random random)
+		{
+			Vector3 output = RandomPointOnSphere(random);
+			return new Vector3(output.X, MathF.Abs(output.Y), output.Z);
 		}
 	}
 }

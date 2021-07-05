@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using Raytracer.Extensions;
 using Raytracer.Math;
 using Raytracer.Utils;
 
@@ -65,20 +64,6 @@ namespace Raytracer.SceneObjects.Lights
 
 		private IEnumerable<Ray> GetRays(Vector3 position)
 		{
-			if (Samples == 1 ||
-				!CastShadows ||
-			    System.Math.Abs(SoftShadowRadius) < 0.0001f)
-			{
-				return new[]
-				{
-					new Ray
-					{
-						Origin = position,
-						Direction = Vector3.Normalize(Position - position)
-					}
-				};
-			}
-
 			Random random = new Random(position.GetHashCode());
 
 			return Enumerable.Range(0, Samples)
@@ -86,9 +71,8 @@ namespace Raytracer.SceneObjects.Lights
 			                 {
 				                 Vector3 softShadowPosition =
 					                 Position +
-					                 new Vector3(random.NextFloat(),
-					                             random.NextFloat(),
-					                             random.NextFloat()) * SoftShadowRadius;
+									 MathUtils.RandomPointInSphere(random) *
+					                 SoftShadowRadius;
 
 				                 return new Ray
 				                 {
