@@ -39,11 +39,10 @@ namespace Raytracer.SceneObjects.Geometry
 		{
 			position = Vector3.Normalize(position);
 
-			float u = MathF.Atan2(position.Y, position.X) / (2.0f * MathF.PI);
+			float u = MathF.Atan2(position.X, position.Z) / (2.0f * MathF.PI) + 0.5f;
+			float v = position.Y * 0.5f + 0.5f;
 
-			return new Vector2(
-				u >= 0 ? u : u + 1,
-				MathF.Acos(position.Z) / MathF.PI);
+			return new Vector2(u, v);
 		}
 
 		public override IEnumerable<Intersection> GetIntersections(Ray ray)
@@ -61,6 +60,7 @@ namespace Raytracer.SceneObjects.Geometry
 						? new Vector3(1, 0, 0)
 						: Vector3.Normalize(Vector3.Cross(normal, new Vector3(0, 1, 0)));
 				Vector3 bitangent = Vector3.Normalize(Vector3.Cross(tangent, normal));
+				Vector2 uv = GetUv(position);
 
 				yield return new Intersection
 				{
@@ -69,7 +69,7 @@ namespace Raytracer.SceneObjects.Geometry
 					Bitangent = bitangent,
 					Normal = normal,
 					RayOrigin = ray.Origin,
-					Uv = GetUv(position)
+					Uv = uv
 				}.Multiply(LocalToWorld);
 			}
 		}
