@@ -1,14 +1,15 @@
 ﻿using System.Drawing;
 using System.Numerics;
+using Raytracer.Buffers;
 using Raytracer.Utils;
 
 namespace Raytracer.Materials.Textures
 {
 	public sealed class BitmapTexture : AbstractTexture
 	{
-		private readonly Buffer m_Buffer;
+		private readonly BitmapBuffer m_Buffer;
 
-		private BitmapTexture(Buffer buffer)
+		private BitmapTexture(BitmapBuffer buffer)
 		{
 			m_Buffer = buffer;
 		}
@@ -24,7 +25,7 @@ namespace Raytracer.Materials.Textures
 		{
 			Image image = Image.FromFile(path);
 			Bitmap bitmap = new Bitmap(image);
-			Buffer buffer = Buffer.FromBitmap(bitmap);
+			BitmapBuffer buffer = BitmapBuffer.FromBitmap(bitmap);
 
 			return new BitmapTexture(buffer);
 		}

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing.Imaging;
-using System.IO;
+using System.Linq;
 using System.Numerics;
-using System.Threading.Tasks;
-using Raytracer.Buffers;
+using System.Threading;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Raytracer.Layers;
 using Raytracer.Materials;
 using Raytracer.Materials.Textures;
@@ -14,23 +13,49 @@ using Raytracer.SceneObjects;
 using Raytracer.SceneObjects.Geometry;
 using Raytracer.SceneObjects.Lights;
 using Raytracer.Utils;
-using Plane = Raytracer.SceneObjects.Geometry.Plane;
 
-namespace Raytracer.Cmd
+namespace Raytracer.Wpf.ViewModel
 {
-	public static class Program
+	public sealed class MainWindowViewModel : AbstractViewModel
 	{
 		private const int WIDTH = 1920;
 		private const int HEIGHT = 1080;
 
-		private const string PATH = @"C:\\Temp\\Raytracer\\";
+		private readonly WriteableBitmapBuffer m_Buffer;
+		private readonly Thread m_Worker;
+		private readonly CancellationTokenSource m_CancellationTokenSource;
 
-		public static void Main()
+		private string m_Title;
+
+		public WriteableBitmap Bitmap { get; }
+
+		public string Title
 		{
-			Console.CursorVisible = false;
+			get { return m_Title ?? string.Empty; }
+			private set
+			{
+				if (value == m_Title)
+					return;
+
+				m_Title = value;
+
+				RaisePropertyChanged();
+			}
+		}
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public MainWindowViewModel()
+		{
+			m_CancellationTokenSource = new CancellationTokenSource();
+
+			Title = "Raytracer";
+			Bitmap = new WriteableBitmap(WIDTH, HEIGHT, 96, 96, PixelFormats.Bgr32, null);
+			m_Buffer = new WriteableBitmapBuffer(Bitmap);
 
 			BitmapTexture normal = BitmapTexture.FromPath("Resources\\TexturesCom_Wall_Stone2_3x3_1K_normal.tif");
-			
+
 			Scene scene = new Scene
 			{
 				Camera = new Camera
@@ -39,9 +64,9 @@ namespace Raytracer.Cmd
 					NearPlane = 0.01f,
 					FarPlane = 40.0f,
 					Fov = 40,
-					//Samples = 32,
-					//FocalLength = 20,
-					//ApertureSize = 0.2f,
+					Samples = 32,
+					FocalLength = 18,
+					ApertureSize = 0.2f,
 					Aspect = WIDTH / (float)HEIGHT
 				},
 				Lights = new List<ILight>
@@ -51,7 +76,7 @@ namespace Raytracer.Cmd
 						Position = new Vector3(10, 100, -5),
 						Color = new Vector4(10, 0, 0, 1),
 						Range = 200,
-						//SoftShadowRadius = 2,
+						SoftShadowRadius = 2,
 						//Samples = 8,
 						Falloff = eFalloff.Linear
 					},
@@ -60,7 +85,7 @@ namespace Raytracer.Cmd
 						Position = new Vector3(0, 10, 10),
 						Color = new Vector4(0, 10, 0, 1),
 						Range = 40,
-						//SoftShadowRadius = 2,
+						SoftShadowRadius = 2,
 						//Samples = 8,
 						Falloff = eFalloff.Linear
 					},
@@ -69,7 +94,7 @@ namespace Raytracer.Cmd
 						Position = new Vector3(0, 1, -20),
 						Color = new Vector4(10, 10, 10, 1),
 						Range = 80,
-						//SoftShadowRadius = 2,
+						SoftShadowRadius = 2,
 						//Samples = 8,
 						Falloff = eFalloff.Linear
 					}
@@ -188,7 +213,7 @@ namespace Raytracer.Cmd
 							Emission = new SolidColorTexture { Color = new Vector4(0, 0, 1, 1) }
 						}
 					},
-					new Plane
+					new SceneObjects.Geometry.Plane
 					{
 						Material = new Material
 						{
@@ -213,44 +238,22 @@ namespace Raytracer.Cmd
 				},
 				Layers = new List<ILayer>
 				{
-					//new DepthLayer(),
-					//new WorldNormalsLayer(),
-					//new ViewNormalsLayer(),
-					//new WorldPositionLayer(),
-					//new LightsLayer(),
-					//new UnlitLayer(),
 					new FullLayer()
 				}
 			};
 
-			for (int index = 0; index < scene.Layers.Count; index++)
-			{
-				int index1 = index;
-				scene.Layers[index].OnProgressChanged += (sender, args) => PrintProgress(scene, index1);
-			}
+			scene.Layers.First().OnProgressChanged += UpdateTitle;
 
-			Parallel.ForEach(scene.Layers,
-			                 layer =>
-			                 {
-				                 Render(scene, layer);
-			                 });
+			m_Worker = new Thread(() => scene.Layers.First().Render(scene, m_Buffer, m_CancellationTokenSource.Token));
+			m_Worker.Start();
 		}
 
-		private static void PrintProgress(Scene scene, int layerIndex)
+		private void UpdateTitle(object sender, EventArgs eventArgs)
 		{
-			lock (scene)
+			ILayer layer = (ILayer)sender;
+
+			lock (m_Worker)
 			{
-				ILayer layer = scene.Layers[layerIndex];
-
-				char spin = (layer.Progress % 4) switch
-				{
-					0 => '/',
-					1 => '-',
-					2 => '\\',
-					3 => '|',
-					_ => default
-				};
-
 				TimeSpan elapsed = DateTime.UtcNow - layer.Start;
 				float percent = layer.RenderSize == 0 ? 0 : (layer.Progress / (float)layer.RenderSize);
 
@@ -259,28 +262,13 @@ namespace Raytracer.Cmd
 						? TimeSpan.MaxValue
 						: (elapsed / percent) * (1 - percent);
 
-				Console.SetCursorPosition(0, layerIndex);
-				Console.Write("{0} {1} - {2:P} ({3} remaining)           ", spin, layer.GetType().Name, percent, remaining);
-				Console.SetCursorPosition(0, scene.Layers.Count);
+				Title = $"Raytracer - {percent:P} ({remaining} remaining)";
 			}
 		}
 
-		private static void Render(Scene scene, ILayer layer)
+		public void Closing()
 		{
-			string path = Path.Combine(PATH, layer.GetType().Name + ".bmp");
-
-			using (BitmapBuffer buffer = new BitmapBuffer(WIDTH, HEIGHT))
-			{
-				layer.Render(scene, buffer);
-
-				Directory.CreateDirectory(PATH);
-				if (File.Exists(path))
-					File.Delete(path);
-
-				buffer.Bitmap.Save(path, ImageFormat.Bmp);
-			}
-
-			Process.Start("cmd.exe", $"/c {path}");
+			m_CancellationTokenSource.Cancel();
 		}
 	}
 }

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Threading;
 using System.Threading.Tasks;
+using Raytracer.Buffers;
 using Raytracer.Math;
 using Raytracer.Utils;
 
@@ -30,7 +32,7 @@ namespace Raytracer.Layers
 
 		public int RenderSize { get; private set; }
 
-		public void Render(Scene scene, Buffer buffer)
+		public void Render(Scene scene, IBuffer buffer, CancellationToken cancellationToken = default)
 		{
 			int width = buffer.Width;
 			int height = buffer.Height;
@@ -45,25 +47,36 @@ namespace Raytracer.Layers
 				Enumerable.Range(0, width * height)
 				          .Select(px => FeistelNet(px, width, height));
 
-			Parallel.ForEach(pixels, px =>
+			ParallelOptions po = new ParallelOptions
 			{
-				int x = px % width;
-				int y = px / width;
+				CancellationToken = cancellationToken
+			};
 
-				float xViewportMin = x / (float)width;
-				float xViewportMax = (x + 1) / (float)width;
-				float yViewportMin = y / (float)height;
-				float yViewportMax = (y + 1) / (float)height;
+			try
+			{
+				Parallel.ForEach(pixels, po, px =>
+				{
+					int x = px % width;
+					int y = px / width;
 
-				IEnumerable<Vector4> samples =
-					scene.Camera
-					     .CreateRays(xViewportMin, xViewportMax, yViewportMin, yViewportMax)
-					     .Select(r => CastRay(scene, r, 0));
+					float xViewportMin = x / (float)width;
+					float xViewportMax = (x + 1) / (float)width;
+					float yViewportMin = y / (float)height;
+					float yViewportMax = (y + 1) / (float)height;
 
-				Vector4 pixel = ColorUtils.Average(samples);
-				buffer.SetPixel(x, y, ColorUtils.ToColorRgba(pixel));
-				Progress = pixelsComplete++;
-			});
+					IEnumerable<Vector4> samples =
+						scene.Camera
+						     .CreateRays(xViewportMin, xViewportMax, yViewportMin, yViewportMax)
+						     .Select(r => CastRay(scene, r, 0));
+
+					Vector4 pixel = ColorUtils.Average(samples);
+					buffer.SetPixel(x, y, ColorUtils.ToColorRgba(pixel));
+					Progress = pixelsComplete++;
+				});
+			}
+			catch (OperationCanceledException)
+			{
+			}
 
 			End = DateTime.UtcNow;
 		}

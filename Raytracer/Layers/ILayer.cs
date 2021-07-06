@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using Raytracer.Buffers;
 
 namespace Raytracer.Layers
 {
@@ -12,6 +14,6 @@ namespace Raytracer.Layers
 		int Progress { get; }
 		int RenderSize { get; }
 
-		void Render(Scene scene, Buffer buffer);
+		void Render(Scene scene, IBuffer buffer, CancellationToken cancellationToken = default);
 	}
 }
