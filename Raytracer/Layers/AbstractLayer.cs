@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
@@ -43,9 +44,11 @@ namespace Raytracer.Layers
 
 			int pixelsComplete = 0;
 
+			Rectangle region = new Rectangle(0, 0, width, height);
+
 			IEnumerable<int> pixels =
-				Enumerable.Range(0, width * height)
-				          .Select(px => FeistelNet(px, width, height));
+				Enumerable.Range(0, region.Width * region.Height)
+				          .Select(px => FeistelNet(px, region.Width, region.Height));
 
 			ParallelOptions po = new ParallelOptions
 			{
@@ -56,8 +59,8 @@ namespace Raytracer.Layers
 			{
 				Parallel.ForEach(pixels, po, px =>
 				{
-					int x = px % width;
-					int y = px / width;
+					int x = region.Left + px % region.Width;
+					int y = region.Top + px / region.Width;
 
 					float xViewportMin = x / (float)width;
 					float xViewportMax = (x + 1) / (float)width;

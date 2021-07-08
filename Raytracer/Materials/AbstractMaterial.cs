@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.Numerics;
+﻿using System.Numerics;
 using Raytracer.Materials.Textures;
 using Raytracer.Math;
 using Raytracer.Utils;
