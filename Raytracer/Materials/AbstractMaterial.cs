@@ -7,8 +7,8 @@ namespace Raytracer.Materials
 {
 	public abstract class AbstractMaterial : IMaterial
 	{
-		public Vector4 Color { get; set; } = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
-		public ITexture Diffuse { get; set; } = new SolidColorTexture {Color = ColorUtils.RgbaWhite};
+		public Vector4 Color { get; set; } = ColorUtils.RgbaWhite;
+		public ITexture Diffuse { get; set; } = new SolidColorTexture {Color = new Vector4(0.5f, 0.5f, 0.5f, 1.0f)};
 		public ITexture Emission { get; set; } = new SolidColorTexture {Color = ColorUtils.RgbaBlack};
 		public ITexture Normal { get; set; } = new SolidColorTexture {Color = new Vector4(0.5f, 0.5f, 1.0f, 1.0f)};
 		public float NormalScale { get; set; } = 1.0f;
