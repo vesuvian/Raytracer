@@ -34,7 +34,7 @@ namespace Raytracer.Wpf
 		{
 			Application.Current
 			           ?.Dispatcher
-			           .Invoke(DispatcherPriority.Background,
+			           .Invoke(DispatcherPriority.Render,
 			                   (Action)delegate
 			                   {
 				                   try
