@@ -7,9 +7,42 @@ namespace Raytracer.SceneObjects.Geometry
 {
 	public sealed class Triangle : AbstractSceneGeometry
 	{
-		public Vector3 A { get; set; }
-		public Vector3 B { get; set; }
-		public Vector3 C { get; set; }
+		private Vector3 m_A;
+		private Vector3 m_B;
+		private Vector3 m_C;
+
+		public Vector3 A
+		{
+			get { return m_A; }
+			set
+			{
+				m_A = value;
+				// Force a rebuild of the AABB
+				HandleTransformChange();
+			}
+		}
+
+		public Vector3 B
+		{
+			get { return m_B; }
+			set
+			{
+				m_B = value;
+				// Force a rebuild of the AABB
+				HandleTransformChange();
+			}
+		}
+
+		public Vector3 C
+		{
+			get { return m_C; }
+			set
+			{
+				m_C = value;
+				// Force a rebuild of the AABB
+				HandleTransformChange();
+			}
+		}
 
 		public static Vector3 GetNormal(Vector3 a, Vector3 b, Vector3 c)
 		{
@@ -58,7 +91,7 @@ namespace Raytracer.SceneObjects.Geometry
 			return t > 0;
 		}
 
-		public override IEnumerable<Intersection> GetIntersections(Ray ray)
+		public override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
 		{
 			// First transform the ray into local space
 			ray = ray.Multiply(WorldToLocal);
@@ -81,6 +114,11 @@ namespace Raytracer.SceneObjects.Geometry
 				RayOrigin = ray.Origin,
 				Uv = new Vector2(u, v)
 			}.Multiply(LocalToWorld);
+		}
+
+		protected override Aabb CalculateAabb()
+		{
+			return Aabb.FromPoints(LocalToWorld, A, B, C);
 		}
 	}
 }

@@ -6,11 +6,25 @@ namespace Raytracer.SceneObjects.Geometry
 {
 	public sealed class Disc : AbstractSceneGeometry
 	{
-		public float Radius { get; set; } = 0.5f;
-
 		private static readonly Vector3 s_Normal = new Vector3(0, 1, 0);
 
-		public override IEnumerable<Intersection> GetIntersections(Ray ray)
+		private float m_Radius = 0.5f;
+
+		public float Radius
+		{
+			get
+			{
+				return m_Radius;
+			}
+			set
+			{
+				m_Radius = value;
+				// Force a rebuild of the AABB
+				HandleTransformChange();
+			}
+		}
+
+		public override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
 		{
 			// First transform the ray into local space
 			ray = ray.Multiply(WorldToLocal);
@@ -37,6 +51,15 @@ namespace Raytracer.SceneObjects.Geometry
 				RayOrigin = ray.Origin,
 				Uv = uv
 			}.Multiply(LocalToWorld);
+		}
+
+		protected override Aabb CalculateAabb()
+		{
+			return Aabb.FromPoints(LocalToWorld,
+			                       new Vector3(-m_Radius, 0, -m_Radius),
+			                       new Vector3(-m_Radius, 0, m_Radius),
+			                       new Vector3(m_Radius, 0, -m_Radius),
+			                       new Vector3(m_Radius, 0, m_Radius));
 		}
 	}
 }

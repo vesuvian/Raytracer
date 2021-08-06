@@ -5,8 +5,32 @@ namespace Raytracer.Math
 {
 	public struct Ray
 	{
+		private Vector3 m_Direction;
+		private Vector3 m_InverseDirection;
+		private Vector3Int m_Sign;
+
 		public Vector3 Origin { get; set; }
-		public Vector3 Direction { get; set; }
+
+		public Vector3 Direction
+		{
+			get { return m_Direction; }
+			set
+			{
+				m_Direction = value;
+
+				m_InverseDirection = new Vector3(1 / m_Direction.X,
+				                                 1 / m_Direction.Y,
+				                                 1 / m_Direction.Z);
+
+				m_Sign = new Vector3Int(m_InverseDirection.X < 0 ? 1 : 0,
+				                        m_InverseDirection.Y < 0 ? 1 : 0,
+				                        m_InverseDirection.Z < 0 ? 1 : 0);
+			}
+		}
+
+		public Vector3 InverseDirection { get { return m_InverseDirection; } }
+
+		public Vector3Int Sign { get { return m_Sign; } }
 
 		public Ray Multiply(Matrix4x4 matrix)
 		{

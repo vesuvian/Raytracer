@@ -7,11 +7,20 @@ namespace Raytracer.SceneObjects.Geometry
 {
 	public sealed class Sphere : AbstractSceneGeometry
 	{
-		public float Radius { get; set; }
+		private float m_Radius = 1.0f;
 
-		public Sphere()
+		public float Radius
 		{
-			Radius = 1;
+			get
+			{
+				return m_Radius;
+			}
+			set
+			{
+				m_Radius = value;
+				// Force a rebuild of the AABB
+				HandleTransformChange();
+			}
 		}
 
 		public static IEnumerable<float> HitSphere(Vector3 origin, float radius, Ray ray)
@@ -35,17 +44,7 @@ namespace Raytracer.SceneObjects.Geometry
 				yield return t2;
 		}
 
-		private static Vector2 GetUv(Vector3 position)
-		{
-			position = Vector3.Normalize(position);
-
-			float u = MathF.Atan2(position.X, position.Z) / (2.0f * MathF.PI) + 0.5f;
-			float v = position.Y * 0.5f + 0.5f;
-
-			return new Vector2(u, v);
-		}
-
-		public override IEnumerable<Intersection> GetIntersections(Ray ray)
+		public override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
 		{
 			// First transform the ray into local space
 			ray = ray.Multiply(WorldToLocal);
@@ -72,6 +71,25 @@ namespace Raytracer.SceneObjects.Geometry
 					Uv = uv
 				}.Multiply(LocalToWorld);
 			}
+		}
+
+		protected override Aabb CalculateAabb()
+		{
+			return new Aabb
+			{
+				Min = new Vector3(-m_Radius),
+				Max = new Vector3(m_Radius)
+			}.Multiply(LocalToWorld);
+		}
+
+		private static Vector2 GetUv(Vector3 position)
+		{
+			position = Vector3.Normalize(position);
+
+			float u = MathF.Atan2(position.X, position.Z) / (2.0f * MathF.PI) + 0.5f;
+			float v = position.Y * 0.5f + 0.5f;
+
+			return new Vector2(u, v);
 		}
 	}
 }

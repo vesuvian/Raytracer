@@ -21,7 +21,7 @@ namespace Raytracer.SceneObjects.Geometry
 			return t > 0.00001f;
 		}
 
-		public override IEnumerable<Intersection> GetIntersections(Ray ray)
+		public override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
 		{
 			// First transform the ray into local space
 			ray = ray.Multiply(WorldToLocal);
@@ -62,6 +62,11 @@ namespace Raytracer.SceneObjects.Geometry
 
 			closestPosition = position + sb * planeNormal;
 			return Vector3.Distance(position, closestPosition);
+		}
+
+		protected override Aabb CalculateAabb()
+		{
+			return new Aabb {Min = new Vector3(float.MinValue), Max = new Vector3(float.MaxValue)};
 		}
 	}
 }

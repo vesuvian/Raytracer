@@ -18,8 +18,7 @@ namespace Raytracer.SceneObjects
 			set
 			{
 				m_Position = value;
-				m_LocalToWorld = null;
-				m_WorldToLocal = null;
+				HandleTransformChange();
 			}
 		}
 
@@ -29,8 +28,7 @@ namespace Raytracer.SceneObjects
 			set
 			{
 				m_Scale = value;
-				m_LocalToWorld = null;
-				m_WorldToLocal = null;
+				HandleTransformChange();
 			}
 		}
 
@@ -40,19 +38,13 @@ namespace Raytracer.SceneObjects
 			set
 			{
 				m_Rotation = value;
-				m_LocalToWorld = null;
-				m_WorldToLocal = null;
+				HandleTransformChange();
 			}
 		}
 
 		public Matrix4x4 LocalToWorld
 		{
-			get
-			{
-				if (m_LocalToWorld == null)
-					m_LocalToWorld = Matrix4x4Utils.Trs(Position, Rotation, Scale);
-				return m_LocalToWorld.Value;
-			}
+			get { return m_LocalToWorld ??= Matrix4x4Utils.Trs(Position, Rotation, Scale); }
 		}
 
 		public Matrix4x4 WorldToLocal
@@ -76,6 +68,12 @@ namespace Raytracer.SceneObjects
 			Position = new Vector3(0, 0, 0);
 			Scale = new Vector3(1, 1, 1);
 			Rotation = Quaternion.Identity;
+		}
+
+		protected virtual void HandleTransformChange()
+		{
+			m_LocalToWorld = null;
+			m_WorldToLocal = null;
 		}
 	}
 }

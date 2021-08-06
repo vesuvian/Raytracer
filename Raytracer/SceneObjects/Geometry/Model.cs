@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using Raytracer.Math;
 using Raytracer.Parsers;
@@ -9,32 +8,22 @@ namespace Raytracer.SceneObjects.Geometry
 	public sealed class Model : AbstractSceneGeometry
 	{
 		private Mesh m_Mesh;
-		private float m_SphereRadius;
-		private Vector3 m_SphereCentroid;
 
 		public Mesh Mesh
 		{
 			get { return m_Mesh; }
 			set
 			{
-				if (value == m_Mesh)
-					return;
-
 				m_Mesh = value;
-
-				m_SphereCentroid = m_Mesh == null ? Vector3.Zero : m_Mesh.Vertices.Aggregate((sum, v) => sum + v) / m_Mesh.Vertices.Count; 
-				m_SphereRadius = m_Mesh == null ? 0 : m_Mesh.Vertices.Select(v => (v - m_SphereCentroid).Length()).Max();
+				// Force a rebuild of the AABB
+				HandleTransformChange();
 			}
 		}
 
-		public override IEnumerable<Intersection> GetIntersections(Ray ray)
+		public override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
 		{
 			// First transform the ray into local space
 			ray = ray.Multiply(WorldToLocal);
-
-			// Does the ray hit the sphere?
-			if (!Sphere.HitSphere(m_SphereCentroid, m_SphereRadius, ray).Any())
-				yield break;
 
 			for (int faceIndex = 0; faceIndex < m_Mesh.Triangles.Count; faceIndex += 3)
 			{
@@ -102,6 +91,11 @@ namespace Raytracer.SceneObjects.Geometry
 					Uv = uv
 				}.Multiply(LocalToWorld);
 			}
+		}
+
+		protected override Aabb CalculateAabb()
+		{
+			return Aabb.FromPoints(LocalToWorld, m_Mesh.Vertices);
 		}
 	}
 }

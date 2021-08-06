@@ -7,7 +7,7 @@ namespace Raytracer.SceneObjects.Geometry
 {
 	public sealed class Cube : AbstractSceneGeometry
 	{
-		public override IEnumerable<Intersection> GetIntersections(Ray ray)
+		public override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
 		{
 			// First transform ray to local space.
 			ray = ray.Multiply(WorldToLocal);
@@ -59,6 +59,15 @@ namespace Raytracer.SceneObjects.Geometry
 					Uv = uv
 				}.Multiply(LocalToWorld);
 			}
+		}
+
+		protected override Aabb CalculateAabb()
+		{
+			return new Aabb
+			{
+				Min = new Vector3(-0.5f),
+				Max = new Vector3(0.5f)
+			}.Multiply(LocalToWorld);
 		}
 
 		private static Vector3 GetTangent(Vector3 pos)
