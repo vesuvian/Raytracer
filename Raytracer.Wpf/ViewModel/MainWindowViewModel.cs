@@ -21,7 +21,6 @@ namespace Raytracer.Wpf.ViewModel
 		private const int WIDTH = 1920;
 		private const int HEIGHT = 1080;
 
-		private readonly WriteableBitmapBuffer m_Buffer;
 		private readonly Thread m_Worker;
 		private readonly CancellationTokenSource m_CancellationTokenSource;
 
@@ -52,7 +51,6 @@ namespace Raytracer.Wpf.ViewModel
 
 			Title = "Raytracer";
 			Bitmap = new WriteableBitmap(WIDTH, HEIGHT, 96, 96, PixelFormats.Bgr32, null);
-			m_Buffer = new WriteableBitmapBuffer(Bitmap);
 
 			BitmapTexture normal = BitmapTexture.FromPath("Resources\\TexturesCom_Wall_Stone2_3x3_1K_normal.tif");
 
@@ -244,7 +242,8 @@ namespace Raytracer.Wpf.ViewModel
 
 			scene.Layers.First().OnProgressChanged += UpdateTitle;
 
-			m_Worker = new Thread(() => scene.Layers.First().Render(scene, m_Buffer, m_CancellationTokenSource.Token));
+			var buffer = new WriteableBitmapBuffer(Bitmap);
+			m_Worker = new Thread(() => scene.Layers.First().Render(scene, buffer, m_CancellationTokenSource.Token));
 			m_Worker.Start();
 		}
 
@@ -254,15 +253,21 @@ namespace Raytracer.Wpf.ViewModel
 
 			lock (m_Worker)
 			{
-				TimeSpan elapsed = DateTime.UtcNow - layer.Start;
+				TimeSpan elapsed =
+					layer.Progress >= layer.RenderSize
+						? layer.End - layer.Start
+						: DateTime.UtcNow - layer.Start;
+
 				float percent = layer.RenderSize == 0 ? 0 : (layer.Progress / (float)layer.RenderSize);
 
 				TimeSpan remaining =
-					System.Math.Abs(layer.Progress) < 0.0001f
-						? TimeSpan.MaxValue
-						: (elapsed / percent) * (1 - percent);
+					layer.Progress >= layer.RenderSize
+						? TimeSpan.Zero
+						: System.Math.Abs(layer.Progress) < 0.0001f
+							? TimeSpan.MaxValue
+							: (elapsed / percent) * (1 - percent);
 
-				Title = $"Raytracer - {percent:P} ({remaining} remaining)";
+				Title = $"Raytracer - {percent:P} ({elapsed} elapsed, {remaining} remaining)";
 			}
 		}
 
