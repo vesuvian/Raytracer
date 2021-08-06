@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Numerics;
 using Raytracer.Extensions;
 using Raytracer.Math;
@@ -78,52 +77,48 @@ namespace Raytracer.SceneObjects
 		/// <param name="maxX"></param>
 		/// <param name="minY"></param>
 		/// <param name="maxY"></param>
+		/// <param name="random"></param>
 		/// <returns></returns>
-		public IEnumerable<Ray> CreateRays(float minX, float maxX, float minY, float maxY)
+		public Ray CreateRay(float minX, float maxX, float minY, float maxY, Random random)
 		{
-			int seed = HashCode.Combine(minX, maxX, minY, maxY);
-			Random random = new Random(seed);
 			float scale = (float)System.Math.Tan(MathUtils.DEG2RAD * Fov * 0.5f);
 
-			for (int index = 0; index < Samples; index++)
+			float x;
+			float y;
+
+			if (Samples == 1)
 			{
-				float x;
-				float y;
-
-				if (Samples == 1)
-				{
-					x = (minX + maxX) / 2;
-					y = (minY + maxY) / 2;
-				}
-				else
-				{
-					x = random.NextFloat(minX, maxX);
-					y = random.NextFloat(minY, maxY);
-				}
-
-				// Calculate the local viewport ray
-				float rayX = (2 * x - 1) * Aspect * scale;
-				float rayY = (1 - 2 * y) * scale;
-				Vector3 direction = Vector3.Normalize(new Vector3(rayX, rayY, 1));
-
-				// Find the focal point
-				Vector3 focalpoint = new Ray { Direction = direction }.PositionAtDelta(FocalLength);
-
-				// Offset the start position by a random amount for depth of field
-				Vector3 apertureOffset =
-					new Vector3(random.NextFloat(-0.5f, 0.5f),
-					            random.NextFloat(-0.5f, 0.5f),
-					            random.NextFloat(-0.5f, 0.5f)) * ApertureSize;
-
-				// Direction is now the direction from the offset position to the focal point
-				Vector3 apertureOffsetDirection = Vector3.Normalize(focalpoint - apertureOffset);
-
-				yield return new Ray
-				{
-					Origin = apertureOffset,
-					Direction = apertureOffsetDirection
-				}.Multiply(LocalToWorld);
+				x = (minX + maxX) / 2;
+				y = (minY + maxY) / 2;
 			}
+			else
+			{
+				x = random.NextFloat(minX, maxX);
+				y = random.NextFloat(minY, maxY);
+			}
+
+			// Calculate the local viewport ray
+			float rayX = (2 * x - 1) * Aspect * scale;
+			float rayY = (1 - 2 * y) * scale;
+			Vector3 direction = Vector3.Normalize(new Vector3(rayX, rayY, 1));
+
+			// Find the focal point
+			Vector3 focalpoint = new Ray {Direction = direction}.PositionAtDelta(FocalLength);
+
+			// Offset the start position by a random amount for depth of field
+			Vector3 apertureOffset =
+				new Vector3(random.NextFloat(-0.5f, 0.5f),
+				            random.NextFloat(-0.5f, 0.5f),
+				            random.NextFloat(-0.5f, 0.5f)) * ApertureSize;
+
+			// Direction is now the direction from the offset position to the focal point
+			Vector3 apertureOffsetDirection = Vector3.Normalize(focalpoint - apertureOffset);
+
+			return new Ray
+			{
+				Origin = apertureOffset,
+				Direction = apertureOffsetDirection
+			}.Multiply(LocalToWorld);
 		}
 	}
 }

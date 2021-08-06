@@ -35,20 +35,25 @@ namespace Raytracer.Layers
 
 		public void Render(Scene scene, IBuffer buffer, CancellationToken cancellationToken = default)
 		{
-			int width = buffer.Width;
-			int height = buffer.Height;
+			IBuffer successiveBuffer = new SuccessiveRefinementBuffer(buffer);
+
+			int width = successiveBuffer.Width;
+			int height = successiveBuffer.Height;
 
 			Start = DateTime.UtcNow;
 			Progress = 0;
-			RenderSize = width * height;
+			RenderSize = width * height * scene.Camera.Samples;
 
 			int pixelsComplete = 0;
 
 			Rectangle region = new Rectangle(0, 0, width, height);
 
 			IEnumerable<int> pixels =
-				Enumerable.Range(0, region.Width * region.Height)
-				          .Select(px => FeistelNet(px, region.Width, region.Height));
+				Enumerable.Range(0, scene.Camera.Samples)
+				          .SelectMany(_ => Enumerable.Range(0, region.Width * region.Height)
+				                                     .Select(px => FeistelNet(px, region.Width, region.Height)));
+
+			Random random = new Random();
 
 			ParallelOptions po = new ParallelOptions
 			{
@@ -67,13 +72,10 @@ namespace Raytracer.Layers
 					float yViewportMin = y / (float)height;
 					float yViewportMax = (y + 1) / (float)height;
 
-					IEnumerable<Vector4> samples =
-						scene.Camera
-						     .CreateRays(xViewportMin, xViewportMax, yViewportMin, yViewportMax)
-						     .Select(r => CastRay(scene, r, 0));
+					Ray ray = scene.Camera.CreateRay(xViewportMin, xViewportMax, yViewportMin, yViewportMax, random);
+					Vector4 sample = CastRay(scene, ray, 0);
 
-					Vector4 pixel = ColorUtils.Average(samples);
-					buffer.SetPixel(x, y, ColorUtils.ToColorRgba(pixel));
+					successiveBuffer.SetPixel(x, y, ColorUtils.ToColorRgba(sample));
 					Progress = pixelsComplete++;
 				});
 			}
