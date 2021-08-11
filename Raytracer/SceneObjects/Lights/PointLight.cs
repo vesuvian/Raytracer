@@ -9,6 +9,8 @@ namespace Raytracer.SceneObjects.Lights
 {
 	public sealed class PointLight : AbstractLight
 	{
+		private readonly Random m_Random = new Random();
+
 		public float Range { get; set; } = 100;
 		public eFalloff Falloff { get; set; }
 		public int Samples { get; set; } = 1;
@@ -63,15 +65,14 @@ namespace Raytracer.SceneObjects.Lights
 
 		private IEnumerable<Ray> GetRays(Vector3 position)
 		{
-			Random random = new Random(position.GetHashCode());
-
 			return Enumerable.Range(0, Samples)
 			                 .Select(i =>
 			                 {
-				                 Vector3 softShadowPosition =
-					                 Position +
-									 MathUtils.RandomPointInSphere(random) *
-					                 SoftShadowRadius;
+				                 Vector3 pointInSphere;
+				                 lock (m_Random)
+					                 pointInSphere = MathUtils.RandomPointInSphere(m_Random);
+
+				                 Vector3 softShadowPosition = Position + pointInSphere * SoftShadowRadius;
 
 				                 return new Ray
 				                 {

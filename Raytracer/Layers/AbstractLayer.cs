@@ -17,6 +17,8 @@ namespace Raytracer.Layers
 
 		private int m_Progress;
 
+		protected Random Random { get; } = new Random();
+
 		public DateTime Start { get; private set; }
 		public DateTime End { get; private set; }
 
@@ -53,8 +55,6 @@ namespace Raytracer.Layers
 				          .SelectMany(_ => Enumerable.Range(0, region.Width * region.Height)
 				                                     .Select(px => FeistelNet(px, region.Width, region.Height)));
 
-			Random random = new Random();
-
 			ParallelOptions po = new ParallelOptions
 			{
 				CancellationToken = cancellationToken
@@ -77,7 +77,9 @@ namespace Raytracer.Layers
 						float yViewportMin = y / (float)height;
 						float yViewportMax = (y + 1) / (float)height;
 
-						Ray ray = scene.Camera.CreateRay(xViewportMin, xViewportMax, yViewportMin, yViewportMax, random);
+						Ray ray;
+						lock (Random)
+							ray = scene.Camera.CreateRay(xViewportMin, xViewportMax, yViewportMin, yViewportMax, Random);
 						Vector4 sample = CastRay(scene, ray, 0);
 
 						successiveBuffer.SetPixel(x, y, ColorUtils.ToColorRgba(sample));
