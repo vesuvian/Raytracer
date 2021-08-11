@@ -21,5 +21,18 @@ namespace Raytracer.Utils
 			Vector3 newVec = a * MathF.Cos(theta) + relativeVec * MathF.Sin(theta);
 			return newVec * (magA + (magB - magA) * t);
 		}
+
+		public static Tuple<Vector3, Vector3> GetTangentAndBitangent(Vector3 normal)
+		{
+			Vector3 tangent;
+			if (MathF.Abs(normal.X) > MathF.Abs(normal.Y)) 
+				tangent = new Vector3(normal.Z, 0, -normal.X) / MathF.Sqrt(normal.X* normal.X + normal.Z* normal.Z); 
+			else
+				tangent = new Vector3(0, -normal.Z, normal.Y) / MathF.Sqrt(normal.Y* normal.Y + normal.Z* normal.Z);
+
+			Vector3 bitangent = Vector3.Cross(normal, tangent);
+
+			return new Tuple<Vector3, Vector3>(tangent, bitangent);
+		}
 	}
 }

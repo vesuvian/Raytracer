@@ -103,5 +103,14 @@ namespace Raytracer.Utils
 			Vector3 output = RandomPointOnSphere(random);
 			return new Vector3(output.X, MathF.Abs(output.Y), output.Z);
 		}
+
+		public static Vector3 UniformSampleHemisphere(float r1, float r2)
+		{
+			float sinTheta = MathF.Sqrt(1 - r1 * r1);
+			float phi = 2 * MathF.PI * r2;
+			float x = sinTheta * MathF.Cos(phi);
+			float z = sinTheta * MathF.Sin(phi);
+			return new Vector3(x, r1, z);
+		}
 	}
 }

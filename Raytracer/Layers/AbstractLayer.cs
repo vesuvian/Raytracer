@@ -40,13 +40,13 @@ namespace Raytracer.Layers
 			int width = successiveBuffer.Width;
 			int height = successiveBuffer.Height;
 
+			Rectangle region = new Rectangle(0, 0, width, height);
+
 			Start = DateTime.UtcNow;
 			Progress = 0;
-			RenderSize = width * height * scene.Camera.Samples;
+			RenderSize = region.Width * region.Height * scene.Camera.Samples;
 
 			int pixelsComplete = 0;
-
-			Rectangle region = new Rectangle(0, 0, width, height);
 
 			IEnumerable<int> pixels =
 				Enumerable.Range(0, scene.Camera.Samples)

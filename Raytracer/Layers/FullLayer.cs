@@ -55,9 +55,9 @@ namespace Raytracer.Layers
 					: GetReflection(scene, ray, intersection.Position, worldNormal, roughness, rayDepth);
 
 			// Combine values
-			Vector4 direct = ColorUtils.Multiply(illumination, 1 / MathF.PI);
-			Vector4 indirect = ColorUtils.Multiply(globalIllumination, 2);
-			Vector4 combined = ColorUtils.Add(direct, indirect);
+			Vector4 direct = illumination / MathF.PI;
+			Vector4 indirect = 2 * globalIllumination;
+			Vector4 combined = direct + indirect;
 
 			// Final diffuse color
 			// TODO - Guessing at emission implementation
@@ -79,6 +79,8 @@ namespace Raytracer.Layers
 			return ColorUtils.Sum(illumination);
 		}
 
+		private readonly Random m_Random = new Random();
+
 		private Vector4 GetGlobalIllumination(Scene scene, Vector3 position, Vector3 normal, int rayDepth)
 		{
 			if (scene.Geometry.Count == 0)
@@ -88,20 +90,31 @@ namespace Raytracer.Layers
 				Enumerable.Range(0, scene.GlobalIlluminationSamples)
 				          .Select(i =>
 				          {
-					          // TODO - Random point on hemisphere and transform to surface
-					          Vector3 randomNormal = MathUtils.RandomPointOnSphere();
-					          Vector3 giNormal = Vector3Utils.Slerp(normal, randomNormal, 0.5f);
+					          float r1;
+					          float r2;
+
+					          lock (m_Random)
+					          {
+						          r1 = m_Random.NextFloat();
+						          r2 = m_Random.NextFloat();
+					          }
+
+					          Vector3 randomNormal = MathUtils.UniformSampleHemisphere(r1, r2);
+					          (Vector3 nt, Vector3 nb) = Vector3Utils.GetTangentAndBitangent(normal);
+
+					          Vector3 worldNormal =
+						          new Vector3(randomNormal.X * nb.X + randomNormal.Y * normal.X + randomNormal.Z * nt.X,
+						                      randomNormal.X * nb.Y + randomNormal.Y * normal.Y + randomNormal.Z * nt.Y,
+						                      randomNormal.X * nb.Z + randomNormal.Y * normal.Z + randomNormal.Z * nt.Z);
 
 					          Ray giRay = new Ray
 					          {
 						          Origin = position,
-						          Direction = giNormal
+						          Direction = worldNormal
 					          };
 
 					          Vector4 sample = CastRay(scene, giRay, rayDepth + 1);
-					          float faceAmount = Vector3.Dot(normal, giNormal);
-
-					          return ColorUtils.LerpRgb(ColorUtils.RgbaBlack, sample, faceAmount);
+					          return r1 * sample;
 				          });
 
 			return ColorUtils.Average(globalIllumination);
