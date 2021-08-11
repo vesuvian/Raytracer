@@ -64,19 +64,29 @@ namespace Raytracer.Layers
 			{
 				Parallel.ForEach(pixels, po, px =>
 				{
-					int x = region.Left + px % region.Width;
-					int y = region.Top + px / region.Width;
+					var priority = Thread.CurrentThread.Priority;
+					Thread.CurrentThread.Priority = ThreadPriority.Lowest;
 
-					float xViewportMin = x / (float)width;
-					float xViewportMax = (x + 1) / (float)width;
-					float yViewportMin = y / (float)height;
-					float yViewportMax = (y + 1) / (float)height;
+					try
+					{
+						int x = region.Left + px % region.Width;
+						int y = region.Top + px / region.Width;
 
-					Ray ray = scene.Camera.CreateRay(xViewportMin, xViewportMax, yViewportMin, yViewportMax, random);
-					Vector4 sample = CastRay(scene, ray, 0);
+						float xViewportMin = x / (float)width;
+						float xViewportMax = (x + 1) / (float)width;
+						float yViewportMin = y / (float)height;
+						float yViewportMax = (y + 1) / (float)height;
 
-					successiveBuffer.SetPixel(x, y, ColorUtils.ToColorRgba(sample));
-					Progress = pixelsComplete++;
+						Ray ray = scene.Camera.CreateRay(xViewportMin, xViewportMax, yViewportMin, yViewportMax, random);
+						Vector4 sample = CastRay(scene, ray, 0);
+
+						successiveBuffer.SetPixel(x, y, ColorUtils.ToColorRgba(sample));
+						Progress = pixelsComplete++;
+					}
+					finally
+					{
+						Thread.CurrentThread.Priority = priority;
+					}
 				});
 			}
 			catch (OperationCanceledException)

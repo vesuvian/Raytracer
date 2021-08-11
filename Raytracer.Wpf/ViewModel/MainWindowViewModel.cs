@@ -244,6 +244,7 @@ namespace Raytracer.Wpf.ViewModel
 
 			var buffer = new WriteableBitmapBuffer(Bitmap);
 			m_Worker = new Thread(() => scene.Layers.First().Render(scene, buffer, m_CancellationTokenSource.Token));
+			m_Worker.Priority = ThreadPriority.Lowest;
 			m_Worker.Start();
 		}
 
