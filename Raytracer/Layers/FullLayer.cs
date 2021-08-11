@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Raytracer.Extensions;
@@ -60,8 +59,7 @@ namespace Raytracer.Layers
 			Vector4 combined = direct + indirect;
 
 			// Final diffuse color
-			// TODO - Guessing at emission implementation
-			Vector4 hitColor = Vector4.Max(ColorUtils.Multiply(combined, diffuse), emission);
+			Vector4 hitColor = ColorUtils.Multiply(combined, diffuse) + emission;
 
 			// Blend with reflection
 			return ColorUtils.LerpRgb(hitColor, reflection, reflectivity);
