@@ -264,9 +264,9 @@ namespace Raytracer.Wpf.ViewModel
 				TimeSpan remaining =
 					layer.Progress >= layer.RenderSize
 						? TimeSpan.Zero
-						: System.Math.Abs(layer.Progress) < 0.0001f
+						: layer.Progress == 0
 							? TimeSpan.MaxValue
-							: (elapsed / percent) * (1 - percent);
+							: TimeSpan.FromMilliseconds(MathUtils.Clamp((float)elapsed.TotalMilliseconds / percent, 0, (float)TimeSpan.MaxValue.TotalMilliseconds)) * (1 - percent);
 
 				Title = $"Raytracer - {percent:P} ({elapsed} elapsed, {remaining} remaining)";
 			}

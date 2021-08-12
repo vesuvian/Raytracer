@@ -15,14 +15,14 @@ namespace Raytracer.Layers
 	{
 		public event EventHandler OnProgressChanged;
 
-		private int m_Progress;
+		private ulong m_Progress;
 
 		protected Random Random { get; } = new Random();
 
 		public DateTime Start { get; private set; }
 		public DateTime End { get; private set; }
 
-		public int Progress
+		public ulong Progress
 		{
 			get { return m_Progress; }
 			private set
@@ -33,7 +33,7 @@ namespace Raytracer.Layers
 			}
 		}
 
-		public int RenderSize { get; private set; }
+		public ulong RenderSize { get; private set; }
 
 		public void Render(Scene scene, IBuffer buffer, CancellationToken cancellationToken = default)
 		{
@@ -46,9 +46,9 @@ namespace Raytracer.Layers
 
 			Start = DateTime.UtcNow;
 			Progress = 0;
-			RenderSize = region.Width * region.Height * scene.Camera.Samples;
+			RenderSize = (ulong)region.Width * (ulong)region.Height * (ulong)scene.Camera.Samples;
 
-			int pixelsComplete = 0;
+			ulong pixelsComplete = 0;
 
 			IEnumerable<int> pixels =
 				Enumerable.Range(0, scene.Camera.Samples)

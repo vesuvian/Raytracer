@@ -11,8 +11,8 @@ namespace Raytracer.Layers
 		DateTime Start { get; }
 		DateTime End { get; }
 
-		int Progress { get; }
-		int RenderSize { get; }
+		ulong Progress { get; }
+		ulong RenderSize { get; }
 
 		void Render(Scene scene, IBuffer buffer, CancellationToken cancellationToken = default);
 	}

@@ -255,9 +255,11 @@ namespace Raytracer.Cmd
 				float percent = layer.RenderSize == 0 ? 0 : (layer.Progress / (float)layer.RenderSize);
 
 				TimeSpan remaining =
-					System.Math.Abs(layer.Progress) < 0.0001f
-						? TimeSpan.MaxValue
-						: (elapsed / percent) * (1 - percent);
+					layer.Progress >= layer.RenderSize
+						? TimeSpan.Zero
+						: layer.Progress == 0
+							? TimeSpan.MaxValue
+							: TimeSpan.FromMilliseconds(MathUtils.Clamp((float)elapsed.TotalMilliseconds / percent, 0, (float)TimeSpan.MaxValue.TotalMilliseconds)) * (1 - percent);
 
 				Console.SetCursorPosition(0, layerIndex);
 				Console.Write("{0} {1} - {2:P} ({3} remaining)           ", spin, layer.GetType().Name, percent, remaining);
