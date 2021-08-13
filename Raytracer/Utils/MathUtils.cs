@@ -83,25 +83,13 @@ namespace Raytracer.Utils
 			return new Vector3(x, y, z);
 		}
 
-		public static Vector3 RandomPointOnHemisphere(Random random)
-		{
-			Vector3 output = RandomPointOnSphere(random);
-			return new Vector3(output.X, MathF.Abs(output.Y), output.Z);
-		}
-
-		public static Vector3 UniformPointInHemisphere(float r1, float r2)
+		public static Vector3 UniformPointOnHemisphere(float r1, float r2)
 		{
 			float sinTheta = MathF.Sqrt(1 - r1 * r1);
 			float phi = 2 * MathF.PI * r2;
 			float x = sinTheta * MathF.Cos(phi);
 			float z = sinTheta * MathF.Sin(phi);
-			return new Vector3(x, r1, z);
-		}
-
-		public static Vector3 UniformPointOnHemisphere(float r1, float r2)
-		{
-			Vector3 point = UniformPointInHemisphere(r1, r2);
-			return Vector3.Normalize(point);
+			return Vector3.Normalize(new Vector3(x, r1, z));
 		}
 	}
 }

@@ -97,12 +97,8 @@ namespace Raytracer.Layers
 
 					          Vector3 randomNormal = MathUtils.UniformPointOnHemisphere(r1, r2);
 					          (Vector3 nt, Vector3 nb) = Vector3Utils.GetTangentAndBitangent(normal);
-
-					          Vector3 worldNormal =
-						          new Vector3(randomNormal.X * nb.X + randomNormal.Y * normal.X + randomNormal.Z * nt.X,
-						                      randomNormal.X * nb.Y + randomNormal.Y * normal.Y + randomNormal.Z * nt.Y,
-						                      randomNormal.X * nb.Z + randomNormal.Y * normal.Z + randomNormal.Z * nt.Z);
-					          worldNormal = Vector3.Normalize(worldNormal);
+					          Matrix4x4 surface = Matrix4x4Utils.Tbn(nt, nb, normal);
+					          Vector3 worldNormal = surface.MultiplyNormal(randomNormal);
 
 					          Ray giRay = new Ray
 					          {
@@ -119,14 +115,22 @@ namespace Raytracer.Layers
 
 		private Vector4 GetReflection(Scene scene, Ray ray, Vector3 position, Vector3 normal, float roughness, int rayDepth)
 		{
-			// TODO - Random point on hemisphere and transform to surface
-			float scatterAmount = new Random().NextFloat(0, roughness / 2);
-			Vector3 scatterNormal;
-			lock (Random)
-				scatterNormal = MathUtils.RandomPointOnSphere(Random);
-			Vector3 reflectionNormal = Vector3Utils.Slerp(normal, scatterNormal, scatterAmount);
+			float r1;
+			float r2;
 
-			return CastRay(scene, ray.Reflect(position, reflectionNormal), rayDepth + 1);
+			lock (Random)
+			{
+				r1 = Random.NextFloat();
+				r2 = Random.NextFloat();
+			}
+
+			Vector3 randomNormal = MathUtils.UniformPointOnHemisphere(r1, r2);
+			randomNormal = Vector3Utils.Slerp(Vector3.UnitY, randomNormal, roughness);
+			(Vector3 nt, Vector3 nb) = Vector3Utils.GetTangentAndBitangent(normal);
+			Matrix4x4 surface = Matrix4x4Utils.Tbn(nt, nb, normal);
+			Vector3 worldNormal = surface.MultiplyNormal(randomNormal);
+
+			return CastRay(scene, ray.Reflect(position, worldNormal), rayDepth + 1);
 		}
 	}
 }
