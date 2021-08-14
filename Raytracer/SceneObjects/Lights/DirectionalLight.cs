@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Numerics;
 using Raytracer.Math;
 using Raytracer.Utils;
@@ -7,7 +8,7 @@ namespace Raytracer.SceneObjects.Lights
 {
 	public sealed class DirectionalLight : AbstractLight
 	{
-		public override Vector4 Sample(Scene scene, Vector3 position, Vector3 normal)
+		public override Vector4 Sample(Scene scene, Vector3 position, Vector3 normal, Random random)
 		{
 			Ray toLight =
 				new Ray

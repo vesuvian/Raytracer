@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using Raytracer.Utils;
 
 namespace Raytracer.SceneObjects.Lights
@@ -10,6 +11,6 @@ namespace Raytracer.SceneObjects.Lights
 		public Vector4 Color { get; set; } = ColorUtils.RgbaWhite;
 		public bool CastShadows { get; set; } = true;
 
-		public abstract Vector4 Sample(Scene scene, Vector3 position, Vector3 normal);
+		public abstract Vector4 Sample(Scene scene, Vector3 position, Vector3 normal, Random random);
 	}
 }

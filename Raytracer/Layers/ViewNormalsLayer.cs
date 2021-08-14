@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Numerics;
 using Raytracer.Extensions;
 using Raytracer.Math;
@@ -10,7 +11,7 @@ namespace Raytracer.Layers
 {
 	public sealed class ViewNormalsLayer : AbstractLayer
 	{
-		protected override Vector4 CastRay(Scene scene, Ray ray, int rayDepth)
+		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth)
 		{
 			(ISceneGeometry geometry, Intersection intersection) =
 				scene.GetIntersections(ray, eRayMask.Visible)

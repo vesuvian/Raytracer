@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace Raytracer.SceneObjects.Lights
 {
@@ -7,6 +8,6 @@ namespace Raytracer.SceneObjects.Lights
 		Vector4 Color { get; set; }
 		bool CastShadows { get; set; }
 
-		Vector4 Sample(Scene scene, Vector3 position, Vector3 normal);
+		Vector4 Sample(Scene scene, Vector3 position, Vector3 normal, Random random);
 	}
 }

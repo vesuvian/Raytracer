@@ -12,7 +12,7 @@ namespace Raytracer.Layers
 {
 	public sealed class FullLayer : AbstractLayer
 	{
-		protected override Vector4 CastRay(Scene scene, Ray ray, int rayDepth)
+		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth)
 		{
 			(ISceneGeometry geometry, Intersection intersection) =
 				scene.GetIntersections(ray, eRayMask.Visible)
@@ -37,21 +37,21 @@ namespace Raytracer.Layers
 			Vector4 illumination =
 				System.Math.Abs(reflectivity - 1) < 0.001f
 					? ColorUtils.RgbaBlack
-					: GetIllumination(scene, intersection.Position, worldNormal);
+					: GetIllumination(scene, intersection.Position, worldNormal, random);
 
 			// Global illumination
 			Vector4 globalIllumination =
 				rayDepth > scene.MaxReflectionRays ||
 				System.Math.Abs(reflectivity - 1) < 0.001f
 					? ColorUtils.RgbaBlack
-					: GetGlobalIllumination(scene, intersection.Position, worldNormal, rayDepth);
+					: GetGlobalIllumination(scene, intersection.Position, worldNormal, random, rayDepth);
 
 			// Calculate reflection
 			Vector4 reflection =
 				rayDepth > scene.MaxReflectionRays ||
 				System.Math.Abs(reflectivity) < 0.001f
 					? ColorUtils.RgbaBlack
-					: GetReflection(scene, ray, intersection.Position, worldNormal, roughness, rayDepth);
+					: GetReflection(scene, ray, intersection.Position, worldNormal, roughness, random, rayDepth);
 
 			// Combine values
 			Vector4 direct = illumination / MathF.PI;
@@ -65,19 +65,19 @@ namespace Raytracer.Layers
 			return ColorUtils.LerpRgb(hitColor, reflection, reflectivity);
 		}
 
-		private Vector4 GetIllumination(Scene scene, Vector3 position, Vector3 normal)
+		private Vector4 GetIllumination(Scene scene, Vector3 position, Vector3 normal, Random random)
 		{
 			if (scene.Lights.Count == 0)
 				return ColorUtils.RgbaBlack;
 
 			IEnumerable<Vector4> illumination =
 				scene.Lights
-				     .Select(l => l.Sample(scene, position, normal));
+				     .Select(l => l.Sample(scene, position, normal, random));
 
 			return ColorUtils.Sum(illumination);
 		}
 
-		private Vector4 GetGlobalIllumination(Scene scene, Vector3 position, Vector3 normal, int rayDepth)
+		private Vector4 GetGlobalIllumination(Scene scene, Vector3 position, Vector3 normal, Random random, int rayDepth)
 		{
 			if (scene.Geometry.Count == 0)
 				return ColorUtils.RgbaBlack;
@@ -86,14 +86,8 @@ namespace Raytracer.Layers
 				Enumerable.Range(0, scene.GlobalIlluminationSamples)
 				          .Select(i =>
 				          {
-					          float r1;
-					          float r2;
-
-					          lock (Random)
-					          {
-						          r1 = Random.NextFloat();
-						          r2 = Random.NextFloat();
-					          }
+					          float r1 = random.NextFloat();
+					          float r2 = random.NextFloat();
 
 					          Vector3 randomNormal = MathUtils.UniformPointOnHemisphere(r1, r2);
 					          (Vector3 nt, Vector3 nb) = Vector3Utils.GetTangentAndBitangent(normal);
@@ -106,23 +100,18 @@ namespace Raytracer.Layers
 						          Direction = worldNormal
 					          };
 
-					          Vector4 sample = CastRay(scene, giRay, rayDepth + 1);
+					          Vector4 sample = CastRay(scene, giRay, random, rayDepth + 1);
 					          return r1 * sample;
 				          });
 
 			return ColorUtils.Average(globalIllumination);
 		}
 
-		private Vector4 GetReflection(Scene scene, Ray ray, Vector3 position, Vector3 normal, float roughness, int rayDepth)
+		private Vector4 GetReflection(Scene scene, Ray ray, Vector3 position, Vector3 normal, float roughness,
+		                              Random random, int rayDepth)
 		{
-			float r1;
-			float r2;
-
-			lock (Random)
-			{
-				r1 = Random.NextFloat();
-				r2 = Random.NextFloat();
-			}
+			float r1 = random.NextFloat();
+			float r2 = random.NextFloat();
 
 			Vector3 randomNormal = MathUtils.UniformPointOnHemisphere(r1, r2);
 			randomNormal = Vector3Utils.Slerp(Vector3.UnitY, randomNormal, roughness);
@@ -130,7 +119,7 @@ namespace Raytracer.Layers
 			Matrix4x4 surface = Matrix4x4Utils.Tbn(nt, nb, normal);
 			Vector3 worldNormal = surface.MultiplyNormal(randomNormal);
 
-			return CastRay(scene, ray.Reflect(position, worldNormal), rayDepth + 1);
+			return CastRay(scene, ray.Reflect(position, worldNormal), random, rayDepth + 1);
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Raytracer.Math;
@@ -10,7 +11,7 @@ namespace Raytracer.Layers
 {
 	public sealed class LightsLayer : AbstractLayer
 	{
-		protected override Vector4 CastRay(Scene scene, Ray ray, int rayDepth)
+		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth)
 		{
 			(ISceneGeometry geometry, Intersection intersection) =
 				scene.GetIntersections(ray, eRayMask.Visible)
@@ -24,7 +25,7 @@ namespace Raytracer.Layers
 
 			IEnumerable<Vector4> illumination =
 				scene.Lights
-				     .Select(l => l.Sample(scene, intersection.Position, worldNormal));
+				     .Select(l => l.Sample(scene, intersection.Position, worldNormal, random));
 
 			return ColorUtils.Sum(illumination);
 		}

@@ -9,14 +9,12 @@ namespace Raytracer.SceneObjects.Lights
 {
 	public sealed class PointLight : AbstractLight
 	{
-		private readonly Random m_Random = new Random();
-
 		public float Range { get; set; } = 100;
 		public eFalloff Falloff { get; set; }
 		public int Samples { get; set; } = 1;
 		public float SoftShadowRadius { get; set; }
 
-		public override Vector4 Sample(Scene scene, Vector3 position, Vector3 normal)
+		public override Vector4 Sample(Scene scene, Vector3 position, Vector3 normal, Random random)
 		{
 			float faceAmount = Vector3.Dot(normal, Vector3.Normalize(Position - position));
 			faceAmount = MathUtils.Clamp(faceAmount, 0, 1);
@@ -28,7 +26,7 @@ namespace Raytracer.SceneObjects.Lights
 				return ColorUtils.RgbaBlack;
 
 			IEnumerable<Vector4> samples =
-				GetRays(position)
+				GetRays(position, random)
 					.Select(r =>
 					{
 						bool canSee =
@@ -63,15 +61,12 @@ namespace Raytracer.SceneObjects.Lights
 			throw new NotImplementedException();
 		}
 
-		private IEnumerable<Ray> GetRays(Vector3 position)
+		private IEnumerable<Ray> GetRays(Vector3 position, Random random)
 		{
 			return Enumerable.Range(0, Samples)
 			                 .Select(i =>
 			                 {
-				                 Vector3 pointInSphere;
-				                 lock (m_Random)
-					                 pointInSphere = MathUtils.RandomPointInSphere(m_Random);
-
+				                 Vector3 pointInSphere = MathUtils.RandomPointInSphere(random);
 				                 Vector3 softShadowPosition = Position + pointInSphere * SoftShadowRadius;
 
 				                 return new Ray
