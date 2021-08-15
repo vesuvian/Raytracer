@@ -14,7 +14,6 @@ using Raytracer.SceneObjects;
 using Raytracer.SceneObjects.Geometry;
 using Raytracer.SceneObjects.Lights;
 using Raytracer.Utils;
-using Plane = Raytracer.SceneObjects.Geometry.Plane;
 
 namespace Raytracer.Cmd
 {
@@ -30,18 +29,19 @@ namespace Raytracer.Cmd
 			Console.CursorVisible = false;
 
 			BitmapTexture normal = BitmapTexture.FromPath("Resources\\TexturesCom_Wall_Stone2_3x3_1K_normal.tif");
-			
+
 			Scene scene = new Scene
 			{
+				GlobalIlluminationSamples = 4,
 				Camera = new Camera
 				{
 					Position = new Vector3(5, 2, -20),
 					NearPlane = 0.01f,
 					FarPlane = 40.0f,
 					Fov = 40,
-					//Samples = 32,
-					//FocalLength = 20,
-					//ApertureSize = 0.2f,
+					Samples = int.MaxValue,
+					FocalLength = 18,
+					ApertureSize = 0.2f,
 					Aspect = WIDTH / (float)HEIGHT
 				},
 				Lights = new List<ILight>
@@ -49,28 +49,25 @@ namespace Raytracer.Cmd
 					new PointLight
 					{
 						Position = new Vector3(10, 100, -5),
-						Color = new Vector4(10, 0, 0, 1),
+						Color = new Vector4(5, 0, 0, 1),
 						Range = 200,
-						//SoftShadowRadius = 2,
-						//Samples = 8,
+						SoftShadowRadius = 2,
 						Falloff = eFalloff.Linear
 					},
 					new PointLight
 					{
 						Position = new Vector3(0, 10, 10),
-						Color = new Vector4(0, 10, 0, 1),
+						Color = new Vector4(0, 5, 0, 1),
 						Range = 40,
-						//SoftShadowRadius = 2,
-						//Samples = 8,
+						SoftShadowRadius = 2,
 						Falloff = eFalloff.Linear
 					},
 					new PointLight
 					{
 						Position = new Vector3(0, 1, -20),
-						Color = new Vector4(10, 10, 10, 1),
+						Color = new Vector4(5, 5, 5, 1),
 						Range = 80,
-						//SoftShadowRadius = 2,
-						//Samples = 8,
+						SoftShadowRadius = 2,
 						Falloff = eFalloff.Linear
 					}
 				},
@@ -80,7 +77,7 @@ namespace Raytracer.Cmd
 					{
 						Radius = 100000,
 						RayMask = eRayMask.Visible,
-						Material = new Material
+						Material = new EmissiveMaterial
 						{
 							Emission = BitmapTexture.FromPath("Resources\\skysphere.jpg")
 						}
@@ -90,7 +87,7 @@ namespace Raytracer.Cmd
 						Position = new Vector3(13f, 5, 0),
 						Scale = new Vector3(2, 2, 2),
 						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45),
-						Material = new Material
+						Material = new DiffuseMaterial
 						{
 							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
 							Normal = normal,
@@ -102,19 +99,18 @@ namespace Raytracer.Cmd
 						Scale = new Vector3(2, 1, 1),
 						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 15, MathUtils.DEG2RAD * 30),
 						Radius = 5,
-						Material = new Material
+						Material = new LayeredMaterial
 						{
-							Diffuse = new SolidColorTexture { Color = new Vector4(0.5f) },
-							Reflectivity = new SolidColorTexture { Color = new Vector4(0.5f) },
-							Roughness = new SolidColorTexture { Color = new Vector4(0.5f) },
-							Scale = new Vector2(1 / 3.0f, 1)
+							Blend = new SolidColorTexture { Color = new Vector4(0.5f) },
+							A = new DiffuseMaterial { Diffuse = new SolidColorTexture { Color = new Vector4(0.5f) } },
+							B = new ReflectiveMaterial { Roughness = new SolidColorTexture { Color = new Vector4(0.5f) } }
 						}
 					},
 					new Sphere
 					{
 						Position = new Vector3(-3, 10, 0),
 						Radius = 5,
-						Material = new Material
+						Material = new DiffuseMaterial
 						{
 							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
 							Normal = normal,
@@ -125,10 +121,18 @@ namespace Raytracer.Cmd
 					{
 						Position = new Vector3(-4, 2, 0),
 						Radius = 2,
-						Material = new Material
+						Material = new LayeredMaterial
 						{
-							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
-							Reflectivity = new CheckerboardTexture(),
+							Blend = new CheckerboardTexture(),
+							A = new DiffuseMaterial {
+								Diffuse = new CheckerboardTexture
+								{
+									ColorA = new Vector4(0.9f),
+									ColorB = new Vector4(0.1f)
+								},
+								Scale = new Vector2(1 / 3.0f, 1)
+							},
+							B = new ReflectiveMaterial(),
 							Scale = new Vector2(1 / 3.0f, 1)
 						}
 					},
@@ -136,32 +140,29 @@ namespace Raytracer.Cmd
 					{
 						Position = new Vector3(0, 2, 0),
 						Radius = 2,
-						Material = new Material
+
+						Material = new LayeredMaterial
 						{
-							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
-							Reflectivity = new SolidColorTexture { Color = new Vector4(0.5f) },
-							Scale = new Vector2(1 / 3.0f, 1)
+							Blend = new SolidColorTexture { Color = new Vector4(0.5f) },
+							A = new DiffuseMaterial {
+								Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
+								Scale = new Vector2(1 / 3.0f, 1)
+							},
+							B = new ReflectiveMaterial()
 						}
 					},
 					new Sphere
 					{
 						Position = new Vector3(4, 2, 0),
 						Radius = 2,
-						Material = new Material
-						{
-							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
-							Reflectivity = new SolidColorTexture { Color = ColorUtils.RgbaWhite },
-							Scale = new Vector2(1 / 3.0f, 1)
-						}
+						Material = new ReflectiveMaterial()
 					},
 					new Sphere
 					{
 						Position = new Vector3(8, 2, 0),
 						Radius = 2,
-						Material = new Material
+						Material = new ReflectiveMaterial
 						{
-							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
-							Reflectivity = new SolidColorTexture { Color = ColorUtils.RgbaWhite },
 							Roughness = new CheckerboardTexture
 							{
 								ColorA = new Vector4(0.5f)
@@ -173,7 +174,7 @@ namespace Raytracer.Cmd
 					{
 						Position = new Vector3(12, 2, 0),
 						Radius = 2,
-						Material = new Material
+						Material = new DiffuseMaterial
 						{
 							Diffuse = new SolidColorTexture { Color = new Vector4(0, 1, 0, 1) }
 						}
@@ -182,15 +183,14 @@ namespace Raytracer.Cmd
 					{
 						Position = new Vector3(16, 2, 0),
 						Radius = 2,
-						Material = new Material
+						Material = new EmissiveMaterial
 						{
-							Diffuse = new SolidColorTexture { Color = new Vector4(0, 0, 1, 1) },
-							Emission = new SolidColorTexture { Color = new Vector4(0, 0, 1, 1) }
+							Emission = new SolidColorTexture { Color = new Vector4(0, 0, 1000, 1) }
 						}
 					},
-					new Plane
+					new SceneObjects.Geometry.Plane
 					{
-						Material = new Material
+						Material = new DiffuseMaterial
 						{
 							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
 							Normal = normal,
@@ -203,23 +203,21 @@ namespace Raytracer.Cmd
 						Position = new Vector3(3, 2, -5),
 						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * -45, MathUtils.DEG2RAD * -15, MathUtils.DEG2RAD * 30),
 						Mesh = new ObjMeshParser().Parse("Resources\\teapot.obj"),
-						Material = new Material
+						Material = new LayeredMaterial
 						{
-							Diffuse = new SolidColorTexture { Color = new Vector4(0.5f) },
-							Normal = normal,
-							Reflectivity = new SolidColorTexture { Color = new Vector4(0.5f) }
+							Blend = new SolidColorTexture { Color = new Vector4(0.5f) },
+							A = new DiffuseMaterial
+							{
+								Normal = normal,
+								Diffuse = new SolidColorTexture { Color = new Vector4(0.5f) }
+							},
+							B = new ReflectiveMaterial()
 						}
 					}
 				},
 				Layers = new List<ILayer>
 				{
-					//new DepthLayer(),
-					//new WorldNormalsLayer(),
-					//new ViewNormalsLayer(),
-					//new WorldPositionLayer(),
-					//new LightsLayer(),
-					//new UnlitLayer(),
-					new FullLayer()
+					new MaterialsLayer()
 				}
 			};
 

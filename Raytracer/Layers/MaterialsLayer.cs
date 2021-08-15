@@ -8,18 +8,19 @@ using Raytracer.Utils;
 
 namespace Raytracer.Layers
 {
-	public sealed class UnlitLayer : AbstractLayer
+	public sealed class MaterialsLayer : AbstractLayer
 	{
 		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth)
 		{
 			(ISceneGeometry geometry, Intersection intersection) =
 				scene.GetIntersections(ray, eRayMask.Visible)
+				     .Where(kvp => kvp.Value.Distance > 0.00001f)
 				     .OrderBy(kvp => kvp.Value.Distance)
 				     .FirstOrDefault();
 
 			return geometry == null
 				? ColorUtils.RgbaBlack
-				: geometry.Material.SampleDiffuse(intersection.Uv);
+				: geometry.Material.Sample(scene, ray, intersection, random, rayDepth, CastRay);
 		}
 	}
 }
