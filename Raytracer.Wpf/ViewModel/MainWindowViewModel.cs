@@ -212,6 +212,12 @@ namespace Raytracer.Wpf.ViewModel
 							Emission = new SolidColorTexture { Color = new Vector4(0, 0, 1000, 1) }
 						}
 					},
+					new Sphere
+					{
+						Position = new Vector3(13, 2, -4),
+						Radius = 2,
+						Material = new RefractiveMaterial()
+					},
 					new SceneObjects.Geometry.Plane
 					{
 						Material = new DiffuseMaterial

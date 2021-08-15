@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using Raytracer.Extensions;
+using Raytracer.Utils;
 
 namespace Raytracer.Math
 {
@@ -57,6 +58,15 @@ namespace Raytracer.Math
 			{
 				Origin = position,
 				Direction = Vector3.Normalize(Vector3.Reflect(Direction, normal))
+			};
+		}
+
+		public Ray Refract(Vector3 position, Vector3 normal, float ior)
+		{
+			return new Ray
+			{
+				Origin = position,
+				Direction = Vector3.Normalize(Vector3Utils.Refract(Direction, normal, ior))
 			};
 		}
 	}

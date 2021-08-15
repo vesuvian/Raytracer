@@ -34,5 +34,28 @@ namespace Raytracer.Utils
 
 			return new Tuple<Vector3, Vector3>(tangent, bitangent);
 		}
+
+		public static Vector3 Refract(Vector3 direction, Vector3 normal, float ior)
+		{
+			float cosi = MathUtils.Clamp(-1, 1, Vector3.Dot(direction, normal));
+			float etai = 1, etat = ior;
+			Vector3 n = normal;
+
+			if (cosi < 0)
+				cosi = -cosi;
+			else
+			{
+				float temp = etai;
+				etai = etat;
+				etat = temp;
+				n = -n;
+			}
+
+			float eta = etai / etat;
+			float k = 1 - eta * eta * (1 - cosi * cosi);
+			return k < 0
+				? Vector3.Zero
+				: eta * direction + (eta * cosi - MathF.Sqrt(k)) * n;
+		}
 	}
 }
