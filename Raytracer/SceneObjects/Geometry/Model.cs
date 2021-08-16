@@ -77,10 +77,6 @@ namespace Raytracer.SceneObjects.Geometry
 				Vector3 bitangent = Triangle.GetInterpolatedVertexNormal(vertexBitangent0, vertexBitangent1, vertexBitangent2, u, v);
 				Vector2 uv = Triangle.GetInterpolatedVertexUv(vertexUv0, vertexUv1, vertexUv2, u, v);
 
-				// Flip normals if the ray comes from behind
-				if (Vector3.Dot(ray.Direction, normal) > 0)
-					normal *= -1;
-
 				yield return new Intersection
 				{
 					Position = position,

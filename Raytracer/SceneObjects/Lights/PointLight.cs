@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Raytracer.Math;
@@ -17,7 +16,9 @@ namespace Raytracer.SceneObjects.Lights
 		public override Vector4 Sample(Scene scene, Vector3 position, Vector3 normal, Random random)
 		{
 			float faceAmount = Vector3.Dot(normal, Vector3.Normalize(Position - position));
+			faceAmount = MathF.Abs(faceAmount);
 			faceAmount = MathUtils.Clamp(faceAmount, 0, 1);
+
 			float distance = Vector3.Distance(Position, position);
 			Vector4 sample = Sample(distance, faceAmount);
 
@@ -25,20 +26,23 @@ namespace Raytracer.SceneObjects.Lights
 			if (sample == ColorUtils.RgbaBlack)
 				return ColorUtils.RgbaBlack;
 
-			IEnumerable<Vector4> samples =
-				GetRays(position, random)
-					.Select(r =>
-					{
-						bool canSee =
-							!CastShadows ||
-							!scene.GetIntersections(r, eRayMask.CastShadows)
-							      .Any(kvp => kvp.Value.Distance > SELF_SHADOW_TOLERANCE &&
-							                  kvp.Value.Distance < distance);
+			Vector4 sum = Vector4.Zero;
 
-						return canSee ? sample : ColorUtils.RgbaBlack;
-					});
+			for (int i = 0; i < Samples; i++)
+			{
+				Ray ray = GetRays(position, random);
 
-			return ColorUtils.Average(samples);
+				bool canSee =
+					!CastShadows ||
+					!scene.GetIntersections(ray, eRayMask.CastShadows)
+					      .Any(kvp => kvp.Value.Distance > SELF_SHADOW_TOLERANCE &&
+					                  kvp.Value.Distance < distance);
+
+				if (canSee)
+					sum += sample;
+			}
+
+			return Samples == 0 ? sum : sum / Samples;
 		}
 
 		private Vector4 Sample(float distance, float faceAmount)
@@ -61,20 +65,16 @@ namespace Raytracer.SceneObjects.Lights
 			throw new NotImplementedException();
 		}
 
-		private IEnumerable<Ray> GetRays(Vector3 position, Random random)
+		private Ray GetRays(Vector3 position, Random random)
 		{
-			return Enumerable.Range(0, Samples)
-			                 .Select(i =>
-			                 {
-				                 Vector3 pointInSphere = MathUtils.RandomPointInSphere(random);
-				                 Vector3 softShadowPosition = Position + pointInSphere * SoftShadowRadius;
+			Vector3 pointInSphere = MathUtils.RandomPointInSphere(random);
+			Vector3 softShadowPosition = Position + pointInSphere * SoftShadowRadius;
 
-				                 return new Ray
-				                 {
-					                 Origin = position,
-					                 Direction = Vector3.Normalize(softShadowPosition - position)
-				                 };
-			                 });
+			return new Ray
+			{
+				Origin = position,
+				Direction = Vector3.Normalize(softShadowPosition - position)
+			};
 		}
 	}
 }

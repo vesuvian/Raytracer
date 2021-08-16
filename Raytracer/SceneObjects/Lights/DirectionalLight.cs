@@ -25,7 +25,7 @@ namespace Raytracer.SceneObjects.Lights
 			if (!canSee)
 				return ColorUtils.RgbaBlack;
 
-			float faceAmount = Vector3.Dot(normal, Forward);
+			float faceAmount = MathF.Abs(Vector3.Dot(normal, Forward));
 			faceAmount = MathUtils.Clamp(faceAmount, 0, 1);
 
 			return ColorUtils.Multiply(Color, faceAmount);

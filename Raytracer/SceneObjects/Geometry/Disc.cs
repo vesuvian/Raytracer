@@ -37,14 +37,11 @@ namespace Raytracer.SceneObjects.Geometry
 			if (position.Length() > Radius)
 				yield break;
 
-			// Plane normal is flipped if the ray comes from behind
-			Vector3 normal = Vector3.Dot(s_Normal, ray.Direction) < 0 ? s_Normal : s_Normal * -1;
-
 			Vector2 uv = (new Vector2(position.X / Radius, position.Z / Radius) + Vector2.One) / 2;
 
 			yield return new Intersection
 			{
-				Normal = normal,
+				Normal = s_Normal,
 				Tangent = new Vector3(1, 0, 0),
 				Bitangent = new Vector3(0, 0, 1),
 				Position = position,

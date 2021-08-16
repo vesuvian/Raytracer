@@ -100,10 +100,7 @@ namespace Raytracer.SceneObjects.Geometry
 			if (!HitTriangle(A, B, C, ray, out t, out u, out v))
 				yield break;
 
-			// Flip normals if the ray comes from behind
 			Vector3 normal = GetNormal(A, B, C);
-			if (Vector3.Dot(ray.Direction, normal) > 0)
-				normal *= -1;
 
 			yield return new Intersection
 			{
