@@ -12,6 +12,9 @@ namespace Raytracer.Layers
 	{
 		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth)
 		{
+			if (rayDepth > scene.MaxReflectionRays)
+				return Vector4.Zero;
+
 			(ISceneGeometry geometry, Intersection intersection) =
 				scene.GetIntersections(ray, eRayMask.Visible)
 				     .Where(kvp => kvp.Value.Distance > 0.00001f)

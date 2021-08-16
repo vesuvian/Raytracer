@@ -101,5 +101,21 @@ namespace Raytracer.Materials
 
 			return castRay(scene, ray.Reflect(position, worldNormal), random, rayDepth + 1);
 		}
+
+		protected static Vector4 GetRefraction(Scene scene, Ray ray, Vector3 position, Vector3 normal, float ior,
+		                                       float roughness,
+		                                       Random random, int rayDepth, CastRayDelegate castRay)
+		{
+			float r1 = random.NextFloat();
+			float r2 = random.NextFloat();
+
+			Vector3 randomNormal = MathUtils.UniformPointOnHemisphere(r1, r2);
+			randomNormal = Vector3Utils.Slerp(Vector3.UnitY, randomNormal, roughness);
+			(Vector3 nt, Vector3 nb) = Vector3Utils.GetTangentAndBitangent(normal);
+			Matrix4x4 surface = Matrix4x4Utils.Tbn(nt, nb, normal);
+			Vector3 worldNormal = surface.MultiplyNormal(randomNormal);
+
+			return castRay(scene, ray.Refract(position, worldNormal, ior), random, rayDepth + 1);
+		}
 	}
 }

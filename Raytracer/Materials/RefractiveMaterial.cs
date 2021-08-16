@@ -16,25 +16,23 @@ namespace Raytracer.Materials
 		{
 			// Sample material
 			Vector3 worldNormal = GetWorldNormal(intersection);
-			float roughness = SampleRoughness(intersection.Uv); // todo
-
-			// compute fresnel
-			float kr = Fresnel(ray.Direction, worldNormal, Ior);
-			bool outside = Vector3.Dot(ray.Direction, worldNormal) < 0;
+			float roughness = SampleRoughness(intersection.Uv);
+			float fresnel = Fresnel(ray.Direction, worldNormal, Ior);
 
 			// compute refraction if it is not a case of total internal reflection
 			Vector4 refractionColor =
-				kr < 1
-					? castRay(scene, ray.Refract(intersection.Position, worldNormal, Ior), random, rayDepth + 1)
+				fresnel < 1
+					? GetRefraction(scene, ray, intersection.Position, worldNormal, Ior, roughness, random, rayDepth, castRay)
 					: Vector4.Zero;
 
 			Vector4 reflectionColor =
-				kr > 0
-					? castRay(scene, ray.Reflect(intersection.Position, worldNormal), random, rayDepth + 1)
+				fresnel > 0
+					? GetReflection(scene, ray, intersection.Position, worldNormal, roughness, random, rayDepth, castRay)
 					: Vector4.Zero;
 
 			// mix the two
-			return reflectionColor * kr + refractionColor * (1 - kr);
+			return reflectionColor * fresnel +
+			       refractionColor * (1 - fresnel);
 		}
 
 		private float SampleRoughness(Vector2 uv)

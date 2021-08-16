@@ -17,10 +17,7 @@ namespace Raytracer.Materials
 			float roughness = SampleRoughness(intersection.Uv);
 
 			// Calculate reflection
-			return
-				rayDepth > scene.MaxReflectionRays
-					? ColorUtils.RgbaBlack
-					: GetReflection(scene, ray, intersection.Position, worldNormal, roughness, random, rayDepth, castRay);
+			return GetReflection(scene, ray, intersection.Position, worldNormal, roughness, random, rayDepth, castRay);
 		}
 
 		private float SampleRoughness(Vector2 uv)

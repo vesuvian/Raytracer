@@ -20,10 +20,7 @@ namespace Raytracer.Materials
 			Vector4 illumination = GetIllumination(scene, intersection.Position, worldNormal, random);
 
 			// Global illumination
-			Vector4 globalIllumination =
-				rayDepth > scene.MaxReflectionRays
-					? ColorUtils.RgbaBlack
-					: GetGlobalIllumination(scene, intersection.Position, worldNormal, random, rayDepth, castRay);
+			Vector4 globalIllumination = GetGlobalIllumination(scene, intersection.Position, worldNormal, random, rayDepth, castRay);
 
 			// Combine values
 			Vector4 direct = illumination / MathF.PI;
