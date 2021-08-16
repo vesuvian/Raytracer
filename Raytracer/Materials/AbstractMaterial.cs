@@ -87,6 +87,22 @@ namespace Raytracer.Materials
 			return scene.GlobalIlluminationSamples == 0 ? sum : sum / scene.GlobalIlluminationSamples;
 		}
 
+		protected static Vector4 GetSpecular(Scene scene, Vector3 direction, Vector3 position, Vector3 normal,
+		                                     float specularExponent)
+		{
+			Vector4 sum = Vector4.Zero;
+
+			for (int i = 0; i < scene.Lights.Count; i++)
+			{
+				ILight light = scene.Lights[i];
+				Vector3 lightDir = Vector3.Normalize(light.Position - position);
+				Vector3 reflectionDirection = Vector3.Reflect(-lightDir, normal);
+				sum += MathF.Pow(MathF.Max(0.0f, -Vector3.Dot(reflectionDirection, direction)), specularExponent) * light.Color;
+			}
+
+			return sum;
+		}
+
 		protected static Vector4 GetReflection(Scene scene, Ray ray, Vector3 position, Vector3 normal, float roughness,
 		                                       Random random, int rayDepth, CastRayDelegate castRay)
 		{
