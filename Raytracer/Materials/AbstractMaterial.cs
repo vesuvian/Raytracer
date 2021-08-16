@@ -84,7 +84,7 @@ namespace Raytracer.Materials
 				return r1 * sample;
 			}
 
-			return sum / scene.GlobalIlluminationSamples;
+			return scene.GlobalIlluminationSamples == 0 ? sum : sum / scene.GlobalIlluminationSamples;
 		}
 
 		protected static Vector4 GetReflection(Scene scene, Ray ray, Vector3 position, Vector3 normal, float roughness,
