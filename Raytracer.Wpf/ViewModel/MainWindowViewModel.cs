@@ -214,7 +214,7 @@ namespace Raytracer.Wpf.ViewModel
 					},
 					new Sphere
 					{
-						Position = new Vector3(13, 2, -4),
+						Position = new Vector3(8, 3, -6),
 						Radius = 2,
 						Material = new RefractiveMaterial()
 					},

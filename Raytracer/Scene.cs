@@ -15,7 +15,7 @@ namespace Raytracer
 		public List<ISceneGeometry> Geometry { get; set; }
 		public List<ILayer> Layers { get; set; }
 
-		public int MaxReflectionRays { get; set; } = 2;
+		public int MaxReflectionRays { get; set; } = 10;
 		public int GlobalIlluminationSamples { get; set; } = 1;
 
 		public IEnumerable<KeyValuePair<ISceneGeometry, Intersection>> GetIntersections(

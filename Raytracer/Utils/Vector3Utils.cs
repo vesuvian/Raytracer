@@ -38,7 +38,8 @@ namespace Raytracer.Utils
 		public static Vector3 Refract(Vector3 direction, Vector3 normal, float ior)
 		{
 			float cosi = MathUtils.Clamp(-1, 1, Vector3.Dot(direction, normal));
-			float etai = 1, etat = ior;
+			float etai = 1;
+			float etat = ior;
 			Vector3 n = normal;
 
 			if (cosi < 0)
@@ -55,7 +56,8 @@ namespace Raytracer.Utils
 			float k = 1 - eta * eta * (1 - cosi * cosi);
 			return k < 0
 				? Vector3.Zero
-				: eta * direction + (eta * cosi - MathF.Sqrt(k)) * n;
+				: direction * eta +
+				  n * (eta * cosi - MathF.Sqrt(k));
 		}
 	}
 }
