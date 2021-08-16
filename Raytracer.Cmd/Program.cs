@@ -87,7 +87,7 @@ namespace Raytracer.Cmd
 						Position = new Vector3(13f, 5, 0),
 						Scale = new Vector3(2, 2, 2),
 						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45),
-						Material = new DiffuseMaterial
+						Material = new LambertMaterial
 						{
 							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
 							Normal = normal,
@@ -102,7 +102,7 @@ namespace Raytracer.Cmd
 						Material = new LayeredMaterial
 						{
 							Blend = new SolidColorTexture { Color = new Vector4(0.5f) },
-							A = new DiffuseMaterial { Diffuse = new SolidColorTexture { Color = new Vector4(0.5f) } },
+							A = new LambertMaterial { Diffuse = new SolidColorTexture { Color = new Vector4(0.5f) } },
 							B = new ReflectiveMaterial { Roughness = new SolidColorTexture { Color = new Vector4(0.5f) } }
 						}
 					},
@@ -110,7 +110,7 @@ namespace Raytracer.Cmd
 					{
 						Position = new Vector3(-3, 10, 0),
 						Radius = 5,
-						Material = new DiffuseMaterial
+						Material = new LambertMaterial
 						{
 							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
 							Normal = normal,
@@ -124,7 +124,7 @@ namespace Raytracer.Cmd
 						Material = new LayeredMaterial
 						{
 							Blend = new CheckerboardTexture(),
-							A = new DiffuseMaterial {
+							A = new LambertMaterial {
 								Diffuse = new CheckerboardTexture
 								{
 									ColorA = new Vector4(0.9f),
@@ -144,7 +144,7 @@ namespace Raytracer.Cmd
 						Material = new LayeredMaterial
 						{
 							Blend = new SolidColorTexture { Color = new Vector4(0.5f) },
-							A = new DiffuseMaterial {
+							A = new LambertMaterial {
 								Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
 								Scale = new Vector2(1 / 3.0f, 1)
 							},
@@ -174,7 +174,7 @@ namespace Raytracer.Cmd
 					{
 						Position = new Vector3(12, 2, 0),
 						Radius = 2,
-						Material = new DiffuseMaterial
+						Material = new LambertMaterial
 						{
 							Diffuse = new SolidColorTexture { Color = new Vector4(0, 1, 0, 1) }
 						}
@@ -190,7 +190,7 @@ namespace Raytracer.Cmd
 					},
 					new SceneObjects.Geometry.Plane
 					{
-						Material = new DiffuseMaterial
+						Material = new LambertMaterial
 						{
 							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
 							Normal = normal,
@@ -206,7 +206,7 @@ namespace Raytracer.Cmd
 						Material = new LayeredMaterial
 						{
 							Blend = new SolidColorTexture { Color = new Vector4(0.5f) },
-							A = new DiffuseMaterial
+							A = new LambertMaterial
 							{
 								Normal = normal,
 								Diffuse = new SolidColorTexture { Color = new Vector4(0.5f) }

@@ -6,7 +6,7 @@ using Raytracer.Utils;
 
 namespace Raytracer.Materials
 {
-	public sealed class DiffuseMaterial : AbstractMaterial
+	public sealed class LambertMaterial : AbstractMaterial
 	{
 		public ITexture Diffuse { get; set; } = new SolidColorTexture { Color = new Vector4(0.5f, 0.5f, 0.5f, 1.0f) };
 

@@ -12,8 +12,8 @@ namespace Raytracer.Materials
 		public Vector2 Offset { get; set; }
 		public ITexture Blend { get; set; } = new SolidColorTexture { Color = ColorUtils.RgbaBlack };
 
-		public IMaterial A { get; set; } = new DiffuseMaterial();
-		public IMaterial B { get; set; } = new DiffuseMaterial();
+		public IMaterial A { get; set; } = new LambertMaterial();
+		public IMaterial B { get; set; } = new LambertMaterial();
 
 		public Vector4 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth,
 		                      CastRayDelegate castRay)

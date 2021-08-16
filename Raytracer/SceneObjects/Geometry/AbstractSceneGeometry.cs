@@ -9,7 +9,7 @@ namespace Raytracer.SceneObjects.Geometry
 	{
 		private Aabb? m_Aabb;
 
-		public IMaterial Material { get; set; } = new DiffuseMaterial();
+		public IMaterial Material { get; set; } = new LambertMaterial();
 
 		public eRayMask RayMask { get; set; } = eRayMask.All;
 
