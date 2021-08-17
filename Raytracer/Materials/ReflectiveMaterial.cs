@@ -16,8 +16,13 @@ namespace Raytracer.Materials
 			Vector3 worldNormal = GetWorldNormal(intersection);
 			float roughness = SampleRoughness(intersection.Uv);
 
+			// Calculate specular
+			Vector4 specular = GetSpecular(scene, ray.Direction, intersection.Position, worldNormal, random, 25);
+
 			// Calculate reflection
-			return GetReflection(scene, ray, intersection.Position, worldNormal, roughness, random, rayDepth, castRay);
+			Vector4 reflection = GetReflection(scene, ray, intersection.Position, worldNormal, roughness, random, rayDepth, castRay);
+
+			return specular * 0.2f + reflection;
 		}
 
 		private float SampleRoughness(Vector2 uv)

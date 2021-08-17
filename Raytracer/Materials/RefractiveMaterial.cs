@@ -30,9 +30,12 @@ namespace Raytracer.Materials
 					? GetReflection(scene, ray, intersection.Position, worldNormal, roughness, random, rayDepth, castRay)
 					: Vector4.Zero;
 
+			// Calculate specular
+			Vector4 specular = GetSpecular(scene, ray.Direction, intersection.Position, worldNormal, random, 25);
+
 			// mix the two
 			return reflectionColor * fresnel +
-			       refractionColor * (1 - fresnel);
+			       (1 - fresnel) * (refractionColor + specular * 0.2f);
 		}
 
 		private float SampleRoughness(Vector2 uv)
