@@ -37,7 +37,7 @@ namespace Raytracer.Utils
 
 		public static Vector3 Refract(Vector3 direction, Vector3 normal, float ior)
 		{
-			float faceAmount = MathUtils.Clamp(-1, 1, Vector3.Dot(direction, normal));
+			float faceAmount = MathUtils.Clamp(Vector3.Dot(direction, normal), - 1, 1);
 			float fromIor = 1;
 			float toIor = ior;
 
@@ -58,6 +58,31 @@ namespace Raytracer.Utils
 				? Vector3.Zero
 				: direction * ratio +
 				  normal * (ratio * faceAmount - MathF.Sqrt(k));
+		}
+
+		public static float Fresnel(Vector3 direction, Vector3 normal, float ior)
+		{
+			float cosi = MathUtils.Clamp(Vector3.Dot(direction, normal), - 1, 1);
+			float etai = 1;
+			float etat = ior;
+
+			if (cosi > 0)
+			{
+				float temp = etai;
+				etai = etat;
+				etat = temp;
+			}
+
+			// Compute sini using Snell's law
+			float sint = etai / etat * MathF.Sqrt(MathF.Max(0.0f, 1 - cosi * cosi));
+			if (sint >= 1)
+				return 1; // Total internal reflection
+
+			float cost = MathF.Sqrt(MathF.Max(0.0f, 1 - sint * sint));
+			cosi = MathF.Abs(cosi);
+			float rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
+			float rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
+			return (rs * rs + rp * rp) / 2;
 		}
 	}
 }
