@@ -24,7 +24,7 @@ namespace Raytracer.SceneObjects.Geometry
 				: Enumerable.Empty<Intersection>();
 		}
 
-		public abstract IEnumerable<Intersection> GetIntersectionsFinal(Ray ray);
+		protected abstract IEnumerable<Intersection> GetIntersectionsFinal(Ray ray);
 
 		protected override void HandleTransformChange()
 		{

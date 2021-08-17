@@ -91,7 +91,7 @@ namespace Raytracer.SceneObjects.Geometry
 			return t > 0;
 		}
 
-		public override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
+		protected override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
 		{
 			// First transform the ray into local space
 			ray = ray.Multiply(WorldToLocal);

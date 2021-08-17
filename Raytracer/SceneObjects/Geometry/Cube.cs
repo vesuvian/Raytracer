@@ -7,7 +7,7 @@ namespace Raytracer.SceneObjects.Geometry
 {
 	public sealed class Cube : AbstractSceneGeometry
 	{
-		public override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
+		protected override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
 		{
 			// First transform ray to local space.
 			ray = ray.Multiply(WorldToLocal);
