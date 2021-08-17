@@ -37,7 +37,7 @@ namespace Raytracer.Materials
 			Vector4 finalDiffuse = ColorUtils.Multiply(combined, diffuse);
 
 			// Specular
-			Vector4 specular = GetSpecular(scene, ray.Direction, intersection.Position, worldNormal, SpecularExponent);
+			Vector4 specular = GetSpecular(scene, ray.Direction, intersection.Position, worldNormal, random, SpecularExponent);
 
 			return finalDiffuse * Kd + specular * Ks;
 		}
