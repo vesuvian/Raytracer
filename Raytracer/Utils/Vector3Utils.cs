@@ -37,27 +37,27 @@ namespace Raytracer.Utils
 
 		public static Vector3 Refract(Vector3 direction, Vector3 normal, float ior)
 		{
-			float cosi = MathUtils.Clamp(-1, 1, Vector3.Dot(direction, normal));
-			float etai = 1;
-			float etat = ior;
-			Vector3 n = normal;
+			float faceAmount = MathUtils.Clamp(-1, 1, Vector3.Dot(direction, normal));
+			float fromIor = 1;
+			float toIor = ior;
 
-			if (cosi < 0)
-				cosi = -cosi;
+			if (faceAmount < 0)
+				faceAmount = -faceAmount;
 			else
 			{
-				float temp = etai;
-				etai = etat;
-				etat = temp;
-				n = -n;
+				float temp = fromIor;
+				fromIor = toIor;
+				toIor = temp;
+				normal = -normal;
 			}
 
-			float eta = etai / etat;
-			float k = 1 - eta * eta * (1 - cosi * cosi);
+			float ratio = fromIor / toIor;
+			float k = 1 - ratio * ratio * (1 - faceAmount * faceAmount);
+
 			return k < 0
 				? Vector3.Zero
-				: direction * eta +
-				  n * (eta * cosi - MathF.Sqrt(k));
+				: direction * ratio +
+				  normal * (ratio * faceAmount - MathF.Sqrt(k));
 		}
 	}
 }
