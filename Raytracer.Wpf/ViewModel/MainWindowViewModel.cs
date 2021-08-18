@@ -111,7 +111,7 @@ namespace Raytracer.Wpf.ViewModel
 						Position = new Vector3(13f, 5, 0),
 						Scale = new Vector3(2, 2, 2),
 						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45),
-						Material = new LambertMaterial
+						Material = new PhongMaterial
 						{
 							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
 							Normal = normal,
@@ -123,18 +123,13 @@ namespace Raytracer.Wpf.ViewModel
 						Scale = new Vector3(2, 1, 1),
 						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 15, MathUtils.DEG2RAD * 30),
 						Radius = 5,
-						Material = new LayeredMaterial
-						{
-							Blend = new SolidColorTexture { Color = new Vector4(0.5f) },
-							A = new LambertMaterial { Diffuse = new SolidColorTexture { Color = new Vector4(0.5f) } },
-							B = new ReflectiveMaterial { Roughness = new SolidColorTexture { Color = new Vector4(0.5f) } }
-						}
+						Material = new ReflectiveMaterial { Roughness = new SolidColorTexture { Color = new Vector4(0.2f) } }
 					},
 					new Sphere
 					{
 						Position = new Vector3(-3, 10, 0),
 						Radius = 5,
-						Material = new LambertMaterial
+						Material = new PhongMaterial
 						{
 							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
 							Normal = normal,
@@ -148,7 +143,7 @@ namespace Raytracer.Wpf.ViewModel
 						Material = new LayeredMaterial
 						{
 							Blend = new CheckerboardTexture(),
-							A = new LambertMaterial { 
+							A = new PhongMaterial { 
 								Diffuse = new CheckerboardTexture
 								{
 									ColorA = new Vector4(0.9f),
@@ -168,7 +163,7 @@ namespace Raytracer.Wpf.ViewModel
 						Material = new LayeredMaterial
 						{
 							Blend = new SolidColorTexture { Color = new Vector4(0.5f) },
-							A = new LambertMaterial {
+							A = new PhongMaterial {
 								Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
 								Scale = new Vector2(1 / 3.0f, 1)
 							},
@@ -228,7 +223,7 @@ namespace Raytracer.Wpf.ViewModel
 					},
 					new SceneObjects.Geometry.Plane
 					{
-						Material = new LambertMaterial
+						Material = new PhongMaterial
 						{
 							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
 							Normal = normal,
@@ -241,18 +236,9 @@ namespace Raytracer.Wpf.ViewModel
 						Position = new Vector3(3, 2, -5),
 						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * -45, MathUtils.DEG2RAD * -15, MathUtils.DEG2RAD * 30),
 						Mesh = new ObjMeshParser().Parse("Resources\\teapot.obj"),
-						Material = new LayeredMaterial
+						Material = new ReflectiveMaterial
 						{
-							Blend = new SolidColorTexture { Color = new Vector4(0.5f) },
-							A = new LambertMaterial
-							{
-								Normal = normal,
-								Diffuse = new SolidColorTexture { Color = new Vector4(0.5f) }
-							},
-							B = new ReflectiveMaterial
-							{
-								Normal = normal
-							}
+							Normal = normal
 						}
 					}
 				},
