@@ -88,7 +88,7 @@ namespace Raytracer.SceneObjects.Geometry
 				return false;
 
 			t = Vector3.Dot(ac, qvec) * invDet;
-			return t > 0;
+			return true;
 		}
 
 		protected override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)

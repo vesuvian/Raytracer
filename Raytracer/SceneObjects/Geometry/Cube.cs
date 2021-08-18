@@ -22,43 +22,37 @@ namespace Raytracer.SceneObjects.Geometry
 			if (tMin > tMax)
 				yield break;
 
-			if (tMin > 0)
+			Vector3 posMin = ray.PositionAtDelta(tMin);
+			Vector3 normalMin = GetNormal(posMin);
+			Vector3 tangent = GetTangent(posMin);
+			Vector3 bitangent = GetBitangent(posMin);
+			Vector2 uv = GetUv(posMin);
+
+			yield return new Intersection
 			{
-				Vector3 posMin = ray.PositionAtDelta(tMin);
-				Vector3 normalMin = GetNormal(posMin);
-				Vector3 tangent = GetTangent(posMin);
-				Vector3 bitangent = GetBitangent(posMin);
-				Vector2 uv = GetUv(posMin);
+				Normal = normalMin,
+				Tangent = tangent,
+				Bitangent = bitangent,
+				Position = posMin,
+				RayOrigin = ray.Origin,
+				Uv = uv
+			}.Multiply(LocalToWorld);
 
-				yield return new Intersection
-				{
-					Normal = normalMin,
-					Tangent = tangent,
-					Bitangent = bitangent,
-					Position = posMin,
-					RayOrigin = ray.Origin,
-					Uv = uv
-				}.Multiply(LocalToWorld);
-			}
+			Vector3 posMax = ray.PositionAtDelta(tMax);
+			Vector3 normalMax = GetNormal(posMax);
+			tangent = GetTangent(posMax);
+			bitangent = GetBitangent(posMax);
+			uv = GetUv(posMax);
 
-			if (tMax > 0)
+			yield return new Intersection
 			{
-				Vector3 posMax = ray.PositionAtDelta(tMax);
-				Vector3 normalMax = GetNormal(posMax);
-				Vector3 tangent = GetTangent(posMax);
-				Vector3 bitangent = GetBitangent(posMax);
-				Vector2 uv = GetUv(posMax);
-
-				yield return new Intersection
-				{
-					Normal = normalMax,
-					Tangent = tangent,
-					Bitangent = bitangent,
-					Position = posMax,
-					RayOrigin = ray.Origin,
-					Uv = uv
-				}.Multiply(LocalToWorld);
-			}
+				Normal = normalMax,
+				Tangent = tangent,
+				Bitangent = bitangent,
+				Position = posMax,
+				RayOrigin = ray.Origin,
+				Uv = uv
+			}.Multiply(LocalToWorld);
 		}
 
 		protected override Aabb CalculateAabb()

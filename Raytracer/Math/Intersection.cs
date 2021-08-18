@@ -38,6 +38,19 @@ namespace Raytracer.Math
 			};
 		}
 
+		public Intersection Flip()
+		{
+			return new Intersection
+			{
+				Position = Position,
+				Normal = Normal * -1,
+				Tangent = Tangent * -1,
+				Bitangent = Bitangent,
+				RayOrigin = RayOrigin,
+				Uv = Uv
+			};
+		}
+
 		public override string ToString()
 		{
 			StringBuilder builder = new StringBuilder("\r\n");

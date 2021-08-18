@@ -11,6 +11,7 @@ using Raytracer.Materials.Textures;
 using Raytracer.Parsers;
 using Raytracer.SceneObjects;
 using Raytracer.SceneObjects.Geometry;
+using Raytracer.SceneObjects.Geometry.CSG;
 using Raytracer.SceneObjects.Lights;
 using Raytracer.Utils;
 
@@ -59,41 +60,42 @@ namespace Raytracer.Wpf.ViewModel
 				GlobalIlluminationSamples = 4,
 				Camera = new Camera
 				{
-					Position = new Vector3(5, 2, -20),
+					Position = new Vector3(10, 6, -15),
+					Rotation = Quaternion.CreateFromYawPitchRoll(-25 * MathUtils.DEG2RAD, 20 * MathUtils.DEG2RAD, 0),
 					NearPlane = 0.01f,
 					FarPlane = 40.0f,
 					Fov = 40,
 					Samples = int.MaxValue,
-					FocalLength = 18,
+					FocalLength = 13,
 					ApertureSize = 0.2f,
 					Aspect = WIDTH / (float)HEIGHT
 				},
 				Lights = new List<ILight>
 				{
-					new PointLight
-					{
-						Position = new Vector3(10, 100, -5),
-						Color = new Vector4(5, 0, 0, 1),
-						Range = 200,
-						SoftShadowRadius = 2,
-						Falloff = eFalloff.Linear
-					},
-					new PointLight
-					{
-						Position = new Vector3(0, 10, 10),
-						Color = new Vector4(0, 5, 0, 1),
-						Range = 40,
-						SoftShadowRadius = 2,
-						Falloff = eFalloff.Linear
-					},
-					new PointLight
-					{
-						Position = new Vector3(0, 1, -20),
-						Color = new Vector4(5, 5, 5, 1),
-						Range = 80,
-						SoftShadowRadius = 2,
-						Falloff = eFalloff.Linear
-					}
+					//new PointLight
+					//{
+					//	Position = new Vector3(10, 100, -5),
+					//	Color = new Vector4(5, 0, 0, 1),
+					//	Range = 200,
+					//	SoftShadowRadius = 2,
+					//	Falloff = eFalloff.Linear
+					//},
+					//new PointLight
+					//{
+					//	Position = new Vector3(0, 10, 10),
+					//	Color = new Vector4(0, 5, 0, 1),
+					//	Range = 40,
+					//	SoftShadowRadius = 2,
+					//	Falloff = eFalloff.Linear
+					//},
+					//new PointLight
+					//{
+					//	Position = new Vector3(0, 1, -20),
+					//	Color = new Vector4(5, 5, 5, 1),
+					//	Range = 80,
+					//	SoftShadowRadius = 2,
+					//	Falloff = eFalloff.Linear
+					//}
 				},
 				Geometry = new List<ISceneGeometry>
 				{
@@ -106,121 +108,184 @@ namespace Raytracer.Wpf.ViewModel
 							Emission = BitmapTexture.FromPath("Resources\\skysphere.jpg")
 						}
 					},
-					new Cube
-					{
-						Position = new Vector3(13f, 5, 0),
-						Scale = new Vector3(2, 2, 2),
-						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45),
-						Material = new PhongMaterial
-						{
-							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
-							Normal = normal,
-						}
-					},
-					new Sphere
-					{
-						Position = new Vector3(3, 1, 7.5f),
-						Scale = new Vector3(2, 1, 1),
-						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 15, MathUtils.DEG2RAD * 30),
-						Radius = 5,
-						Material = new ReflectiveMaterial { Roughness = new SolidColorTexture { Color = new Vector4(0.2f) } }
-					},
-					new Sphere
-					{
-						Position = new Vector3(-3, 10, 0),
-						Radius = 5,
-						Material = new PhongMaterial
-						{
-							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
-							Normal = normal,
-							Scale = new Vector2(1 / 3.0f, 1)
-						}
-					},
-					new Sphere
-					{
-						Position = new Vector3(-4, 2, 0),
-						Radius = 2,
-						Material = new LayeredMaterial
-						{
-							Blend = new CheckerboardTexture(),
-							A = new PhongMaterial { 
-								Diffuse = new CheckerboardTexture
-								{
-									ColorA = new Vector4(0.9f),
-									ColorB = new Vector4(0.1f)
-								},
-								Scale = new Vector2(1 / 3.0f, 1)
-							},
-							B = new ReflectiveMaterial(),
-							Scale = new Vector2(1 / 3.0f, 1)
-						}
-					},
-					new Sphere
-					{
-						Position = new Vector3(0, 2, 0),
-						Radius = 2,
 
-						Material = new LayeredMaterial
-						{
-							Blend = new SolidColorTexture { Color = new Vector4(0.5f) },
-							A = new PhongMaterial {
-								Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
-								Scale = new Vector2(1 / 3.0f, 1)
-							},
-							B = new ReflectiveMaterial()
-						}
-					},
-					new Sphere
+					new CsgDifference
 					{
-						Position = new Vector3(4, 2, 0),
-						Radius = 2,
-						Material = new ReflectiveMaterial()
-					},
-					new Sphere
-					{
-						Position = new Vector3(8, 2, 0),
-						Radius = 2,
-						Material = new ReflectiveMaterial
+						A = new CsgUnion
 						{
-							Roughness = new CheckerboardTexture
+							A = new Cube
 							{
-								ColorA = new Vector4(0.5f)
+								Position = new Vector3(-1, 2, -4),
+								Scale = new Vector3(4)
 							},
-							Scale = new Vector2(1 / 3.0f, 1)
-						}
-					},
-					new Sphere
-					{
-						Position = new Vector3(12, 2, 0),
-						Radius = 2,
-						Material = new LambertMaterial
+							B = new Sphere
+							{
+								Position = new Vector3(-1, 3, -4),
+								Radius = 2f
+							}
+						},
+						B = new Sphere
 						{
-							Diffuse = new SolidColorTexture { Color = new Vector4(0, 1, 0, 1) }
-						}
+							Position = new Vector3(-1, 2, -7),
+							Radius = 2f
+						},
+						Material = new LambertMaterial()//new RefractiveMaterial { Ior = 1.5f }
 					},
-					new Sphere
+
+					new CsgDifference
 					{
-						Position = new Vector3(16, 2, 0),
-						Radius = 2,
-						Material = new EmissiveMaterial
+						A = new CsgDifference
 						{
-							Emission = new SolidColorTexture { Color = new Vector4(0, 0, 1000, 1) }
-						}
+							A = new Cube
+							{
+								Position = new Vector3(4, 2, -4),
+								Scale = new Vector3(4)
+							},
+							B = new Cube
+							{
+								Position = new Vector3(4, 2, -4),
+								Scale = new Vector3(3.6f)
+							},
+						},
+						B = new Sphere
+						{
+							Position = new Vector3(6, 4, -6),
+							Radius = 3.6f
+						},
+						Material = new LambertMaterial()//new RefractiveMaterial { Ior = 1.5f }
 					},
-					new Sphere
+
+					new CsgIntersection
 					{
-						RayMask = eRayMask.Visible,
-						Position = new Vector3(8, 2, -6),
-						Radius = 2,
-						Material = new RefractiveMaterial { Ior = 1.5f }
+						A = new Cube
+						{
+							Position = new Vector3(9, 2, -4),
+							Scale = new Vector3(4)
+						},
+						B = new Sphere
+						{
+							Position = new Vector3(9, 2, -4),
+							Radius = 2.5f
+						},
+						Material = new LambertMaterial()//new RefractiveMaterial { Ior = 1.5f }
 					},
-					new Sphere
-					{
-						RayMask = eRayMask.Visible,
-						Position = new Vector3(8, 2, -6),
-						Radius = -1.8f,
-						Material = new RefractiveMaterial { Ior = 1.5f }
-					},
+
+
+					//new Cube
+					//{
+					//	Position = new Vector3(13f, 5, 0),
+					//	Scale = new Vector3(2, 2, 2),
+					//	Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45),
+					//	Material = new PhongMaterial
+					//	{
+					//		Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
+					//		Normal = normal,
+					//	}
+					//},
+					//new Sphere
+					//{
+					//	Position = new Vector3(3, 1, 7.5f),
+					//	Scale = new Vector3(2, 1, 1),
+					//	Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 15, MathUtils.DEG2RAD * 30),
+					//	Radius = 5,
+					//	Material = new ReflectiveMaterial { Roughness = new SolidColorTexture { Color = new Vector4(0.2f) } }
+					//},
+					//new Sphere
+					//{
+					//	Position = new Vector3(-3, 10, 0),
+					//	Radius = 5,
+					//	Material = new PhongMaterial
+					//	{
+					//		Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
+					//		Normal = normal,
+					//		Scale = new Vector2(1 / 3.0f, 1)
+					//	}
+					//},
+					//new Sphere
+					//{
+					//	Position = new Vector3(-4, 2, 0),
+					//	Radius = 2,
+					//	Material = new LayeredMaterial
+					//	{
+					//		Blend = new CheckerboardTexture(),
+					//		A = new PhongMaterial { 
+					//			Diffuse = new CheckerboardTexture
+					//			{
+					//				ColorA = new Vector4(0.9f),
+					//				ColorB = new Vector4(0.1f)
+					//			},
+					//			Scale = new Vector2(1 / 3.0f, 1)
+					//		},
+					//		B = new ReflectiveMaterial(),
+					//		Scale = new Vector2(1 / 3.0f, 1)
+					//	}
+					//},
+					//new Sphere
+					//{
+					//	Position = new Vector3(0, 2, 0),
+					//	Radius = 2,
+
+					//	Material = new LayeredMaterial
+					//	{
+					//		Blend = new SolidColorTexture { Color = new Vector4(0.5f) },
+					//		A = new PhongMaterial {
+					//			Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
+					//			Scale = new Vector2(1 / 3.0f, 1)
+					//		},
+					//		B = new ReflectiveMaterial()
+					//	}
+					//},
+					//new Sphere
+					//{
+					//	Position = new Vector3(4, 2, 0),
+					//	Radius = 2,
+					//	Material = new ReflectiveMaterial()
+					//},
+					//new Sphere
+					//{
+					//	Position = new Vector3(8, 2, 0),
+					//	Radius = 2,
+					//	Material = new ReflectiveMaterial
+					//	{
+					//		Roughness = new CheckerboardTexture
+					//		{
+					//			ColorA = new Vector4(0.5f)
+					//		},
+					//		Scale = new Vector2(1 / 3.0f, 1)
+					//	}
+					//},
+					//new Sphere
+					//{
+					//	Position = new Vector3(12, 2, 0),
+					//	Radius = 2,
+					//	Material = new LambertMaterial
+					//	{
+					//		Diffuse = new SolidColorTexture { Color = new Vector4(0, 1, 0, 1) }
+					//	}
+					//},
+					//new Sphere
+					//{
+					//	Position = new Vector3(16, 2, 0),
+					//	Radius = 2,
+					//	Material = new EmissiveMaterial
+					//	{
+					//		Emission = new SolidColorTexture { Color = new Vector4(0, 0, 1000, 1) }
+					//	}
+					//},
+					//new Sphere
+					//{
+					//	RayMask = eRayMask.Visible,
+					//	Position = new Vector3(8, 2, -6),
+					//	Radius = 2,
+					//	Material = new RefractiveMaterial { Ior = 1.5f }
+					//},
+					//new Sphere
+					//{
+					//	RayMask = eRayMask.Visible,
+					//	Position = new Vector3(8, 2, -6),
+					//	Radius = -1.8f,
+					//	Material = new RefractiveMaterial { Ior = 1.5f }
+					//},
 					new SceneObjects.Geometry.Plane
 					{
 						Material = new PhongMaterial
@@ -230,17 +295,18 @@ namespace Raytracer.Wpf.ViewModel
 							Scale = new Vector2(5, 5)
 						}
 					},
-					new Model
-					{
-						Scale = Vector3.One * 0.2f,
-						Position = new Vector3(3, 2, -5),
-						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * -45, MathUtils.DEG2RAD * -15, MathUtils.DEG2RAD * 30),
-						Mesh = new ObjMeshParser().Parse("Resources\\teapot.obj"),
-						Material = new ReflectiveMaterial
-						{
-							Normal = normal
-						}
-					}
+					//new Model
+					//{
+					//	RayMask = eRayMask.Visible,
+					//	Scale = Vector3.One * 0.2f,
+					//	Position = new Vector3(3, 2, -5),
+					//	Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * -45, MathUtils.DEG2RAD * -15, MathUtils.DEG2RAD * 30),
+					//	Mesh = new ObjMeshParser().Parse("Resources\\teapot.obj"),
+					//	Material = new RefractiveMaterial()
+					//	{
+					//		Normal = normal
+					//	}
+					//}
 				},
 				Layers = new List<ILayer>
 				{

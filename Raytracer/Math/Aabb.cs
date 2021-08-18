@@ -32,6 +32,23 @@ namespace Raytracer.Math
 
 		public Vector3[] Bounds { get { return m_Bounds ?? new Vector3[2]; } }
 
+		public static Aabb operator +(Aabb a, Aabb b)
+		{
+			return FromPoints(Matrix4x4.Identity, a.Min, a.Max, b.Min, b.Max);
+		}
+
+		public static Aabb operator -(Aabb a, Aabb b)
+		{
+			// TODO
+			return a;
+		}
+
+		public Aabb Intersection(Aabb other)
+		{
+			// TODO
+			return this;
+		}
+
 		public bool Intersects(Ray ray)
 		{
 			Vector3[] bounds = Bounds;

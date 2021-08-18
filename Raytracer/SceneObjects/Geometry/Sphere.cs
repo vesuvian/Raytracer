@@ -37,11 +37,8 @@ namespace Raytracer.SceneObjects.Geometry
 			float t1 = (-b - (float)System.Math.Sqrt(discriminant)) / (2.0f * a);
 			float t2 = (-b + (float)System.Math.Sqrt(discriminant)) / (2.0f * a);
 
-			if (t1 > 0)
-				yield return t1;
-
-			if (t2 > 0 && System.Math.Abs(t1 - t2) > 0.00001f)
-				yield return t2;
+			yield return t1;
+			yield return t2;
 		}
 
 		protected override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
