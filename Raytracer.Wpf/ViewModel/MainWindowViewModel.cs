@@ -214,9 +214,17 @@ namespace Raytracer.Wpf.ViewModel
 					},
 					new Sphere
 					{
-						Position = new Vector3(8, 3, -6),
+						RayMask = eRayMask.Visible,
+						Position = new Vector3(8, 2, -6),
 						Radius = 2,
-						Material = new RefractiveMaterial()
+						Material = new RefractiveMaterial { Ior = 1.5f }
+					},
+					new Sphere
+					{
+						RayMask = eRayMask.Visible,
+						Position = new Vector3(8, 2, -6),
+						Radius = -1.8f,
+						Material = new RefractiveMaterial { Ior = 1.5f }
 					},
 					new SceneObjects.Geometry.Plane
 					{

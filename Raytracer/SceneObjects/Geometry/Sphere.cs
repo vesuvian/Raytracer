@@ -53,7 +53,7 @@ namespace Raytracer.SceneObjects.Geometry
 			foreach (float intersect in HitSphere(Vector3.Zero, Radius, ray))
 			{
 				Vector3 position = ray.PositionAtDelta(intersect);
-				Vector3 normal = Vector3.Normalize(position);
+				Vector3 normal = Vector3.Normalize(MathF.Sign(Radius) * position);
 				Vector3 tangent =
 					normal == new Vector3(0, 1, 0) || normal == new Vector3(0, -1, 0)
 						? new Vector3(1, 0, 0)
