@@ -13,12 +13,20 @@ namespace Raytracer.Math
 		public Vector3 Normal { get; set; }
 		public Vector3 Tangent { get; set; }
 		public Vector3 Bitangent { get; set; }
-		public Vector3 RayOrigin { get; set; }
+		public Ray Ray { get; set; }
 		public Vector2 Uv { get; set; }
 
-		public float Distance
+		public float FaceRatio { get { return Vector3.Dot(Ray.Direction, Normal); } }
+
+		public float Distance { get { return (Position - Ray.Origin).Length(); } }
+
+		public float RayDelta
 		{
-			get { return Vector3.Distance(Position, RayOrigin); }
+			get
+			{
+				bool inFront = Vector3.Dot(Vector3.Normalize(Position - Ray.Origin), Ray.Direction) > 0;
+				return inFront ? Distance : -Distance;
+			}
 		}
 
 		#endregion
@@ -33,7 +41,7 @@ namespace Raytracer.Math
 				Normal = matrix.MultiplyNormal(Normal),
 				Tangent = Vector3.Normalize(matrix.MultiplyDirection(Tangent)),
 				Bitangent = Vector3.Normalize(matrix.MultiplyDirection(Bitangent)),
-				RayOrigin = matrix.MultiplyPoint(RayOrigin),
+				Ray = Ray.Multiply(matrix),
 				Uv = Uv
 			};
 		}
@@ -46,7 +54,7 @@ namespace Raytracer.Math
 				Normal = Normal * -1,
 				Tangent = Tangent * -1,
 				Bitangent = Bitangent,
-				RayOrigin = RayOrigin,
+				Ray = Ray,
 				Uv = Uv
 			};
 		}
@@ -58,8 +66,8 @@ namespace Raytracer.Math
 			builder.AppendLine(string.Format("Normal: {0}", Normal.ToString()));
 			builder.AppendLine(string.Format("Tangent: {0}", Tangent.ToString()));
 			builder.AppendLine(string.Format("Bitangent: {0}", Bitangent.ToString()));
-			builder.AppendLine(string.Format("RayOrigin: {0}", RayOrigin.ToString()));
-			builder.AppendLine(string.Format("Distance: {0}", Distance));
+			builder.AppendLine(string.Format("Ray: {0}", Ray.ToString()));
+			builder.AppendLine(string.Format("Uv: {0}", Uv));
 
 			return builder.ToString();
 		}
@@ -83,8 +91,9 @@ namespace Raytracer.Math
 			return Position.Equals(other.Position) &&
 			       Normal.Equals(other.Normal) &&
 			       Tangent.Equals(other.Tangent) &&
-				   Bitangent.Equals(other.Bitangent) &&
-				   RayOrigin.Equals(other.RayOrigin) &&
+			       Bitangent.Equals(other.Bitangent) &&
+			       Ray.Equals(other.Ray) &&
+			       RayDelta.Equals(other.RayDelta) &&
 			       Uv.Equals(other.Uv);
 		}
 
@@ -95,7 +104,7 @@ namespace Raytracer.Math
 
 		public override int GetHashCode()
 		{
-			return HashCode.Combine(Position, Normal, Tangent, Bitangent, RayOrigin, Uv);
+			return HashCode.Combine(Position, Normal, Tangent, Bitangent, Ray, RayDelta, Uv);
 		}
 
 		#endregion

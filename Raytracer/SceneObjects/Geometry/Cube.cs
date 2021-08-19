@@ -34,7 +34,7 @@ namespace Raytracer.SceneObjects.Geometry
 				Tangent = tangent,
 				Bitangent = bitangent,
 				Position = posMin,
-				RayOrigin = ray.Origin,
+				Ray = ray,
 				Uv = uv
 			}.Multiply(LocalToWorld);
 
@@ -50,7 +50,7 @@ namespace Raytracer.SceneObjects.Geometry
 				Tangent = tangent,
 				Bitangent = bitangent,
 				Position = posMax,
-				RayOrigin = ray.Origin,
+				Ray = ray,
 				Uv = uv
 			}.Multiply(LocalToWorld);
 		}

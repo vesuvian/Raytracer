@@ -15,7 +15,7 @@ namespace Raytracer.SceneObjects.Geometry.CSG
 			KeyValuePair<Intersection, ISceneGeometry>[] intersections =
 				aIntersections.Select(i => new KeyValuePair<Intersection, ISceneGeometry>(i, A))
 				              .Concat(bIntersections.Select(i => new KeyValuePair<Intersection, ISceneGeometry>(i, B)))
-				              .OrderBy(kvp => kvp.Key.Distance)
+				              .OrderBy(kvp => kvp.Key.RayDelta)
 				              .ToArray();
 
 			int aDepth = 0;

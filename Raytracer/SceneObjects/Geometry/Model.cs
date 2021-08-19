@@ -83,7 +83,7 @@ namespace Raytracer.SceneObjects.Geometry
 					Normal = normal,
 					Tangent = tangent,
 					Bitangent = bitangent,
-					RayOrigin = ray.Origin,
+					Ray = ray,
 					Uv = uv
 				}.Multiply(LocalToWorld);
 			}

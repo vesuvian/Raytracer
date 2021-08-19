@@ -12,7 +12,7 @@ namespace Raytracer.SceneObjects.Geometry.CSG
 			Intersection[] intersections =
 				(A?.GetIntersections(ray) ?? Enumerable.Empty<Intersection>())
 				.Concat(B?.GetIntersections(ray) ?? Enumerable.Empty<Intersection>())
-				.OrderBy(i => i.Distance)
+				.OrderBy(i => i.RayDelta)
 				.ToArray();
 
 			int depth = 0;

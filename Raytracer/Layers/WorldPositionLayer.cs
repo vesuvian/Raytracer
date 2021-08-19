@@ -16,7 +16,8 @@ namespace Raytracer.Layers
 		{
 			Intersection? closestIntersection =
 				scene.GetIntersections(ray, eRayMask.Visible)
-				     .OrderBy(kvp => kvp.Value.Distance)
+				     .Where(kvp => kvp.Value.RayDelta > 0.00001f)
+				     .OrderBy(kvp => kvp.Value.RayDelta)
 				     .Select(kvp => (Intersection?)kvp.Value)
 				     .FirstOrDefault();
 

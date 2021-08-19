@@ -25,7 +25,7 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 					{
 						Normal = new Vector3(0, 0, -1),
 						Position = new Vector3(0, 0, -1),
-						RayOrigin = new Vector3(0, 0, -10)
+						Ray = new Ray { Origin = new Vector3(0, 0, -10), Direction = new Vector3(0, 0, 1)}
 					}
 				}
 			},
@@ -46,7 +46,7 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 					{
 						Normal = new Vector3(0, 0, -1),
 						Position = new Vector3(0, 0, -2f),
-						RayOrigin = new Vector3(0, 0, -10)
+						Ray = new Ray { Origin = new Vector3(0, 0, -10), Direction = new Vector3(0, 0, 1)}
 					}
 				}
 			}

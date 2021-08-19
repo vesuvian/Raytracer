@@ -20,7 +20,7 @@ namespace Raytracer.SceneObjects.Lights
 			bool canSee =
 				!CastShadows ||
 				!scene.GetIntersections(toLight, eRayMask.CastShadows)
-				      .Any(kvp => kvp.Value.Distance > SELF_SHADOW_TOLERANCE);
+				      .Any(kvp => kvp.Value.RayDelta > SELF_SHADOW_TOLERANCE);
 
 			if (!canSee)
 				return ColorUtils.RgbaBlack;

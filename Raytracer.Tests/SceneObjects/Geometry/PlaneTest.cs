@@ -26,7 +26,7 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 					{
 						Normal = new Vector3(0, 1, 0),
 						Position = Vector3.Zero,
-						RayOrigin = new Vector3(0, 1, 0)
+						Ray = new Ray { Origin = new Vector3(0, 1, 0), Direction = new Vector3(0, 1, 0) }
 					}
 				}
 			},
@@ -47,7 +47,7 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 					{
 						Normal = new Vector3(0, 1, 0),
 						Position = new Vector3(0, -1, 0),
-						RayOrigin = new Vector3(0, 0, 0)
+						Ray = new Ray { Origin = new Vector3(0, 0, 0), Direction = new Vector3(0, -1, 0) }
 					}
 				}
 			},
@@ -65,7 +65,7 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 					{
 						Normal = new Vector3(0, -1, 0),
 						Position = Vector3.Zero,
-						RayOrigin = new Vector3(0, -1, 0)
+						Ray = new Ray { Origin = new Vector3(0, -1, 0), Direction = new Vector3(0, 1, 0) }
 					}
 				}
 			},
@@ -86,7 +86,7 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 					{
 						Normal = new Vector3(0, -0.7071067f, -0.7071068f),
 						Position = new Vector3(0, 0.99999946f, -1),
-						RayOrigin = new Vector3(0, 0.9999995f, -10)
+						Ray = new Ray { Origin = new Vector3(0, 1, -10), Direction = new Vector3(0, 0, 1) }
 					}
 				}
 			}

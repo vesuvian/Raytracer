@@ -35,8 +35,8 @@ namespace Raytracer.SceneObjects.Lights
 				bool canSee =
 					!CastShadows ||
 					!scene.GetIntersections(ray, eRayMask.CastShadows)
-					      .Any(kvp => kvp.Value.Distance > SELF_SHADOW_TOLERANCE &&
-					                  kvp.Value.Distance < distance);
+					      .Any(kvp => kvp.Value.RayDelta > SELF_SHADOW_TOLERANCE &&
+					                  kvp.Value.RayDelta < distance);
 
 				if (canSee)
 					sum += sample;
