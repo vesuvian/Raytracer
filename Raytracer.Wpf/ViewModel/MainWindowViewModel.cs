@@ -56,7 +56,7 @@ namespace Raytracer.Wpf.ViewModel
 
 			Scene scene = new Scene
 			{
-				GlobalIlluminationSamples = 4,
+				GlobalIlluminationSamples = 32,
 				Camera = new Camera
 				{
 					Position = new Vector3(5, 2, -20),

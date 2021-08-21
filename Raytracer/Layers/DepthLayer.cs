@@ -10,8 +10,10 @@ namespace Raytracer.Layers
 {
 	public sealed class DepthLayer : AbstractLayer
 	{
-		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight)
+		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight, out bool hit)
 		{
+			hit = false;
+
 			Intersection? closestIntersection =
 				scene.GetIntersections(ray, eRayMask.Visible)
 				     .Select(kvp => (Intersection?)kvp.Value)
@@ -21,6 +23,7 @@ namespace Raytracer.Layers
 
 			if (closestIntersection == null)
 				return ColorUtils.RgbaBlack;
+			hit = true;
 
 			float planarDistance = Plane.Distance(scene.Camera.Position, scene.Camera.Forward, closestIntersection.Value.Position, out _);
 			float t = MathUtils.Clamp(planarDistance, scene.Camera.NearPlane, scene.Camera.FarPlane) /

@@ -12,8 +12,10 @@ namespace Raytracer.Layers
 		public Vector3 Min { get; set; } = Vector3.One * -10;
 		public Vector3 Max { get; set; } = Vector3.One * 10;
 
-		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight)
+		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight, out bool hit)
 		{
+			hit = false;
+
 			Intersection? closestIntersection =
 				scene.GetIntersections(ray, eRayMask.Visible)
 				     .Where(kvp => kvp.Value.RayDelta > 0.00001f)
@@ -23,6 +25,7 @@ namespace Raytracer.Layers
 
 			if (closestIntersection == null)
 				return ColorUtils.RgbaBlack;
+			hit = true;
 
 			Vector3 position = Vector3.Clamp(closestIntersection.Value.Position, Min, Max) - Min;
 			Vector3 range = Max - Min;

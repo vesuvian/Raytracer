@@ -11,16 +11,18 @@ namespace Raytracer.Layers
 {
 	public sealed class MaterialsLayer : AbstractLayer
 	{
-		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight)
+		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight, out bool hit)
 		{
+			hit = false;
+
 			if (rayDepth > scene.MaxReflectionRays)
-				return Vector4.Zero;
+				return ColorUtils.RgbaBlack;
 
 			// Russian Roulette
 			// Randomly terminate a path with a probability inversely equal to the throughput
 			float p = MathF.Max(rayWeight.X, MathF.Max(rayWeight.Y, rayWeight.Z));
 			if (random.NextFloat() / (rayDepth + 1) > p)
-				return Vector4.Zero;
+				return ColorUtils.RgbaBlack;
 
 			// Add the energy we 'lose' by randomly terminating paths
 			rayWeight *= 1 / p;
@@ -31,9 +33,11 @@ namespace Raytracer.Layers
 				     .OrderBy(kvp => kvp.Value.RayDelta)
 				     .FirstOrDefault();
 
-			return geometry == null
-				? ColorUtils.RgbaBlack
-				: geometry.Material.Sample(scene, ray, intersection, random, rayDepth, rayWeight, CastRay);
+			if (geometry == null)
+				return ColorUtils.RgbaBlack;
+			hit = true;
+
+			return geometry.Material.Sample(scene, ray, intersection, random, rayDepth, rayWeight, CastRay);
 		}
 	}
 }

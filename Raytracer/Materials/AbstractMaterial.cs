@@ -81,6 +81,7 @@ namespace Raytracer.Materials
 		                                               int rayDepth, Vector3 rayWeight, CastRayDelegate castRay)
 		{
 			Vector4 sum = Vector4.Zero;
+			int rays = 0;
 
 			for (int i = 0; i < scene.GlobalIlluminationSamples; i++)
 			{
@@ -98,10 +99,16 @@ namespace Raytracer.Materials
 					Direction = worldNormal
 				};
 
-				sum += r1 * castRay(scene, giRay, random, rayDepth + 1, rayWeight * r1 / scene.GlobalIlluminationSamples);
+				bool hit;
+				Vector4 sample = r1 * castRay(scene, giRay, random, rayDepth + 1, rayWeight * r1 / scene.GlobalIlluminationSamples, out hit);
+				if (!hit)
+					continue;
+
+				rays++;
+				sum += sample;
 			}
 
-			return scene.GlobalIlluminationSamples == 0 ? sum : sum / scene.GlobalIlluminationSamples;
+			return rays == 0 ? sum : sum / rays;
 		}
 
 		protected static Vector4 GetReflection(Scene scene, Ray ray, Vector3 position, Vector3 normal, float roughness,
@@ -116,7 +123,7 @@ namespace Raytracer.Materials
 			Matrix4x4 surface = Matrix4x4Utils.Tbn(nt, nb, normal);
 			Vector3 worldNormal = surface.MultiplyNormal(randomNormal);
 
-			return castRay(scene, ray.Reflect(position, worldNormal), random, rayDepth + 1, rayWeight);
+			return castRay(scene, ray.Reflect(position, worldNormal), random, rayDepth + 1, rayWeight, out _);
 		}
 
 		protected static Vector4 GetRefraction(Scene scene, Ray ray, Vector3 position, Vector3 normal, float ior,
@@ -132,7 +139,7 @@ namespace Raytracer.Materials
 			Matrix4x4 surface = Matrix4x4Utils.Tbn(nt, nb, normal);
 			Vector3 worldNormal = surface.MultiplyNormal(randomNormal);
 
-			return castRay(scene, ray.Refract(position, worldNormal, ior), random, rayDepth + 1, rayWeight);
+			return castRay(scene, ray.Refract(position, worldNormal, ior), random, rayDepth + 1, rayWeight, out _);
 		}
 	}
 }

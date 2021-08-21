@@ -4,7 +4,7 @@ using Raytracer.Math;
 
 namespace Raytracer.Materials
 {
-	public delegate Vector4 CastRayDelegate(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight);
+	public delegate Vector4 CastRayDelegate(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight, out bool hit);
 
 	public interface IMaterial
 	{
