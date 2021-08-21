@@ -228,10 +228,7 @@ namespace Raytracer.Utils
 
 		public static Vector4 Multiply(Vector4 a, Vector4 b)
 		{
-			return new Vector4(a.X * b.X,
-			                   a.Y * b.Y,
-			                   a.Z * b.Z,
-			                   a.W * b.W);
+			return a * b;
 		}
 
 		public static Color Add(Color a, Color b)

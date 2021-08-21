@@ -10,7 +10,8 @@ namespace Raytracer.Materials
 	{
 		public ITexture Roughness { get; set; } = new SolidColorTexture { Color = ColorUtils.RgbaBlack };
 
-		public override Vector4 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth, CastRayDelegate castRay)
+		public override Vector4 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth,
+		                               Vector3 rayWeight, CastRayDelegate castRay)
 		{
 			// Sample material
 			Vector3 worldNormal = GetWorldNormal(intersection);
@@ -20,7 +21,8 @@ namespace Raytracer.Materials
 			Vector4 specular = GetSpecular(scene, ray.Direction, intersection.Position, worldNormal, random, 25);
 
 			// Calculate reflection
-			Vector4 reflection = GetReflection(scene, ray, intersection.Position, worldNormal, roughness, random, rayDepth, castRay);
+			Vector4 reflection = GetReflection(scene, ray, intersection.Position, worldNormal, roughness, random,
+			                                   rayDepth, rayWeight, castRay);
 
 			return specular * 0.2f + reflection;
 		}

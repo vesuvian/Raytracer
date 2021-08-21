@@ -10,7 +10,8 @@ namespace Raytracer.Materials
 	{
 		public ITexture Emission { get; set; } = new SolidColorTexture { Color = ColorUtils.RgbaWhite };
 
-		public override Vector4 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth, CastRayDelegate castRay)
+		public override Vector4 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth,
+		                               Vector3 rayWeight, CastRayDelegate castRay)
 		{
 			return SampleEmission(intersection.Uv);
 		}

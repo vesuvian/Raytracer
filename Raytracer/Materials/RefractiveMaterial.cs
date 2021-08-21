@@ -12,7 +12,8 @@ namespace Raytracer.Materials
 
 		public ITexture Roughness { get; set; } = new SolidColorTexture { Color = ColorUtils.RgbaBlack };
 
-		public override Vector4 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth, CastRayDelegate castRay)
+		public override Vector4 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth,
+		                               Vector3 rayWeight, CastRayDelegate castRay)
 		{
 			// Sample material
 			Vector3 worldNormal = GetWorldNormal(intersection);
@@ -22,12 +23,14 @@ namespace Raytracer.Materials
 			// compute refraction if it is not a case of total internal reflection
 			Vector4 refractionColor =
 				fresnel < 1
-					? GetRefraction(scene, ray, intersection.Position, worldNormal, Ior, roughness, random, rayDepth, castRay)
+					? GetRefraction(scene, ray, intersection.Position, worldNormal, Ior, roughness, random, rayDepth,
+					                rayWeight * (1 - fresnel), castRay)
 					: Vector4.Zero;
 
 			Vector4 reflectionColor =
 				fresnel > 0
-					? GetReflection(scene, ray, intersection.Position, worldNormal, roughness, random, rayDepth, castRay)
+					? GetReflection(scene, ray, intersection.Position, worldNormal, roughness, random, rayDepth,
+					                rayWeight * fresnel, castRay)
 					: Vector4.Zero;
 
 			// Calculate specular

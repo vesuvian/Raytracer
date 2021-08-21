@@ -16,7 +16,8 @@ namespace Raytracer.Materials
 
 		public float Ks { get; set; } = 0.2f;
 
-		public override Vector4 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth, CastRayDelegate castRay)
+		public override Vector4 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth,
+		                               Vector3 rayWeight, CastRayDelegate castRay)
 		{
 			// Sample material
 			Vector3 worldNormal = GetWorldNormal(intersection);
@@ -26,7 +27,9 @@ namespace Raytracer.Materials
 			Vector4 illumination = GetIllumination(scene, intersection.Position, worldNormal, random);
 
 			// Global illumination
-			Vector4 globalIllumination = GetGlobalIllumination(scene, intersection.Position, worldNormal, random, rayDepth, castRay);
+			Vector3 giWeight = new Vector3(diffuse.X, diffuse.Y, diffuse.Z) * 2 * rayWeight;
+			Vector4 globalIllumination =
+				GetGlobalIllumination(scene, intersection.Position, worldNormal, random, rayDepth, giWeight, castRay);
 
 			// Combine values
 			Vector4 direct = illumination / MathF.PI;
@@ -37,7 +40,8 @@ namespace Raytracer.Materials
 			Vector4 finalDiffuse = ColorUtils.Multiply(combined, diffuse);
 
 			// Specular
-			Vector4 specular = GetSpecular(scene, ray.Direction, intersection.Position, worldNormal, random, SpecularExponent);
+			Vector4 specular = GetSpecular(scene, ray.Direction, intersection.Position, worldNormal, random,
+			                               SpecularExponent);
 
 			return finalDiffuse * Kd + specular * Ks;
 		}

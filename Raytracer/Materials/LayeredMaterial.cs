@@ -16,12 +16,12 @@ namespace Raytracer.Materials
 		public IMaterial B { get; set; } = new LambertMaterial();
 
 		public Vector4 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth,
-		                      CastRayDelegate castRay)
+		                      Vector3 rayWeight, CastRayDelegate castRay)
 		{
 			float blend = SampleBlend(intersection.Uv);
 
-			Vector4 a = blend < 1 ? A.Sample(scene, ray, intersection, random, rayDepth, castRay) : Vector4.Zero;
-			Vector4 b = blend > 0 ? B.Sample(scene, ray, intersection, random, rayDepth, castRay) : Vector4.Zero;
+			Vector4 a = blend < 1 ? A.Sample(scene, ray, intersection, random, rayDepth, rayWeight * (1 - blend), castRay) : Vector4.Zero;
+			Vector4 b = blend > 0 ? B.Sample(scene, ray, intersection, random, rayDepth, rayWeight * blend, castRay) : Vector4.Zero;
 
 			return ColorUtils.LerpRgb(a, b, blend);
 		}

@@ -12,7 +12,7 @@ namespace Raytracer.Layers
 		public Vector3 Min { get; set; } = Vector3.One * -10;
 		public Vector3 Max { get; set; } = Vector3.One * 10;
 
-		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth)
+		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight)
 		{
 			Intersection? closestIntersection =
 				scene.GetIntersections(ray, eRayMask.Visible)

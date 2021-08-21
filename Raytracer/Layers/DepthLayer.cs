@@ -10,7 +10,7 @@ namespace Raytracer.Layers
 {
 	public sealed class DepthLayer : AbstractLayer
 	{
-		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth)
+		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight)
 		{
 			Intersection? closestIntersection =
 				scene.GetIntersections(ray, eRayMask.Visible)

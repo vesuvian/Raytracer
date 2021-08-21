@@ -11,7 +11,7 @@ namespace Raytracer.Layers
 {
 	public sealed class ViewNormalsLayer : AbstractLayer
 	{
-		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth)
+		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight)
 		{
 			(ISceneGeometry geometry, Intersection intersection) =
 				scene.GetIntersections(ray, eRayMask.Visible)
