@@ -74,6 +74,8 @@ namespace Raytracer.Layers
 
 					try
 					{
+						cancellationToken.ThrowIfCancellationRequested();
+
 						int iteration = px.Item1;
 						int x = px.Item2;
 						int y = px.Item3;
@@ -86,10 +88,13 @@ namespace Raytracer.Layers
 						Random random = new Random(HashCode.Combine(iteration, x, y));
 
 						Ray ray = scene.Camera.CreateRay(xViewportMin, xViewportMax, yViewportMin, yViewportMax, random);
-						Vector4 sample = CastRay(scene, ray, random, 0, Vector3.One, out _);
+						Vector4 sample = CastRay(scene, ray, random, 0, Vector3.One, out _, cancellationToken);
 
 						successiveBuffer.SetPixel(x, y, ColorUtils.ToColorRgba(sample));
 						Progress = pixelsComplete++;
+					}
+					catch (OperationCanceledException)
+					{
 					}
 					finally
 					{
@@ -104,7 +109,8 @@ namespace Raytracer.Layers
 			End = DateTime.UtcNow;
 		}
 
-		protected abstract Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight, out bool hit);
+		protected abstract Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
+		                                   out bool hit, CancellationToken cancellationToken = default);
 
 		/// <summary>
 		/// Gets a "random" pixel for each input, only visiting each pixel once.

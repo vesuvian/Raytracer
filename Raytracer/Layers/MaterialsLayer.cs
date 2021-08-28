@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Numerics;
+using System.Threading;
 using Raytracer.Extensions;
 using Raytracer.Math;
 using Raytracer.SceneObjects;
@@ -11,8 +12,11 @@ namespace Raytracer.Layers
 {
 	public sealed class MaterialsLayer : AbstractLayer
 	{
-		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight, out bool hit)
+		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
+		                                   out bool hit, CancellationToken cancellationToken = default)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
+
 			hit = false;
 
 			if (rayDepth > scene.MaxReflectionRays)
@@ -37,7 +41,7 @@ namespace Raytracer.Layers
 				return ColorUtils.RgbaBlack;
 			hit = true;
 
-			return geometry.Material.Sample(scene, ray, intersection, random, rayDepth, rayWeight, CastRay);
+			return geometry.Material.Sample(scene, ray, intersection, random, rayDepth, rayWeight, CastRay, cancellationToken);
 		}
 	}
 }

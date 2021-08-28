@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Numerics;
+using System.Threading;
 using Raytracer.Math;
 using Raytracer.SceneObjects;
 using Raytracer.Utils;
@@ -10,8 +11,11 @@ namespace Raytracer.Layers
 {
 	public sealed class DepthLayer : AbstractLayer
 	{
-		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight, out bool hit)
+		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
+		                                   out bool hit, CancellationToken cancellationToken = default)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
+
 			hit = false;
 
 			Intersection? closestIntersection =
@@ -25,7 +29,8 @@ namespace Raytracer.Layers
 				return ColorUtils.RgbaBlack;
 			hit = true;
 
-			float planarDistance = Plane.Distance(scene.Camera.Position, scene.Camera.Forward, closestIntersection.Value.Position, out _);
+			float planarDistance = Plane.Distance(scene.Camera.Position, scene.Camera.Forward,
+			                                      closestIntersection.Value.Position, out _);
 			float t = MathUtils.Clamp(planarDistance, scene.Camera.NearPlane, scene.Camera.FarPlane) /
 			          (scene.Camera.FarPlane - scene.Camera.NearPlane);
 			return ColorUtils.LerpHsl(new Vector4(1), ColorUtils.RgbaBlack, t);

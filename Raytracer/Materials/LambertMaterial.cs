@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using System.Threading;
 using Raytracer.Materials.Textures;
 using Raytracer.Math;
 using Raytracer.Utils;
@@ -11,7 +12,8 @@ namespace Raytracer.Materials
 		public ITexture Diffuse { get; set; } = new SolidColorTexture { Color = new Vector4(0.5f, 0.5f, 0.5f, 1.0f) };
 
 		public override Vector4 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth,
-		                               Vector3 rayWeight, CastRayDelegate castRay)
+		                               Vector3 rayWeight, CastRayDelegate castRay,
+		                               CancellationToken cancellationToken = default)
 		{
 			// Sample material
 			Vector3 worldNormal = GetWorldNormal(intersection);
@@ -23,7 +25,7 @@ namespace Raytracer.Materials
 			// Global illumination
 			Vector3 giWeight = new Vector3(diffuse.X, diffuse.Y, diffuse.Z) * 2 * rayWeight;
 			Vector4 globalIllumination =
-				GetGlobalIllumination(scene, intersection.Position, worldNormal, random, rayDepth, giWeight, castRay);
+				GetGlobalIllumination(scene, intersection.Position, worldNormal, random, rayDepth, giWeight, castRay, cancellationToken);
 
 			// Combine values
 			Vector4 direct = illumination / MathF.PI;

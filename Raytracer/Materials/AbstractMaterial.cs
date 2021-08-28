@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using System.Threading;
 using Raytracer.Extensions;
 using Raytracer.Materials.Textures;
 using Raytracer.Math;
@@ -17,7 +18,8 @@ namespace Raytracer.Materials
 		public Vector2 Offset { get; set; }
 
 		public abstract Vector4 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth,
-		                               Vector3 rayWeight, CastRayDelegate castRay);
+		                               Vector3 rayWeight, CastRayDelegate castRay,
+		                               CancellationToken cancellationToken = default);
 
 		public Vector3 SampleNormal(Vector2 uv)
 		{
@@ -78,7 +80,8 @@ namespace Raytracer.Materials
 		}
 
 		protected static Vector4 GetGlobalIllumination(Scene scene, Vector3 position, Vector3 normal, Random random,
-		                                               int rayDepth, Vector3 rayWeight, CastRayDelegate castRay)
+		                                               int rayDepth, Vector3 rayWeight, CastRayDelegate castRay,
+		                                               CancellationToken cancellationToken = default)
 		{
 			Vector4 sum = Vector4.Zero;
 			int rays = 0;
@@ -100,7 +103,9 @@ namespace Raytracer.Materials
 				};
 
 				bool hit;
-				Vector4 sample = r1 * castRay(scene, giRay, random, rayDepth + 1, rayWeight * r1 / scene.GlobalIlluminationSamples, out hit);
+				Vector4 sample = r1 * castRay(scene, giRay, random, rayDepth + 1,
+				                              rayWeight * r1 / scene.GlobalIlluminationSamples, out hit,
+				                              cancellationToken);
 				if (!hit)
 					continue;
 
@@ -112,7 +117,8 @@ namespace Raytracer.Materials
 		}
 
 		protected static Vector4 GetReflection(Scene scene, Ray ray, Vector3 position, Vector3 normal, float roughness,
-		                                       Random random, int rayDepth, Vector3 rayWeight, CastRayDelegate castRay)
+		                                       Random random, int rayDepth, Vector3 rayWeight, CastRayDelegate castRay,
+		                                       CancellationToken cancellationToken = default)
 		{
 			float r1 = random.NextFloat();
 			float r2 = random.NextFloat();
@@ -123,12 +129,12 @@ namespace Raytracer.Materials
 			Matrix4x4 surface = Matrix4x4Utils.Tbn(nt, nb, normal);
 			Vector3 worldNormal = surface.MultiplyNormal(randomNormal);
 
-			return castRay(scene, ray.Reflect(position, worldNormal), random, rayDepth + 1, rayWeight, out _);
+			return castRay(scene, ray.Reflect(position, worldNormal), random, rayDepth + 1, rayWeight, out _, cancellationToken);
 		}
 
 		protected static Vector4 GetRefraction(Scene scene, Ray ray, Vector3 position, Vector3 normal, float ior,
 		                                       float roughness, Random random, int rayDepth, Vector3 rayWeight,
-		                                       CastRayDelegate castRay)
+		                                       CastRayDelegate castRay, CancellationToken cancellationToken = default)
 		{
 			float r1 = random.NextFloat();
 			float r2 = random.NextFloat();
@@ -139,7 +145,7 @@ namespace Raytracer.Materials
 			Matrix4x4 surface = Matrix4x4Utils.Tbn(nt, nb, normal);
 			Vector3 worldNormal = surface.MultiplyNormal(randomNormal);
 
-			return castRay(scene, ray.Refract(position, worldNormal, ior), random, rayDepth + 1, rayWeight, out _);
+			return castRay(scene, ray.Refract(position, worldNormal, ior), random, rayDepth + 1, rayWeight, out _, cancellationToken);
 		}
 	}
 }
