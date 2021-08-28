@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
+using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Raytracer.Layers;
@@ -13,6 +15,7 @@ using Raytracer.SceneObjects;
 using Raytracer.SceneObjects.Geometry;
 using Raytracer.SceneObjects.Lights;
 using Raytracer.Utils;
+using Raytracer.Wpf.Utils;
 
 namespace Raytracer.Wpf.ViewModel
 {
@@ -41,6 +44,8 @@ namespace Raytracer.Wpf.ViewModel
 				RaisePropertyChanged();
 			}
 		}
+
+		public ICommand CopyImageCommand { get => new RelayCommand(CopyImage); }
 
 		/// <summary>
 		/// Constructor.
@@ -283,6 +288,11 @@ namespace Raytracer.Wpf.ViewModel
 		public void Closing()
 		{
 			m_CancellationTokenSource.Cancel();
+		}
+
+		private void CopyImage()
+		{
+			Clipboard.SetImage(Bitmap);
 		}
 	}
 }
