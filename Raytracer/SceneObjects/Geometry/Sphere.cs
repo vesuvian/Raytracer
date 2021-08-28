@@ -79,7 +79,7 @@ namespace Raytracer.SceneObjects.Geometry
 			}.Multiply(LocalToWorld);
 		}
 
-		private static Vector2 GetUv(Vector3 position)
+		public static Vector2 GetUv(Vector3 position)
 		{
 			position = Vector3.Normalize(position);
 
