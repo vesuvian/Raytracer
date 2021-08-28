@@ -13,6 +13,7 @@ namespace Raytracer.SceneObjects
 		private float m_Fov = 40.0f;
 		private float m_Aspect = 2.0f;
 		private Matrix4x4? m_Projection;
+		private Matrix4x4? m_ProjectionInverse;
 
 		public float NearPlane
 		{
@@ -70,6 +71,20 @@ namespace Raytracer.SceneObjects
 			}
 		}
 
+		public Matrix4x4 ProjectionInverse
+		{
+			get
+			{
+				if (m_ProjectionInverse == null)
+				{
+					Matrix4x4 inverse;
+					Matrix4x4.Invert(Projection, out inverse);
+					m_ProjectionInverse = inverse;
+				}
+				return m_ProjectionInverse.Value;
+			}
+		}
+
 		/// <summary>
 		/// Creates a camera ray for the given viewport co-ordinates in the range 0 - 1 (bottom left to top right).
 		/// </summary>
@@ -81,8 +96,6 @@ namespace Raytracer.SceneObjects
 		/// <returns></returns>
 		public Ray CreateRay(float minX, float maxX, float minY, float maxY, Random random)
 		{
-			float scale = (float)System.Math.Tan(MathUtils.DEG2RAD * Fov * 0.5f);
-
 			float x;
 			float y;
 
@@ -98,12 +111,14 @@ namespace Raytracer.SceneObjects
 			}
 
 			// Calculate the local viewport ray
-			float rayX = (2 * x - 1) * Aspect * scale;
-			float rayY = (1 - 2 * y) * scale;
-			Vector3 direction = Vector3.Normalize(new Vector3(rayX, rayY, 1));
+			float rayX = -1 + x * 2;
+			float rayY = 1 - y * 2;
+
+			Vector3 direction = Vector3.Normalize(ProjectionInverse.MultiplyPoint(new Vector3(rayX, rayY, 0)));
+			direction.Z = -direction.Z;
 
 			// Find the focal point
-			Vector3 focalpoint = new Ray {Direction = direction}.PositionAtDelta(FocalLength);
+			Vector3 focalpoint = direction * FocalLength;
 
 			// Offset the start position by a random amount for depth of field
 			Vector3 apertureOffset =
