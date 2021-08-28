@@ -12,12 +12,10 @@ namespace Raytracer.Utils
 			a = Vector3.Normalize(a);
 			b = Vector3.Normalize(b);
 
-			float dot = Vector3.Dot(a, b);
-			dot = MathF.Max(dot, -1.0f);
-			dot = MathF.Min(dot, 1.0f);
-
+			float dot = MathUtils.Clamp(Vector3.Dot(a, b), -1, 1);
 			float theta = MathF.Acos(dot) * t;
-			Vector3 relativeVec = Vector3.Normalize(b - a * dot);
+			Vector3 relativeVec = b - a * dot;
+			relativeVec = relativeVec == Vector3.Zero ? Vector3.Zero : Vector3.Normalize(relativeVec);
 			Vector3 newVec = a * MathF.Cos(theta) + relativeVec * MathF.Sin(theta);
 			return newVec * (magA + (magB - magA) * t);
 		}
