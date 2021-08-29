@@ -3,6 +3,7 @@ using System.Linq;
 using Raytracer.Layers;
 using Raytracer.Math;
 using Raytracer.SceneObjects;
+using Raytracer.SceneObjects.Cameras;
 using Raytracer.SceneObjects.Geometry;
 using Raytracer.SceneObjects.Lights;
 
@@ -10,7 +11,7 @@ namespace Raytracer
 {
 	public sealed class Scene
 	{
-		public Camera Camera { get; set; }
+		public ICamera Camera { get; set; }
 		public List<ILight> Lights { get; set; }
 		public List<ISceneGeometry> Geometry { get; set; }
 		public List<ILayer> Layers { get; set; }

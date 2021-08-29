@@ -61,12 +61,12 @@ namespace Raytracer.Wpf.ViewModel
 
 			Scene scene = new Scene
 			{
-				GlobalIlluminationSamples = 32,
-				Camera = new Camera
+				GlobalIlluminationSamples = 4,
+				Camera = new PerspectiveCamera
 				{
 					Position = new Vector3(5, 2, -20),
 					NearPlane = 0.01f,
-					FarPlane = 40.0f,
+					FarPlane = 1000.0f,
 					Fov = 40,
 					Samples = int.MaxValue,
 					FocalLength = 18,

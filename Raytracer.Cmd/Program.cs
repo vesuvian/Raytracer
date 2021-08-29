@@ -11,6 +11,7 @@ using Raytracer.Materials;
 using Raytracer.Materials.Textures;
 using Raytracer.Parsers;
 using Raytracer.SceneObjects;
+using Raytracer.SceneObjects.Cameras;
 using Raytracer.SceneObjects.Geometry;
 using Raytracer.SceneObjects.Lights;
 using Raytracer.Utils;
@@ -33,7 +34,7 @@ namespace Raytracer.Cmd
 			Scene scene = new Scene
 			{
 				GlobalIlluminationSamples = 4,
-				Camera = new Camera
+				Camera = new PerspectiveCamera
 				{
 					Position = new Vector3(5, 2, -20),
 					NearPlane = 0.01f,
