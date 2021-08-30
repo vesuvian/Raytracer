@@ -7,13 +7,13 @@ namespace Raytracer.SceneObjects.Geometry
 {
 	public abstract class AbstractSceneGeometry : AbstractSceneObject, ISceneGeometry
 	{
-		private Aabb? m_Aabb;
-
 		public IMaterial Material { get; set; } = new LambertMaterial();
 
 		public eRayMask RayMask { get; set; } = eRayMask.All;
 
-		public Aabb Aabb { get { return m_Aabb ??= CalculateAabb(); } }
+		public float SurfaceArea { get; private set; }
+
+		public Aabb Aabb { get; private set; }
 
 		protected abstract Aabb CalculateAabb();
 
@@ -30,7 +30,17 @@ namespace Raytracer.SceneObjects.Geometry
 		{
 			base.HandleTransformChange();
 
-			m_Aabb = null;
+			SurfaceArea = CalculateSurfaceArea();
+			Aabb = CalculateAabb();
 		}
+
+		private float CalculateSurfaceArea()
+		{
+			float unscaled = CalculateUnscaledSurfaceArea();
+			float scaleFactor = Scale.X * Scale.Y * Scale.Z;
+			return unscaled * scaleFactor * scaleFactor;
+		}
+
+		protected abstract float CalculateUnscaledSurfaceArea();
 	}
 }

@@ -52,6 +52,11 @@ namespace Raytracer.SceneObjects.Geometry
 			}.Multiply(LocalToWorld);
 		}
 
+		protected override float CalculateUnscaledSurfaceArea()
+		{
+			return m_Edge * m_Edge;
+		}
+
 		protected override Aabb CalculateAabb()
 		{
 			return Aabb.FromPoints(LocalToWorld,

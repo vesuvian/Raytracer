@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using Raytracer.Math;
 
@@ -48,6 +49,11 @@ namespace Raytracer.SceneObjects.Geometry
 				Ray = ray,
 				Uv = uv
 			}.Multiply(LocalToWorld);
+		}
+
+		protected override float CalculateUnscaledSurfaceArea()
+		{
+			return MathF.PI * m_Radius * m_Radius;
 		}
 
 		protected override Aabb CalculateAabb()

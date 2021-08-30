@@ -10,6 +10,8 @@ namespace Raytracer.SceneObjects.Geometry
 
 		eRayMask RayMask { get; set; }
 
+		float SurfaceArea { get; }
+
 		Aabb Aabb { get; }
 
 		IEnumerable<Intersection> GetIntersections(Ray ray);

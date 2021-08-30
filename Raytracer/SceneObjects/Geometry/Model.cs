@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using Raytracer.Math;
 using Raytracer.Parsers;
@@ -89,9 +90,30 @@ namespace Raytracer.SceneObjects.Geometry
 			}
 		}
 
+		protected override float CalculateUnscaledSurfaceArea()
+		{
+			float output = 0;
+
+			for (int faceIndex = 0; faceIndex < m_Mesh.Triangles.Count; faceIndex += 3)
+			{
+				// Positions
+				int vertexIndex0 = m_Mesh.Triangles[faceIndex];
+				int vertexIndex1 = m_Mesh.Triangles[faceIndex + 1];
+				int vertexIndex2 = m_Mesh.Triangles[faceIndex + 2];
+
+				Vector3 a = m_Mesh.Vertices[vertexIndex0];
+				Vector3 b = m_Mesh.Vertices[vertexIndex1];
+				Vector3 c = m_Mesh.Vertices[vertexIndex2];
+
+				output += Triangle.GetSurfaceArea(a, b, c);
+			}
+
+			return output;
+		}
+
 		protected override Aabb CalculateAabb()
 		{
-			return Aabb.FromPoints(LocalToWorld, m_Mesh.Vertices);
+			return Aabb.FromPoints(LocalToWorld, m_Mesh?.Vertices ?? Enumerable.Empty<Vector3>());
 		}
 	}
 }

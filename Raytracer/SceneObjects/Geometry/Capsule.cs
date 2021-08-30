@@ -160,6 +160,11 @@ namespace Raytracer.SceneObjects.Geometry
 			}
 		}
 
+		protected override float CalculateUnscaledSurfaceArea()
+		{
+			return (2 * MathF.PI * m_Radius * m_Height) + (4 * MathF.PI * m_Radius * m_Radius);
+		}
+
 		private Vector2 CalculateCylinderUv(Vector3 position)
 		{
 			position += Vector3.UnitY * Height / 2;

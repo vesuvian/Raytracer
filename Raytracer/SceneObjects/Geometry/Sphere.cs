@@ -70,6 +70,11 @@ namespace Raytracer.SceneObjects.Geometry
 			}
 		}
 
+		protected override float CalculateUnscaledSurfaceArea()
+		{
+			return 4 * MathF.PI * m_Radius * m_Radius;
+		}
+
 		protected override Aabb CalculateAabb()
 		{
 			return new Aabb

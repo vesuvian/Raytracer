@@ -43,6 +43,11 @@ namespace Raytracer.SceneObjects.Geometry
 			}.Multiply(LocalToWorld);
 		}
 
+		protected override float CalculateUnscaledSurfaceArea()
+		{
+			return float.PositiveInfinity;
+		}
+
 		/// <summary>
 		/// Returns the shortest distance from the plane to the given position.
 		/// </summary>
@@ -63,7 +68,7 @@ namespace Raytracer.SceneObjects.Geometry
 
 		protected override Aabb CalculateAabb()
 		{
-			return new Aabb {Min = new Vector3(float.MinValue), Max = new Vector3(float.MaxValue)};
+			return new Aabb {Min = new Vector3(float.NegativeInfinity), Max = new Vector3(float.PositiveInfinity)};
 		}
 	}
 }

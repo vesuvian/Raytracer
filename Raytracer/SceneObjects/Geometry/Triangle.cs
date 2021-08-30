@@ -59,6 +59,21 @@ namespace Raytracer.SceneObjects.Geometry
 			return (1 - u - v) * a + u * b + v * c;
 		}
 
+		public static float GetSurfaceArea(Vector3 a, Vector3 b, Vector3 c)
+		{
+			Vector3 ab = b - a;
+			Vector3 ac = c - a;
+			Vector3 bc = c - b;
+
+			float lengthA = ab.Length();
+			float lengthB = ab.Length();
+			float lengthC = bc.Length();
+
+			float abcOver2 = (lengthA + lengthB + lengthC) / 2;
+
+			return MathF.Sqrt(abcOver2 * (abcOver2 - lengthA) * (abcOver2 - lengthB) * (abcOver2 - lengthC));
+		}
+
 		public static bool HitTriangle(Vector3 a, Vector3 b, Vector3 c, Ray ray, out float t, out float u, out float v)
 		{
 			t = default;
@@ -111,6 +126,11 @@ namespace Raytracer.SceneObjects.Geometry
 				Ray = ray,
 				Uv = new Vector2(u, v)
 			}.Multiply(LocalToWorld);
+		}
+
+		protected override float CalculateUnscaledSurfaceArea()
+		{
+			return GetSurfaceArea(A, B, C);
 		}
 
 		protected override Aabb CalculateAabb()
