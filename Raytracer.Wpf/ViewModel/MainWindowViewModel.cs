@@ -12,6 +12,7 @@ using Raytracer.Materials;
 using Raytracer.Materials.Textures;
 using Raytracer.Parsers;
 using Raytracer.SceneObjects;
+using Raytracer.SceneObjects.Cameras;
 using Raytracer.SceneObjects.Geometry;
 using Raytracer.SceneObjects.Lights;
 using Raytracer.Utils;
