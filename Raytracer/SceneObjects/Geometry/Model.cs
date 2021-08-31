@@ -26,7 +26,7 @@ namespace Raytracer.SceneObjects.Geometry
 			// First transform the ray into local space
 			ray = ray.Multiply(WorldToLocal);
 
-			for (int faceIndex = 0; faceIndex < m_Mesh.Triangles.Count; faceIndex += 3)
+			for (int faceIndex = 0; faceIndex < m_Mesh?.Triangles?.Count; faceIndex += 3)
 			{
 				// Positions
 				int vertexIndex0 = m_Mesh.Triangles[faceIndex];
@@ -94,7 +94,7 @@ namespace Raytracer.SceneObjects.Geometry
 		{
 			float output = 0;
 
-			for (int faceIndex = 0; faceIndex < m_Mesh.Triangles.Count; faceIndex += 3)
+			for (int faceIndex = 0; faceIndex < m_Mesh?.Triangles?.Count; faceIndex += 3)
 			{
 				// Positions
 				int vertexIndex0 = m_Mesh.Triangles[faceIndex];
