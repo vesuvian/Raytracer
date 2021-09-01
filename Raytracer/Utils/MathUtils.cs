@@ -91,5 +91,18 @@ namespace Raytracer.Utils
 			float z = sinTheta * MathF.Sin(phi);
 			return Vector3.Normalize(new Vector3(x, r1, z));
 		}
+
+		public static Vector2 RandomPointInDisc(Random random)
+		{
+			float r = MathF.Sqrt(random.NextFloat());
+			float theta = random.NextFloat() * 2 * MathF.PI;
+			return r * new Vector2(MathF.Cos(theta), MathF.Sin(theta));
+		}
+
+		public static Vector2 RandomPointOnDisc(Random random)
+		{
+			Vector2 randomPointInDisc = RandomPointInDisc(random);
+			return Vector2.Normalize(randomPointInDisc);
+		}
 	}
 }

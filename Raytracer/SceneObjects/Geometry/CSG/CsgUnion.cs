@@ -1,12 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Raytracer.Extensions;
 using Raytracer.Math;
 
 namespace Raytracer.SceneObjects.Geometry.CSG
 {
 	public sealed class CsgUnion : AbstractCsg
 	{
+		public override Vector3 GetRandomPointOnSurface(Random random = null)
+		{
+			// TODO - Can this be better?
+			float surfaceA = A?.SurfaceArea ?? 0;
+			float surfaceB = B?.SurfaceArea ?? 0;
+
+			bool a = random.NextFloat(0, surfaceA + surfaceB) <= surfaceA;
+
+			return (a ? A?.GetRandomPointOnSurface(random) : B?.GetRandomPointOnSurface(random)) ?? Vector3.Zero;
+		}
+
 		protected override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
 		{
 			Intersection[] intersections =

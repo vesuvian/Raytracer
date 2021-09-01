@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Raytracer.Extensions;
 using Raytracer.Math;
 
 namespace Raytracer.SceneObjects.Geometry
@@ -23,6 +24,18 @@ namespace Raytracer.SceneObjects.Geometry
 				// Force a rebuild of the AABB
 				HandleTransformChange();
 			}
+		}
+
+		public override Vector3 GetRandomPointOnSurface(Random random = null)
+		{
+			random ??= new Random();
+
+			float x = random.NextFloat(-0.5f, 0.5f);
+			float z = random.NextFloat(-0.5f, 0.5f);
+
+			Vector3 output = new Vector3(x, 0, z) * m_Edge;
+
+			return LocalToWorld.MultiplyPoint(output);
 		}
 
 		protected override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)

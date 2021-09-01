@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Raytracer.Materials;
 using Raytracer.Math;
 
@@ -23,6 +25,8 @@ namespace Raytracer.SceneObjects.Geometry
 				? GetIntersectionsFinal(ray)
 				: Enumerable.Empty<Intersection>();
 		}
+
+		public abstract Vector3 GetRandomPointOnSurface(Random random = null);
 
 		protected abstract IEnumerable<Intersection> GetIntersectionsFinal(Ray ray);
 

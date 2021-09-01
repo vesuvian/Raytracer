@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
 using Raytracer.Materials;
 using Raytracer.Math;
 
@@ -15,5 +17,7 @@ namespace Raytracer.SceneObjects.Geometry
 		Aabb Aabb { get; }
 
 		IEnumerable<Intersection> GetIntersections(Ray ray);
+
+		Vector3 GetRandomPointOnSurface(Random random = null);
 	}
 }

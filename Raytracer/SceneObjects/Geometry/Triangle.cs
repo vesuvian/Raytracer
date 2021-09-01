@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Raytracer.Extensions;
 using Raytracer.Math;
 
 namespace Raytracer.SceneObjects.Geometry
@@ -104,6 +105,21 @@ namespace Raytracer.SceneObjects.Geometry
 
 			t = Vector3.Dot(ac, qvec) * invDet;
 			return true;
+		}
+
+		public override Vector3 GetRandomPointOnSurface(Random random = null)
+		{
+			random ??= new Random();
+
+			float r1 = random.NextFloat();
+			float r2 = random.NextFloat();
+
+			Vector3 output =
+				new Vector3((1 - MathF.Sqrt(r1)) * A.X + (MathF.Sqrt(r1) * (1 - r2)) * B.X + (MathF.Sqrt(r1) * r2) * C.X,
+				            (1 - MathF.Sqrt(r1)) * A.Y + (MathF.Sqrt(r1) * (1 - r2)) * B.Y + (MathF.Sqrt(r1) * r2) * C.Y,
+				            (1 - MathF.Sqrt(r1)) * A.Z + (MathF.Sqrt(r1) * (1 - r2)) * B.Z + (MathF.Sqrt(r1) * r2) * C.Z);
+
+			return LocalToWorld.MultiplyPoint(output);
 		}
 
 		protected override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)

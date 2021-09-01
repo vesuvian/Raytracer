@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Raytracer.Extensions;
 using Raytracer.Math;
+using Raytracer.Utils;
 
 namespace Raytracer.SceneObjects.Geometry
 {
@@ -45,6 +47,31 @@ namespace Raytracer.SceneObjects.Geometry
 				Min = new Vector3(-Radius, -Height / 2, -Radius),
 				Max = new Vector3(Radius, Height / 2, Radius)
 			}.Multiply(LocalToWorld);
+		}
+
+		public override Vector3 GetRandomPointOnSurface(Random random = null)
+		{
+			float cylinderSurfaceArea = 2 * MathF.PI * m_Radius * m_Height;
+			float capsSurfaceArea = 2 * MathF.PI * m_Radius * m_Radius;
+			bool cylinder = random.NextFloat(0, cylinderSurfaceArea + capsSurfaceArea) <= cylinderSurfaceArea;
+
+			Vector3 output;
+
+			if (cylinder)
+			{
+				Vector2 randomOnDisc = MathUtils.RandomPointOnDisc(random) * m_Radius;
+				float randomHeight = random.NextFloat(m_Height / -2, m_Height / 2);
+				output = new Vector3(randomOnDisc.X, randomHeight, randomOnDisc.Y);
+			}
+			else
+			{
+				Vector2 randomInDisc = MathUtils.RandomPointInDisc(random) * m_Radius;
+				output = new Vector3(randomInDisc.X, m_Height / 2, randomInDisc.Y);
+				if (random.NextBool())
+					output *= -1;
+			}
+
+			return LocalToWorld.MultiplyPoint(output);
 		}
 
 		protected override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)

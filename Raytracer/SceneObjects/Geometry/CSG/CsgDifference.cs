@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Raytracer.Math;
@@ -7,6 +8,12 @@ namespace Raytracer.SceneObjects.Geometry.CSG
 {
 	public sealed class CsgDifference : AbstractCsg
 	{
+		public override Vector3 GetRandomPointOnSurface(Random random = null)
+		{
+			// TODO - Can this be better?
+			return A?.GetRandomPointOnSurface(random) ?? Vector3.Zero;
+		}
+
 		protected override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
 		{
 			Intersection[] aIntersections = (A?.GetIntersections(ray) ?? Enumerable.Empty<Intersection>()).ToArray();

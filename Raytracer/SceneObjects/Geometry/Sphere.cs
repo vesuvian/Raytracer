@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Raytracer.Extensions;
 using Raytracer.Math;
+using Raytracer.Utils;
 
 namespace Raytracer.SceneObjects.Geometry
 {
@@ -39,6 +41,13 @@ namespace Raytracer.SceneObjects.Geometry
 
 			yield return t1;
 			yield return t2;
+		}
+
+		public override Vector3 GetRandomPointOnSurface(Random random = null)
+		{
+			random ??= new Random();
+			Vector3 output = MathUtils.RandomPointOnSphere(random) * m_Radius;
+			return LocalToWorld.MultiplyPoint(output);
 		}
 
 		protected override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)

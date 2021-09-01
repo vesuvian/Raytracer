@@ -7,6 +7,16 @@ namespace Raytracer.Extensions
 	public static class RandomExtensions
 	{
 		/// <summary>
+		/// Gets the next random value as a boolean.
+		/// </summary>
+		/// <param name="extends"></param>
+		/// <returns></returns>
+		public static bool NextBool([NotNull] this Random extends)
+		{
+			return extends.Next(0, 2) == 0;
+		}
+
+		/// <summary>
 		/// Gets the next random value as a float.
 		/// </summary>
 		/// <param name="extends"></param>

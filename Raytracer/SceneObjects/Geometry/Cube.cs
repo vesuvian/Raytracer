@@ -1,12 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Raytracer.Extensions;
 using Raytracer.Math;
 
 namespace Raytracer.SceneObjects.Geometry
 {
 	public sealed class Cube : AbstractSceneGeometry
 	{
+		public override Vector3 GetRandomPointOnSurface(Random random = null)
+		{
+			random ??= new Random();
+
+			int side = random.Next(0, 4);
+			float r1 = random.NextFloat(-0.5f, 0.5f);
+			float r2 = random.NextFloat(-0.5f, 0.5f);
+
+			Vector3 output;
+
+			switch (side)
+			{
+				case 0:
+					output = new Vector3(r1, r2, 0.5f);
+					break;
+				case 1:
+					output = new Vector3(r1, 0.5f, r2);
+					break;
+				case 2:
+					output = new Vector3(0.5f, r1, r2);
+					break;
+
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+
+			if (random.NextBool())
+				output *= 1;
+
+			return LocalToWorld.MultiplyPoint(output);
+		}
+
 		protected override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
 		{
 			// First transform ray to local space.
