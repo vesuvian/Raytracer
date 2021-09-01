@@ -66,7 +66,7 @@ namespace Raytracer.SceneObjects.Geometry
 			Vector3 bc = c - b;
 
 			float lengthA = ab.Length();
-			float lengthB = ab.Length();
+			float lengthB = ac.Length();
 			float lengthC = bc.Length();
 
 			float abcOver2 = (lengthA + lengthB + lengthC) / 2;
