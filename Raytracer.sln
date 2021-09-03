@@ -11,9 +11,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{252D5452-4D9
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{8AF4A84E-99BE-447B-8D8B-6BF2157AF63C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raytracer.Wpf", "Raytracer.Wpf\Raytracer.Wpf.csproj", "{BC8E26F1-A4EB-4E44-835C-968D99004433}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raytracer.Wpf", "Raytracer.Wpf\Raytracer.Wpf.csproj", "{BC8E26F1-A4EB-4E44-835C-968D99004433}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raytracer.Cmd", "Raytracer.Cmd\Raytracer.Cmd.csproj", "{B4145FF7-008A-42EC-B1F0-4A2BFF863BB9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raytracer.Cmd", "Raytracer.Cmd\Raytracer.Cmd.csproj", "{B4145FF7-008A-42EC-B1F0-4A2BFF863BB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raytracer.Ascii", "Raytracer.Ascii\Raytracer.Ascii.csproj", "{AE8AA3DE-E851-4564-A211-7CD5AEFDA1F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +39,10 @@ Global
 		{B4145FF7-008A-42EC-B1F0-4A2BFF863BB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4145FF7-008A-42EC-B1F0-4A2BFF863BB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4145FF7-008A-42EC-B1F0-4A2BFF863BB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE8AA3DE-E851-4564-A211-7CD5AEFDA1F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE8AA3DE-E851-4564-A211-7CD5AEFDA1F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE8AA3DE-E851-4564-A211-7CD5AEFDA1F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE8AA3DE-E851-4564-A211-7CD5AEFDA1F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +52,7 @@ Global
 		{D37B5D50-1B93-4C46-935A-75FEF8DD98C2} = {8AF4A84E-99BE-447B-8D8B-6BF2157AF63C}
 		{BC8E26F1-A4EB-4E44-835C-968D99004433} = {252D5452-4D9B-454E-9294-32729365E57F}
 		{B4145FF7-008A-42EC-B1F0-4A2BFF863BB9} = {252D5452-4D9B-454E-9294-32729365E57F}
+		{AE8AA3DE-E851-4564-A211-7CD5AEFDA1F6} = {252D5452-4D9B-454E-9294-32729365E57F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {11E0EBE3-475C-4E6C-86B2-097AA97DCC72}
