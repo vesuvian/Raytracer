@@ -206,6 +206,7 @@ namespace Raytracer.Wpf.ViewModel
 					},
 					new Sphere
 					{
+						RayMask = eRayMask.Default | eRayMask.LightSource,
 						Position = new Vector3(16, 2, 0),
 						Radius = 2,
 						Material = new EmissiveMaterial

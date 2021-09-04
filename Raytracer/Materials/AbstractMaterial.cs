@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
 using System.Threading;
 using Raytracer.Extensions;
 using Raytracer.Materials.Textures;
 using Raytracer.Math;
+using Raytracer.SceneObjects;
+using Raytracer.SceneObjects.Geometry;
 using Raytracer.SceneObjects.Lights;
 using Raytracer.Utils;
 
@@ -57,6 +60,14 @@ namespace Raytracer.Materials
 			{
 				ILight light = scene.Lights[i];
 				sum += light.Sample(scene, position, normal, random);
+			}
+
+			for (int i = 0; i < scene.Geometry.Count; i++)
+			{
+				ISceneGeometry light = scene.Geometry[i];
+
+				if (light.RayMask.HasFlag(eRayMask.LightSource))
+					sum += light.SampleLight(scene, position, normal, random);
 			}
 
 			return sum;

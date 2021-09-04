@@ -19,5 +19,7 @@ namespace Raytracer.SceneObjects.Geometry
 		IEnumerable<Intersection> GetIntersections(Ray ray);
 
 		Vector3 GetRandomPointOnSurface(Random random = null);
+
+		Vector4 SampleLight(Scene scene, Vector3 position, Vector3 normal, Random random = null);
 	}
 }

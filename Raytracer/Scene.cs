@@ -20,7 +20,7 @@ namespace Raytracer
 		public int GlobalIlluminationSamples { get; set; } = 1;
 
 		public IEnumerable<KeyValuePair<ISceneGeometry, Intersection>> GetIntersections(
-			Ray ray, eRayMask mask = eRayMask.All)
+			Ray ray, eRayMask mask = eRayMask.Default)
 		{
 			return Geometry.Where(g => (g.RayMask & mask) != eRayMask.None)
 			               .SelectMany(g => g.GetIntersections(ray)
