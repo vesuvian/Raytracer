@@ -90,7 +90,7 @@ namespace Raytracer.Layers
 						Ray ray = scene.Camera.CreateRay(xViewportMin, xViewportMax, yViewportMin, yViewportMax, random);
 						Vector4 sample = CastRay(scene, ray, random, 0, Vector3.One, out _, cancellationToken);
 
-						successiveBuffer.SetPixel(x, y, ColorUtils.ToColorRgba(sample));
+						successiveBuffer.SetPixel(x, y, ColorUtils.RgbToColor(sample));
 						Progress = pixelsComplete++;
 					}
 					catch (OperationCanceledException)

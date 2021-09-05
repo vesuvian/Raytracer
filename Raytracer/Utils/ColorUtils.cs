@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using Raytracer.Extensions;
 
 namespace Raytracer.Utils
 {
@@ -9,16 +11,23 @@ namespace Raytracer.Utils
 	{
 		private const float EPSILON = 0.00001f;
 
+		/// <summary>
+		/// Gets the CIE D65 (white) structure.
+		/// </summary>
+		public static Vector3 XyzD65White = new Vector3(0.9505f, 1.0f, 1.0890f);
+
 		public static Vector4 RgbaBlack { get { return new Vector4(0, 0, 0, 1); } }
 
 		public static Vector4 RgbaWhite { get { return new Vector4(1); } }
 
+		#region Lerp
+
 		public static Color LerpRgb(Color a, Color b, float f)
 		{
-			Vector4 rgbA = ToVectorRgba(a);
-			Vector4 rgbB = ToVectorRgba(b);
+			Vector4 rgbA = ColorToRgb(a);
+			Vector4 rgbB = ColorToRgb(b);
 			Vector4 rgbLerped = LerpRgb(rgbA, rgbB, f);
-			return ToColorRgba(rgbLerped);
+			return RgbToColor(rgbLerped);
 		}
 
 		public static Vector4 LerpRgb(Vector4 a, Vector4 b, float f)
@@ -28,10 +37,10 @@ namespace Raytracer.Utils
 
 		public static Color LerpHsl(Color a, Color b, float f)
 		{
-			Vector4 rgbaA = ToVectorRgba(a);
-			Vector4 rgbaB = ToVectorRgba(b);
+			Vector4 rgbaA = ColorToRgb(a);
+			Vector4 rgbaB = ColorToRgb(b);
 			Vector4 rgbLerped = LerpHsl(rgbaA, rgbaB, f);
-			return ToColorRgba(rgbLerped);
+			return RgbToColor(rgbLerped);
 		}
 
 		public static Vector4 LerpHsl(Vector4 rgbaA, Vector4 rgbaB, float f)
@@ -41,6 +50,10 @@ namespace Raytracer.Utils
 			Vector4 hslLerped = Vector4.Lerp(hslA, hslB, f);
 			return HslToRgb(hslLerped);
 		}
+
+		#endregion
+
+		#region Conversion
 
 		/// <summary>
 		/// Converts RGB to HSL.
@@ -138,6 +151,82 @@ namespace Raytracer.Utils
 			                   MathUtils.Clamp(rgb[2], 0, 1),
 			                   MathUtils.Clamp(a, 0, 1));
 		}
+
+		public static Color RgbToColor(Vector4 rgba)
+		{
+			return Color.FromArgb((int)MathUtils.Clamp(rgba.W * 255, 0, 255),
+			                      (int)MathUtils.Clamp(rgba.X * 255, 0, 255),
+			                      (int)MathUtils.Clamp(rgba.Y * 255, 0, 255),
+			                      (int)MathUtils.Clamp(rgba.Z * 255, 0, 255));
+		}
+
+		public static Vector4 ColorToRgb(Color color)
+		{
+			return new Vector4(color.R, color.G, color.B, color.A) / 255;
+		}
+
+		public static Vector4 RgbToLab(Vector4 rgba, Vector3 rgbWhite)
+		{
+			Vector4 xyz = RgbToXyz(rgba);
+			Vector3 xyzWhite = RgbToXyz(rgbWhite.ToVector4()).ToVector3();
+
+			return XyztoLab(xyz, xyzWhite);
+		}
+
+		public static Vector4 RgbToLab(Vector4 rgba)
+		{
+			Vector4 xyz = RgbToXyz(rgba);
+			return XyztoLab(xyz, XyzD65White);
+		}
+
+		/// <summary>
+		/// Converts RGB to CIEXYZ.
+		/// </summary>
+		public static Vector4 RgbToXyz(Vector4 rgba)
+		{
+			// convert to a sRGB form
+			double r =
+				rgba.X > 0.04045
+					? System.Math.Pow((rgba.X + 0.055) / (1 + 0.055), 2.2)
+					: rgba.X / 12.92;
+
+			double g =
+				rgba.Y > 0.04045
+					? System.Math.Pow((rgba.Y + 0.055) / (1 + 0.055), 2.2)
+					: rgba.Y / 12.92;
+
+			double b =
+				rgba.Z > 0.04045
+					? System.Math.Pow((rgba.Z + 0.055) / (1 + 0.055), 2.2)
+					: rgba.Z / 12.92;
+
+			// converts
+			return new Vector4((float)(r * 0.4124 + g * 0.3576 + b * 0.1805),
+			                  (float)(r * 0.2126 + g * 0.7152 + b * 0.0722),
+			                  (float)(r * 0.0193 + g * 0.1192 + b * 0.9505),
+							  rgba.W);
+		}
+
+		/// <summary>
+		/// Converts CIEXYZ to CIELab.
+		/// </summary>
+		public static Vector4 XyztoLab(Vector4 xyza, Vector3 xyzWhite)
+		{
+			// XYZ to L*a*b* transformation function.
+			Func<double, double> fxyz = t =>
+				((t > 0.008856)
+					? System.Math.Pow(t, (1.0 / 3.0))
+					: (7.787 * t + 16.0 / 116.0));
+
+			return new Vector4((float)(116.0 * fxyz(xyza.Y / xyzWhite.Y) - 16),
+			                   (float)(500.0 * (fxyz(xyza.X / xyzWhite.X) - fxyz(xyza.Y / xyzWhite.Y))),
+			                   (float)(200.0 * (fxyz(xyza.Y / xyzWhite.Y) - fxyz(xyza.Z / xyzWhite.Z))),
+			                   xyza.W);
+		}
+
+		#endregion
+
+		#region Math
 
 		public static Color Average(IEnumerable<Color> colors)
 		{
@@ -260,17 +349,6 @@ namespace Raytracer.Utils
 			                   MathUtils.Clamp(rgba.W, min.W, max.W));
 		}
 
-		public static Color ToColorRgba(Vector4 rgba)
-		{
-			return Color.FromArgb((int)MathUtils.Clamp(rgba.W * 255, 0, 255),
-			                      (int)MathUtils.Clamp(rgba.X * 255, 0, 255),
-			                      (int)MathUtils.Clamp(rgba.Y * 255, 0, 255),
-			                      (int)MathUtils.Clamp(rgba.Z * 255, 0, 255));
-		}
-
-		public static Vector4 ToVectorRgba(Color color)
-		{
-			return new Vector4(color.R, color.G, color.B, color.A) / 255;
-		}
+		#endregion
 	}
 }

@@ -31,7 +31,7 @@ namespace Raytracer.Buffers
 
 			lock (m_Pixels)
 			{
-				m_Pixels[index] += ColorUtils.ToVectorRgba(color);
+				m_Pixels[index] += ColorUtils.ColorToRgb(color);
 				m_PixelSamples[index]++;
 				m_Buffer.SetPixel(x, y, GetPixel(x, y));
 			}
@@ -47,7 +47,7 @@ namespace Raytracer.Buffers
 				int count = m_PixelSamples[index];
 				Vector4 average = count == 0 ? default : sum / count;
 
-				return ColorUtils.ToColorRgba(average);
+				return ColorUtils.RgbToColor(average);
 			}
 		}
 	}

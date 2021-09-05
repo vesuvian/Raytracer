@@ -91,5 +91,19 @@ namespace Raytracer.Utils
 			float z = sinTheta * MathF.Sin(phi);
 			return Vector3.Normalize(new Vector3(x, r1, z));
 		}
+
+		public static Vector3 ClosestPointOnLine(Vector3 a, Vector3 b, Vector3 p, out float t)
+		{
+			t = 0;
+			if (a == b)
+				return a;
+
+			Vector3 ap = p - a;
+			Vector3 ab = b - a;
+
+			t = Vector3.Dot(ap, ab) / ab.LengthSquared();
+
+			return a + t * ab;
+		}
 	}
 }

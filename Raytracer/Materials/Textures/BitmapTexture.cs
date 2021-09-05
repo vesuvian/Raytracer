@@ -18,7 +18,7 @@ namespace Raytracer.Materials.Textures
 		{
 			float x = MathUtils.ModPositive(u * m_Buffer.Width, m_Buffer.Width);
 			float y = MathUtils.ModPositive((1 - v) * m_Buffer.Height, m_Buffer.Height);
-			return ColorUtils.ToVectorRgba(m_Buffer.GetPixelBilinear(x, y));
+			return ColorUtils.ColorToRgb(m_Buffer.GetPixelBilinear(x, y));
 		}
 
 		public static BitmapTexture FromPath(string path)
