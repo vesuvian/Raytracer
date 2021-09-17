@@ -13,6 +13,8 @@ namespace Raytracer.Materials
 		Vector4 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth, Vector3 rayWeight,
 		               CastRayDelegate castRay, CancellationToken cancellationToken = default);
 
+		Vector4 Shadow(Ray ray, Intersection intersection, Vector4 light);
+
 		Vector3 GetWorldNormal(Intersection intersection);
 	}
 }

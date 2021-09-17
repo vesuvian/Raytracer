@@ -43,6 +43,13 @@ namespace Raytracer.Materials
 			       (1 - fresnel) * (refractionColor + specular * 0.2f);
 		}
 
+		public override Vector4 Shadow(Ray ray, Intersection intersection, Vector4 light)
+		{
+			Vector3 worldNormal = GetWorldNormal(intersection);
+			float fresnel = Vector3Utils.Fresnel(ray.Direction, worldNormal, Ior);
+			return light * (1 - fresnel);
+		}
+
 		private float SampleRoughness(Vector2 uv)
 		{
 			float x = uv.X / Scale.X - Offset.X;

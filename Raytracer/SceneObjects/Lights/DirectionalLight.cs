@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Numerics;
 using Raytracer.Math;
 using Raytracer.Utils;
@@ -8,27 +7,22 @@ namespace Raytracer.SceneObjects.Lights
 {
 	public sealed class DirectionalLight : AbstractLight
 	{
+		public float Distance { get; set; } = 1000;
+
 		public override Vector4 Sample(Scene scene, Vector3 position, Vector3 normal, Random random)
 		{
-			Ray toLight =
+			Ray ray =
 				new Ray
 				{
-					Origin = position,
-					Direction = Forward * -1
+					Origin = position - (Forward * Distance),
+					Direction = Forward
 				};
-
-			bool canSee =
-				!CastShadows ||
-				!scene.GetIntersections(toLight, eRayMask.CastShadows)
-				      .Any(kvp => kvp.Value.RayDelta > SELF_SHADOW_TOLERANCE);
-
-			if (!canSee)
-				return ColorUtils.RgbaBlack;
 
 			float faceAmount = MathF.Abs(Vector3.Dot(normal, Forward));
 			faceAmount = MathUtils.Clamp(faceAmount, 0, 1);
 
-			return ColorUtils.Multiply(Color, faceAmount);
+			Vector4 sample = ColorUtils.Multiply(Color, faceAmount);
+			return Shadow(scene, ray, Distance, sample);
 		}
 	}
 }

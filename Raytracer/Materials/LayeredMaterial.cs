@@ -27,6 +27,16 @@ namespace Raytracer.Materials
 			return ColorUtils.LerpRgb(a, b, blend);
 		}
 
+		public Vector4 Shadow(Ray ray, Intersection intersection, Vector4 light)
+		{
+			float blend = SampleBlend(intersection.Uv);
+
+			Vector4 a = A.Shadow(ray, intersection, light);
+			Vector4 b = B.Shadow(ray, intersection, light);
+
+			return Vector4.Lerp(a, b, blend);
+		}
+
 		public Vector3 GetWorldNormal(Intersection intersection)
 		{
 			float blend = SampleBlend(intersection.Uv);

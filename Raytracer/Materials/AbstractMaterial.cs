@@ -21,6 +21,11 @@ namespace Raytracer.Materials
 		                               Vector3 rayWeight, CastRayDelegate castRay,
 		                               CancellationToken cancellationToken = default);
 
+		public virtual Vector4 Shadow(Ray ray, Intersection intersection, Vector4 light)
+		{
+			return ColorUtils.RgbaBlack;
+		}
+
 		public Vector3 SampleNormal(Vector2 uv)
 		{
 			if (Normal == null)

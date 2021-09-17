@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Numerics;
 using Raytracer.Math;
 using Raytracer.Utils;
@@ -22,24 +21,12 @@ namespace Raytracer.SceneObjects.Lights
 			float distance = Vector3.Distance(Position, position);
 			Vector4 sample = Sample(distance, faceAmount);
 
-			// Don't bother finding intersections just to draw shadow
-			if (sample == ColorUtils.RgbaBlack)
-				return ColorUtils.RgbaBlack;
-
 			Vector4 sum = Vector4.Zero;
 
 			for (int i = 0; i < Samples; i++)
 			{
-				Ray ray = GetRays(position, random);
-
-				bool canSee =
-					!CastShadows ||
-					!scene.GetIntersections(ray, eRayMask.CastShadows)
-					      .Any(kvp => kvp.Value.RayDelta > SELF_SHADOW_TOLERANCE &&
-					                  kvp.Value.RayDelta < distance);
-
-				if (canSee)
-					sum += sample;
+				Ray ray = GetRay(position, random);
+				sum += Shadow(scene, ray, distance, sample);
 			}
 
 			return Samples == 0 ? sum : sum / Samples;
@@ -65,7 +52,7 @@ namespace Raytracer.SceneObjects.Lights
 			throw new NotImplementedException();
 		}
 
-		private Ray GetRays(Vector3 position, Random random)
+		private Ray GetRay(Vector3 position, Random random)
 		{
 			Vector3 pointInSphere = MathUtils.RandomPointInSphere(random);
 			Vector3 softShadowPosition = Position + pointInSphere * SoftShadowRadius;
