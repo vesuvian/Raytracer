@@ -47,6 +47,14 @@ namespace Raytracer.Materials
 			return Vector3Utils.Slerp(a, b, blend);
 		}
 
+		public Vector4 GetAmbientOcclusion(Scene scene, Random random, Vector3 position, Vector3 worldNormal)
+		{
+			Vector4 a = A.GetAmbientOcclusion(scene, random, position, worldNormal);
+			Vector4 b = B.GetAmbientOcclusion(scene, random, position, worldNormal);
+
+			return Vector4.Min(a, b);
+		}
+
 		private float SampleBlend(Vector2 uv)
 		{
 			float x = uv.X / Scale.X - Offset.X;

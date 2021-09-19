@@ -34,6 +34,8 @@ namespace Raytracer.Cmd
 			Scene scene = new Scene
 			{
 				GlobalIlluminationSamples = 4,
+				AmbientOcclusionSamples = 16,
+				AmbientOcclusionScale = 0.5f,
 				Camera = new PerspectiveCamera
 				{
 					Position = new Vector3(5, 2, -20),

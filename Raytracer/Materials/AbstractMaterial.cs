@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
 using System.Threading;
 using Raytracer.Extensions;
 using Raytracer.Materials.Textures;
 using Raytracer.Math;
+using Raytracer.SceneObjects;
 using Raytracer.SceneObjects.Lights;
 using Raytracer.Utils;
 
@@ -121,7 +123,42 @@ namespace Raytracer.Materials
 			return rays == 0 ? sum : sum / rays;
 		}
 
-		protected static Vector4 GetReflection(Scene scene, Ray ray, Vector3 position, Vector3 normal, float roughness,
+		public virtual Vector4 GetAmbientOcclusion(Scene scene, Random random, Vector3 position, Vector3 normal)
+		{
+			Vector4 occlusionSum = Vector4.Zero;
+			Vector4 occlusionMax = Vector4.One * scene.AmbientOcclusionSamples;
+
+			for (int i = 0; i < scene.AmbientOcclusionSamples; i++)
+			{
+				float r1 = random.NextFloat();
+				float r2 = random.NextFloat();
+
+				Vector3 randomNormal = MathUtils.UniformPointOnHemisphere(r1, r2);
+				(Vector3 nt, Vector3 nb) = Vector3Utils.GetTangentAndBitangent(normal);
+				Matrix4x4 surface = Matrix4x4Utils.Tbn(nt, nb, normal);
+				Vector3 worldNormal = surface.MultiplyNormal(randomNormal);
+
+				Ray giRay = new Ray
+				{
+					Origin = position,
+					Direction = worldNormal
+				};
+
+				bool hit =
+					scene.GetIntersections(giRay, eRayMask.AmbientOcclusion)
+					     .Any(kvp => kvp.Value.RayDelta > 0.001f &&
+					                 kvp.Value.RayDelta < scene.AmbientOcclusionScale);
+
+				if (hit)
+					occlusionSum += new Vector4(1) * r1;
+			}
+
+			return scene.AmbientOcclusionSamples == 0
+				? Vector4.One
+				: (occlusionMax - occlusionSum) / scene.AmbientOcclusionSamples;
+		}
+
+		protected Vector4 GetReflection(Scene scene, Ray ray, Vector3 position, Vector3 normal, float roughness,
 		                                       Random random, int rayDepth, Vector3 rayWeight, CastRayDelegate castRay,
 		                                       CancellationToken cancellationToken = default)
 		{

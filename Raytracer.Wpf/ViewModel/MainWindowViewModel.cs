@@ -63,6 +63,8 @@ namespace Raytracer.Wpf.ViewModel
 			Scene scene = new Scene
 			{
 				GlobalIlluminationSamples = 4,
+				AmbientOcclusionSamples = 16,
+				AmbientOcclusionScale = 0.5f,
 				Camera = new PerspectiveCamera
 				{
 					Position = new Vector3(5, 2, -20),
@@ -146,7 +148,7 @@ namespace Raytracer.Wpf.ViewModel
 						Material = new LayeredMaterial
 						{
 							Blend = new CheckerboardTexture(),
-							A = new PhongMaterial { 
+							A = new PhongMaterial {
 								Diffuse = new CheckerboardTexture
 								{
 									ColorA = new Vector4(0.9f),
@@ -203,6 +205,7 @@ namespace Raytracer.Wpf.ViewModel
 					},
 					new Sphere
 					{
+						RayMask = eRayMask.Visible | eRayMask.CastShadows,
 						Position = new Vector3(16, 2, 0),
 						Radius = 2,
 						Material = new EmissiveMaterial
@@ -212,12 +215,14 @@ namespace Raytracer.Wpf.ViewModel
 					},
 					new Sphere
 					{
+						RayMask = eRayMask.Visible | eRayMask.CastShadows,
 						Position = new Vector3(8, 3, -6),
 						Radius = 2,
 						Material = new RefractiveMaterial { Ior = 1.5f }
 					},
 					new Sphere
 					{
+						RayMask = eRayMask.Visible | eRayMask.CastShadows,
 						Position = new Vector3(8, 3, -6),
 						Radius = -1.8f,
 						Material = new RefractiveMaterial { Ior = 1.5f }

@@ -8,6 +8,7 @@ namespace Raytracer.SceneObjects
 		None = 0,
 		Visible = 1,
 		CastShadows = 2,
-		All = Visible | CastShadows
+		AmbientOcclusion = 4,
+		All = Visible | CastShadows | AmbientOcclusion
 	}
 }

@@ -16,5 +16,7 @@ namespace Raytracer.Materials
 		Vector4 Shadow(Ray ray, Intersection intersection, Vector4 light);
 
 		Vector3 GetWorldNormal(Intersection intersection);
+
+		Vector4 GetAmbientOcclusion(Scene scene, Random random, Vector3 position, Vector3 worldNormal);
 	}
 }

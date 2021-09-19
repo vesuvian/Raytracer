@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
-using Raytracer.Extensions;
 using Raytracer.Math;
 using Raytracer.SceneObjects;
 using Raytracer.SceneObjects.Geometry;
@@ -10,31 +10,14 @@ using Raytracer.Utils;
 
 namespace Raytracer.Layers
 {
-	public sealed class MaterialsLayer : AbstractLayer
+	public sealed class AmbientOcclusionLayer : AbstractLayer
 	{
-		public MaterialsLayer()
-		{
-			Gamma = 2.2f;
-		}
-
 		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
 		                                   out bool hit, CancellationToken cancellationToken = default)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 
 			hit = false;
-
-			if (rayDepth > scene.MaxReflectionRays)
-				return ColorUtils.RgbaBlack;
-
-			// Russian Roulette
-			// Randomly terminate a path with a probability inversely equal to the throughput
-			float p = MathF.Max(rayWeight.X, MathF.Max(rayWeight.Y, rayWeight.Z));
-			if (random.NextFloat() / (rayDepth + 1) > p)
-				return ColorUtils.RgbaBlack;
-
-			// Add the energy we 'lose' by randomly terminating paths
-			rayWeight *= 1 / p;
 
 			(ISceneGeometry geometry, Intersection intersection) =
 				scene.GetIntersections(ray, eRayMask.Visible)
@@ -46,9 +29,10 @@ namespace Raytracer.Layers
 				return ColorUtils.RgbaBlack;
 			hit = true;
 
-			Vector4 sample = geometry.Material.Sample(scene, ray, intersection, random, rayDepth, rayWeight, CastRay, cancellationToken);
-			Vector4 ao = geometry.Material.GetAmbientOcclusion(scene, random, intersection.Position, intersection.Normal);
-			return sample * ao;
+			return
+				geometry.RayMask.HasFlag(eRayMask.AmbientOcclusion)
+					? geometry.Material.GetAmbientOcclusion(scene, random, intersection.Position, intersection.Normal)
+					: Vector4.One;
 		}
 	}
 }

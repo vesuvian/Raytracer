@@ -58,5 +58,10 @@ namespace Raytracer.Materials
 			Vector4 roughness = Roughness.Sample(x, y);
 			return roughness.X;
 		}
+
+		public override Vector4 GetAmbientOcclusion(Scene scene, Random random, Vector3 position, Vector3 normal)
+		{
+			return Vector4.One;
+		}
 	}
 }
