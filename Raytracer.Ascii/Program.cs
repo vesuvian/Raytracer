@@ -46,26 +46,23 @@ namespace Raytracer.Ascii
 					new PointLight
 					{
 						Position = new Vector3(10, 100, -5),
-						Color = new Vector4(5, 0, 0, 1),
-						Range = 200,
+						Color = new Vector4(20000, 0, 0, 1),
 						SoftShadowRadius = 2,
-						Falloff = eFalloff.Linear
+						Falloff = eFalloff.Quadratic
 					},
 					new PointLight
 					{
 						Position = new Vector3(0, 10, 10),
-						Color = new Vector4(0, 5, 0, 1),
-						Range = 40,
+						Color = new Vector4(0, 500, 0, 1),
 						SoftShadowRadius = 2,
-						Falloff = eFalloff.Linear
+						Falloff = eFalloff.Quadratic
 					},
 					new PointLight
 					{
 						Position = new Vector3(0, 1, -20),
-						Color = new Vector4(5, 5, 5, 1),
-						Range = 80,
+						Color = new Vector4(300, 300, 300, 1),
 						SoftShadowRadius = 2,
-						Falloff = eFalloff.Linear
+						Falloff = eFalloff.Quadratic
 					}
 				},
 				Geometry = new List<ISceneGeometry>

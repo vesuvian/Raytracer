@@ -12,6 +12,11 @@ namespace Raytracer.Layers
 {
 	public sealed class MaterialsLayer : AbstractLayer
 	{
+		public MaterialsLayer()
+		{
+			Gamma = 2.2f;
+		}
+
 		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
 		                                   out bool hit, CancellationToken cancellationToken = default)
 		{

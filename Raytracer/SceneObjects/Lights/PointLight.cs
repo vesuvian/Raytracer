@@ -7,7 +7,6 @@ namespace Raytracer.SceneObjects.Lights
 {
 	public sealed class PointLight : AbstractLight
 	{
-		public float Range { get; set; } = 100;
 		public eFalloff Falloff { get; set; }
 		public int Samples { get; set; } = 1;
 		public float SoftShadowRadius { get; set; }
@@ -34,22 +33,19 @@ namespace Raytracer.SceneObjects.Lights
 
 		private Vector4 Sample(float distance, float faceAmount)
 		{
-			switch (Falloff)
-			{
-				case eFalloff.None:
-					return ColorUtils.Multiply(Color, faceAmount);
-				case eFalloff.Linear:
-					float linearFalloff = MathF.Max(Range - distance, 0) / Range;
-					return ColorUtils.Multiply(Color, faceAmount * linearFalloff);
-				case eFalloff.Cubic:
-					break;
-				case eFalloff.Quadratic:
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
+			float attenuation = GetAttenuation(distance);
+			return Color * faceAmount * attenuation;
+		}
 
-			throw new NotImplementedException();
+		private float GetAttenuation(float distance)
+		{
+			return Falloff switch
+			{
+				eFalloff.None => 1,
+				eFalloff.Linear => (1 / distance),
+				eFalloff.Quadratic => (1 / (distance * distance)),
+				_ => throw new ArgumentOutOfRangeException()
+			};
 		}
 
 		private Ray GetRay(Vector3 position, Random random)

@@ -4,7 +4,6 @@
 	{
 		None,
 		Linear,
-		Cubic,
 		Quadratic
 	}
 }

@@ -13,6 +13,8 @@ namespace Raytracer.Layers
 {
 	public abstract class AbstractLayer : ILayer
 	{
+		public float Gamma { get; set; } = 1.0f;
+
 		public event EventHandler OnProgressChanged;
 
 		private ulong m_Progress;
@@ -89,6 +91,12 @@ namespace Raytracer.Layers
 
 						Ray ray = scene.Camera.CreateRay(xViewportMin, xViewportMax, yViewportMin, yViewportMax, random);
 						Vector4 sample = CastRay(scene, ray, random, 0, Vector3.One, out _, cancellationToken);
+
+						// Gamma Correction
+						sample = new Vector4(MathF.Pow(sample.X, 1 / Gamma),
+						                     MathF.Pow(sample.Y, 1 / Gamma),
+						                     MathF.Pow(sample.Z, 1 / Gamma),
+						                     1);
 
 						successiveBuffer.SetPixel(x, y, ColorUtils.RgbToColor(sample));
 						Progress = pixelsComplete++;
