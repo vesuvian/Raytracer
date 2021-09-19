@@ -76,20 +76,20 @@ namespace Raytracer.SceneObjects.Geometry
 			Vector3 pointToMin = pos - cubeMin;
 			Vector3 pointToMax = pos - cubeMax;
 
-			if (MathF.Abs(pointToMin.X) < 0.0001f)
+			if (MathF.Abs(pointToMin.X) < 0.001f)
 				return new Vector3(0, 0, -1); // left
-			if (MathF.Abs(pointToMax.X) < 0.0001f)
+			if (MathF.Abs(pointToMax.X) < 0.001f)
 				return new Vector3(0, 0, 1); // right
-			if (MathF.Abs(pointToMin.Y) < 0.0001f)
+			if (MathF.Abs(pointToMin.Y) < 0.001f)
 				return new Vector3(1, 0, 0); // bottom
-			if (MathF.Abs(pointToMax.Y) < 0.0001f)
+			if (MathF.Abs(pointToMax.Y) < 0.001f)
 				return new Vector3(1, 0, 0); // top
-			if (MathF.Abs(pointToMin.Z) < 0.0001f)
+			if (MathF.Abs(pointToMin.Z) < 0.001f)
 				return new Vector3(1, 0, 0); // front
-			if (MathF.Abs(pointToMax.Z) < 0.0001f)
+			if (MathF.Abs(pointToMax.Z) < 0.001f)
 				return new Vector3(-1, 0, 0); // back
 
-			return default;
+			throw new ArgumentOutOfRangeException(nameof(pos));
 		}
 
 		private static Vector3 GetBitangent(Vector3 pos)
@@ -99,20 +99,20 @@ namespace Raytracer.SceneObjects.Geometry
 			Vector3 pointToMin = pos - cubeMin;
 			Vector3 pointToMax = pos - cubeMax;
 
-			if (MathF.Abs(pointToMin.X) < 0.0001f)
+			if (MathF.Abs(pointToMin.X) < 0.001f)
 				return new Vector3(0, 1, 0); // left
-			if (MathF.Abs(pointToMax.X) < 0.0001f)
+			if (MathF.Abs(pointToMax.X) < 0.001f)
 				return new Vector3(0, 1, 0); // right
-			if (MathF.Abs(pointToMin.Y) < 0.0001f)
+			if (MathF.Abs(pointToMin.Y) < 0.001f)
 				return new Vector3(0, 0, -1); // bottom
-			if (MathF.Abs(pointToMax.Y) < 0.0001f)
+			if (MathF.Abs(pointToMax.Y) < 0.001f)
 				return new Vector3(0, 0, 1); // top
-			if (MathF.Abs(pointToMin.Z) < 0.0001f)
+			if (MathF.Abs(pointToMin.Z) < 0.001f)
 				return new Vector3(0, 1, 0); // front
-			if (MathF.Abs(pointToMax.Z) < 0.0001f)
+			if (MathF.Abs(pointToMax.Z) < 0.001f)
 				return new Vector3(0, 1, 0); // back
 
-			return default;
+			throw new ArgumentOutOfRangeException(nameof(pos));
 		}
 
 		private static Vector2 GetUv(Vector3 pos)
@@ -122,20 +122,22 @@ namespace Raytracer.SceneObjects.Geometry
 			Vector3 pointToMin = pos - cubeMin;
 			Vector3 pointToMax = pos - cubeMax;
 
-			Vector2 output = default;
+			Vector2 output;
 
-			if (MathF.Abs(pointToMin.X) < 0.0001f)
+			if (MathF.Abs(pointToMin.X) < 0.001f)
 				output = new Vector2(-pos.Z, pos.Y); // left
-			else if (MathF.Abs(pointToMax.X) < 0.0001f)
+			else if (MathF.Abs(pointToMax.X) < 0.001f)
 				output = new Vector2(pos.Z, pos.Y); // right
-			else if (MathF.Abs(pointToMin.Y) < 0.0001f)
+			else if (MathF.Abs(pointToMin.Y) < 0.001f)
 				output = new Vector2(pos.X, -pos.Z); // bottom
-			else if (MathF.Abs(pointToMax.Y) < 0.0001f)
+			else if (MathF.Abs(pointToMax.Y) < 0.001f)
 				output = new Vector2(pos.X, pos.Z); // top
-			else if (MathF.Abs(pointToMin.Z) < 0.0001f)
+			else if (MathF.Abs(pointToMin.Z) < 0.001f)
 				output = new Vector2(pos.X, pos.Y); // front
-			else if (MathF.Abs(pointToMax.Z) < 0.0001f)
+			else if (MathF.Abs(pointToMax.Z) < 0.001f)
 				output = new Vector2(-pos.X, pos.Y); // back
+			else
+				throw new ArgumentOutOfRangeException(nameof(pos));
 
 			// At this point we're in the range -0.5 to 0.5
 			output += Vector2.One * 0.5f;
@@ -150,20 +152,20 @@ namespace Raytracer.SceneObjects.Geometry
 			Vector3 pointToMin = pos - cubeMin;
 			Vector3 pointToMax = pos - cubeMax;
 
-			if (MathF.Abs(pointToMin.X) < 0.0001f)
+			if (MathF.Abs(pointToMin.X) < 0.001f)
 				return new Vector3(-1, 0, 0); // left
-			if (MathF.Abs(pointToMax.X) < 0.0001f)
+			if (MathF.Abs(pointToMax.X) < 0.001f)
 				return new Vector3(1, 0, 0); // right
-			if (MathF.Abs(pointToMin.Y) < 0.0001f)
+			if (MathF.Abs(pointToMin.Y) < 0.001f)
 				return new Vector3(0, -1, 0); // bottom
-			if (MathF.Abs(pointToMax.Y) < 0.0001f)
+			if (MathF.Abs(pointToMax.Y) < 0.001f)
 				return new Vector3(0, 1, 0); // top
-			if (MathF.Abs(pointToMin.Z) < 0.0001f)
+			if (MathF.Abs(pointToMin.Z) < 0.001f)
 				return new Vector3(0, 0, -1); // front
-			if (MathF.Abs(pointToMax.Z) < 0.0001f)
+			if (MathF.Abs(pointToMax.Z) < 0.001f)
 				return new Vector3(0, 0, 1); // back
 
-			return default;
+			throw new ArgumentOutOfRangeException(nameof(pos));
 		}
 
 		private static float[] CheckAxis(float origin, float direction)
