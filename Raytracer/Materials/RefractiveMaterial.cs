@@ -11,6 +11,8 @@ namespace Raytracer.Materials
 	{
 		public float Ior { get; set; } = 1.3f;
 
+		public override bool Metallic { get { return false; } }
+
 		public ITexture Roughness { get; set; } = new SolidColorTexture { Color = ColorUtils.RgbaBlack };
 
 		public override Vector4 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth,
@@ -47,7 +49,7 @@ namespace Raytracer.Materials
 		{
 			Vector3 worldNormal = GetWorldNormal(intersection);
 			float fresnel = Vector3Utils.Fresnel(ray.Direction, worldNormal, Ior);
-			return light * (1 - fresnel);
+			return light * (1 - fresnel) * Color;
 		}
 
 		private float SampleRoughness(Vector2 uv)

@@ -11,6 +11,8 @@ namespace Raytracer.Materials
 	{
 		public ITexture Roughness { get; set; } = new SolidColorTexture { Color = ColorUtils.RgbaBlack };
 
+		public override bool Metallic { get { return true; } }
+
 		public override Vector4 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth,
 		                               Vector3 rayWeight, CastRayDelegate castRay,
 		                               CancellationToken cancellationToken = default)

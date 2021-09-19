@@ -11,6 +11,8 @@ namespace Raytracer.Materials
 	{
 		public ITexture Diffuse { get; set; } = new SolidColorTexture { Color = new Vector4(0.5f, 0.5f, 0.5f, 1.0f) };
 
+		public override bool Metallic { get { return false; } }
+
 		public override Vector4 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth,
 		                               Vector3 rayWeight, CastRayDelegate castRay,
 		                               CancellationToken cancellationToken = default)

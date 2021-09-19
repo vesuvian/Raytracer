@@ -11,6 +11,8 @@ namespace Raytracer.Materials
 	{
 		public ITexture Emission { get; set; } = new SolidColorTexture { Color = ColorUtils.RgbaWhite };
 
+		public override bool Metallic { get { return false; } }
+
 		public override Vector4 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth,
 		                               Vector3 rayWeight, CastRayDelegate castRay,
 		                               CancellationToken cancellationToken = default)
