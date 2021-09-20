@@ -78,6 +78,16 @@ namespace Raytracer.Ascii
 							Emission = BitmapTexture.FromPath("Resources\\skysphere.jpg")
 						}
 					},
+					new Cylinder
+					{
+						Position = new Vector3(5, 2, -10),
+						Height = 4,
+						RayMask = eRayMask.Visible | eRayMask.CastShadows,
+						Material = new RefractiveMaterial
+						{
+							Color = new Vector4(1, 0, 0, 1)
+						}
+					},
 					new Cube
 					{
 						Position = new Vector3(13f, 5, 0),
@@ -172,6 +182,7 @@ namespace Raytracer.Ascii
 					},
 					new Sphere
 					{
+						RayMask = eRayMask.Visible | eRayMask.CastShadows,
 						Position = new Vector3(16, 2, 0),
 						Radius = 2,
 						Material = new EmissiveMaterial
@@ -181,23 +192,23 @@ namespace Raytracer.Ascii
 					},
 					new Sphere
 					{
-						RayMask = eRayMask.Visible,
-						Position = new Vector3(8, 2, -6),
+						RayMask = eRayMask.Visible | eRayMask.CastShadows,
+						Position = new Vector3(8, 3, -6),
 						Radius = 2,
-						Material = new RefractiveMaterial { Ior = 1.5f }
+						Material = new RefractiveMaterial { Ior = 1.5f, Color = new Vector4(0.8f, 1.0f, 1.0f, 1.0f) }
 					},
 					new Sphere
 					{
-						RayMask = eRayMask.Visible,
-						Position = new Vector3(8, 2, -6),
+						RayMask = eRayMask.Visible | eRayMask.CastShadows,
+						Position = new Vector3(8, 3, -6),
 						Radius = -1.8f,
-						Material = new RefractiveMaterial { Ior = 1.5f }
+						Material = new RefractiveMaterial { Ior = 1.5f, Color = new Vector4(0.8f, 1.0f, 1.0f, 1.0f)  }
 					},
 					new SceneObjects.Geometry.Plane
 					{
 						Material = new PhongMaterial
 						{
-							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
+							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f, 0.9f, 0.1f, 1.0f), ColorB = new Vector4(0.1f) },
 							Normal = normal,
 							Scale = new Vector2(5, 5)
 						}
@@ -210,7 +221,8 @@ namespace Raytracer.Ascii
 						Mesh = new ObjMeshParser().Parse("Resources\\teapot.obj"),
 						Material = new ReflectiveMaterial
 						{
-							Normal = normal
+							Normal = normal,
+							Color = new Vector4(1.0f, 0.2f, 0, 1)
 						}
 					}
 				},

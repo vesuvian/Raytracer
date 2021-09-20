@@ -82,12 +82,22 @@ namespace Raytracer.Cmd
 							Emission = BitmapTexture.FromPath("Resources\\skysphere.jpg")
 						}
 					},
+					new Cylinder
+					{
+						Position = new Vector3(5, 2, -10),
+						Height = 4,
+						RayMask = eRayMask.Visible | eRayMask.CastShadows,
+						Material = new RefractiveMaterial
+						{
+							Color = new Vector4(1, 0, 0, 1)
+						}
+					},
 					new Cube
 					{
 						Position = new Vector3(13f, 5, 0),
 						Scale = new Vector3(2, 2, 2),
 						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45),
-						Material = new LambertMaterial
+						Material = new PhongMaterial
 						{
 							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
 							Normal = normal,
@@ -99,18 +109,13 @@ namespace Raytracer.Cmd
 						Scale = new Vector3(2, 1, 1),
 						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 15, MathUtils.DEG2RAD * 30),
 						Radius = 5,
-						Material = new LayeredMaterial
-						{
-							Blend = new SolidColorTexture { Color = new Vector4(0.5f) },
-							A = new LambertMaterial { Diffuse = new SolidColorTexture { Color = new Vector4(0.5f) } },
-							B = new ReflectiveMaterial { Roughness = new SolidColorTexture { Color = new Vector4(0.5f) } }
-						}
+						Material = new ReflectiveMaterial { Roughness = new SolidColorTexture { Color = new Vector4(0.2f) } }
 					},
 					new Sphere
 					{
 						Position = new Vector3(-3, 10, 0),
 						Radius = 5,
-						Material = new LambertMaterial
+						Material = new PhongMaterial
 						{
 							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
 							Normal = normal,
@@ -124,7 +129,7 @@ namespace Raytracer.Cmd
 						Material = new LayeredMaterial
 						{
 							Blend = new CheckerboardTexture(),
-							A = new LambertMaterial {
+							A = new PhongMaterial {
 								Diffuse = new CheckerboardTexture
 								{
 									ColorA = new Vector4(0.9f),
@@ -144,7 +149,7 @@ namespace Raytracer.Cmd
 						Material = new LayeredMaterial
 						{
 							Blend = new SolidColorTexture { Color = new Vector4(0.5f) },
-							A = new LambertMaterial {
+							A = new PhongMaterial {
 								Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
 								Scale = new Vector2(1 / 3.0f, 1)
 							},
@@ -181,6 +186,7 @@ namespace Raytracer.Cmd
 					},
 					new Sphere
 					{
+						RayMask = eRayMask.Visible | eRayMask.CastShadows,
 						Position = new Vector3(16, 2, 0),
 						Radius = 2,
 						Material = new EmissiveMaterial
@@ -188,11 +194,25 @@ namespace Raytracer.Cmd
 							Emission = new SolidColorTexture { Color = new Vector4(0, 0, 1000, 1) }
 						}
 					},
+					new Sphere
+					{
+						RayMask = eRayMask.Visible | eRayMask.CastShadows,
+						Position = new Vector3(8, 3, -6),
+						Radius = 2,
+						Material = new RefractiveMaterial { Ior = 1.5f, Color = new Vector4(0.8f, 1.0f, 1.0f, 1.0f) }
+					},
+					new Sphere
+					{
+						RayMask = eRayMask.Visible | eRayMask.CastShadows,
+						Position = new Vector3(8, 3, -6),
+						Radius = -1.8f,
+						Material = new RefractiveMaterial { Ior = 1.5f, Color = new Vector4(0.8f, 1.0f, 1.0f, 1.0f)  }
+					},
 					new SceneObjects.Geometry.Plane
 					{
-						Material = new LambertMaterial
+						Material = new PhongMaterial
 						{
-							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
+							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f, 0.9f, 0.1f, 1.0f), ColorB = new Vector4(0.1f) },
 							Normal = normal,
 							Scale = new Vector2(5, 5)
 						}
@@ -203,15 +223,10 @@ namespace Raytracer.Cmd
 						Position = new Vector3(3, 2, -5),
 						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * -45, MathUtils.DEG2RAD * -15, MathUtils.DEG2RAD * 30),
 						Mesh = new ObjMeshParser().Parse("Resources\\teapot.obj"),
-						Material = new LayeredMaterial
+						Material = new ReflectiveMaterial
 						{
-							Blend = new SolidColorTexture { Color = new Vector4(0.5f) },
-							A = new LambertMaterial
-							{
-								Normal = normal,
-								Diffuse = new SolidColorTexture { Color = new Vector4(0.5f) }
-							},
-							B = new ReflectiveMaterial()
+							Normal = normal,
+							Color = new Vector4(1.0f, 0.2f, 0, 1)
 						}
 					}
 				},

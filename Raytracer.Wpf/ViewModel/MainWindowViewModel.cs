@@ -111,6 +111,16 @@ namespace Raytracer.Wpf.ViewModel
 							Emission = BitmapTexture.FromPath("Resources\\skysphere.jpg")
 						}
 					},
+					new Cylinder
+					{
+						Position = new Vector3(5, 2, -10),
+						Height = 4,
+						RayMask = eRayMask.Visible | eRayMask.CastShadows,
+						Material = new RefractiveMaterial
+						{
+							Color = new Vector4(1, 0, 0, 1)
+						}
+					},
 					new Cube
 					{
 						Position = new Vector3(13f, 5, 0),
