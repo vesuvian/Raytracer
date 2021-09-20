@@ -24,7 +24,7 @@ namespace Raytracer.Materials
 			float roughness = SampleRoughness(intersection.Uv);
 			float fresnel = Vector3Utils.Fresnel(ray.Direction, worldNormal, Ior);
 
-			// compute refraction if it is not a case of total internal reflection
+			// Compute refraction if it is not a case of total internal reflection
 			Vector4 refractionColor =
 				fresnel < 1
 					? GetRefraction(scene, ray, intersection.Position, worldNormal, Ior, roughness, random, rayDepth,
@@ -40,9 +40,10 @@ namespace Raytracer.Materials
 			// Calculate specular
 			Vector4 specular = GetSpecular(scene, ray.Direction, intersection.Position, worldNormal, random, 25);
 
-			// mix the two
-			return reflectionColor * fresnel +
-			       (1 - fresnel) * (refractionColor + specular * 0.2f);
+			// Mix everything
+			return (reflectionColor * fresnel) +
+			       (1 - fresnel) * (refractionColor) +
+			       (specular * 0.2f);
 		}
 
 		public override Vector4 Shadow(Ray ray, Intersection intersection, Vector4 light)
