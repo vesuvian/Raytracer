@@ -25,20 +25,23 @@ namespace Raytracer.SceneObjects.Lights
 			if (sample == ColorUtils.RgbaBlack)
 				return sample;
 
-			IOrderedEnumerable<KeyValuePair<ISceneGeometry, Intersection>> intersections =
+			KeyValuePair<ISceneGeometry, Intersection> intersection =
 				scene.GetIntersections(ray, eRayMask.CastShadows)
-				     .Where(kvp => kvp.Value.RayDelta > SELF_SHADOW_TOLERANCE &&
-				                   kvp.Value.RayDelta < distance - SELF_SHADOW_TOLERANCE)
-				     .OrderBy(kvp => kvp.Value.RayDelta);
+					 .Where(kvp => kvp.Value.RayDelta > SELF_SHADOW_TOLERANCE &&
+								   kvp.Value.RayDelta < distance - SELF_SHADOW_TOLERANCE)
+					 .OrderBy(kvp => kvp.Value.RayDelta)
+					 .FirstOrDefault();
 
-			foreach (var (geometry, intersection) in intersections)
-			{
-				sample = geometry.Material.Shadow(ray, intersection, sample);
-				if (sample == ColorUtils.RgbaBlack)
-					break;
-			}
+			if (intersection.Key == null)
+				return sample;
 
-			return sample;
+			sample = intersection.Key.Material.Shadow(ray, intersection.Value, sample);
+
+			// Move the ray up to this intersection for the next shadow calculation
+			ray.Origin = intersection.Value.Position;
+			distance -= intersection.Value.Distance;
+
+			return Shadow(scene, ray, distance, sample);
 		}
 	}
 }

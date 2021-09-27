@@ -59,7 +59,15 @@ namespace Raytracer.Materials
 		{
 			Vector3 worldNormal = GetWorldNormal(intersection);
 			float fresnel = Vector3Utils.Fresnel(ray.Direction, worldNormal, Ior);
-			return light * (1 - fresnel) * Color;
+
+			// Calculate absorption
+			float transmittance =
+				intersection.FaceRatio < 0
+					? 1
+					: MathUtils.Clamp(MathF.Pow(10, -Absorption * intersection.Distance), 0, 1);
+			Vector4 tint = Vector4.Lerp(Color, Vector4.One, transmittance);
+
+			return light * (1 - fresnel) * tint;
 		}
 
 		private float SampleRoughness(Vector2 uv)
