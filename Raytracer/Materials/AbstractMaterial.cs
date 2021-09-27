@@ -196,9 +196,8 @@ namespace Raytracer.Materials
 			Matrix4x4 surface = Matrix4x4Utils.Tbn(nt, nb, normal);
 			Vector3 worldNormal = surface.MultiplyNormal(randomNormal);
 
-			Vector4 sample = castRay(scene, ray.Refract(position, worldNormal, ior), random, rayDepth + 1, rayWeight,
-			                         out _, cancellationToken);
-			return sample * Color;
+			return castRay(scene, ray.Refract(position, worldNormal, ior), random, rayDepth + 1, rayWeight,
+			               out _, cancellationToken);
 		}
 	}
 }

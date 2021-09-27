@@ -11,6 +11,8 @@ namespace Raytracer.Materials
 	{
 		public float Ior { get; set; } = 1.3f;
 
+		public float Absorption { get; set; } = 0.5f;
+
 		public override bool Metallic { get { return false; } }
 
 		public ITexture Roughness { get; set; } = new SolidColorTexture { Color = ColorUtils.RgbaBlack };
@@ -40,9 +42,16 @@ namespace Raytracer.Materials
 			// Calculate specular
 			Vector4 specular = GetSpecular(scene, ray.Direction, intersection.Position, worldNormal, random, 25);
 
+			// Calculate absorption
+			float transmittance =
+				intersection.FaceRatio > 0
+					? 1
+					: MathUtils.Clamp(MathF.Pow(10, -Absorption * intersection.Distance), 0, 1);
+			Vector4 tint = Vector4.Lerp(Color, Vector4.One, transmittance);
+
 			// Mix everything
 			return (reflectionColor * fresnel) +
-			       (1 - fresnel) * (refractionColor) +
+			       (1 - fresnel) * (refractionColor * tint) +
 			       (specular * 0.2f);
 		}
 
