@@ -44,7 +44,7 @@ namespace Raytracer.Materials
 
 			// Calculate absorption
 			float transmittance =
-				intersection.FaceRatio > 0
+				intersection.FaceRatio < 0
 					? 1
 					: MathUtils.Clamp(MathF.Pow(10, -Absorption * intersection.Distance), 0, 1);
 			Vector4 tint = Vector4.Lerp(Color, Vector4.One, transmittance);
