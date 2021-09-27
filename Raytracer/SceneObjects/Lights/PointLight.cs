@@ -17,14 +17,14 @@ namespace Raytracer.SceneObjects.Lights
 			faceAmount = MathF.Abs(faceAmount);
 			faceAmount = MathUtils.Clamp(faceAmount, 0, 1);
 
-			float distance = Vector3.Distance(Position, position);
-			Vector4 sample = Sample(distance, faceAmount);
-
 			Vector4 sum = Vector4.Zero;
 
 			for (int i = 0; i < Samples; i++)
 			{
 				Ray ray = GetRay(position, random);
+				float distance = Vector3.Distance(ray.Origin, position);
+				Vector4 sample = Sample(distance, faceAmount);
+
 				sum += Shadow(scene, ray, distance, sample);
 			}
 
@@ -55,8 +55,8 @@ namespace Raytracer.SceneObjects.Lights
 
 			return new Ray
 			{
-				Origin = position,
-				Direction = Vector3.Normalize(softShadowPosition - position)
+				Origin = softShadowPosition,
+				Direction = Vector3.Normalize(position - softShadowPosition)
 			};
 		}
 	}

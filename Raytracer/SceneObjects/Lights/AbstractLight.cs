@@ -28,8 +28,8 @@ namespace Raytracer.SceneObjects.Lights
 			IOrderedEnumerable<KeyValuePair<ISceneGeometry, Intersection>> intersections =
 				scene.GetIntersections(ray, eRayMask.CastShadows)
 				     .Where(kvp => kvp.Value.RayDelta > SELF_SHADOW_TOLERANCE &&
-				                   kvp.Value.RayDelta < distance)
-				     .OrderBy(kvp => kvp.Value.Distance);
+				                   kvp.Value.RayDelta < distance - SELF_SHADOW_TOLERANCE)
+				     .OrderBy(kvp => kvp.Value.RayDelta);
 
 			foreach (var (geometry, intersection) in intersections)
 			{
