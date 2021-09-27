@@ -11,7 +11,7 @@ namespace Raytracer.Materials
 	{
 		public float Ior { get; set; } = 1.3f;
 
-		public float Absorption { get; set; } = 0.5f;
+		public float Absorption { get; set; } = 0.8f;
 
 		public override bool Metallic { get { return false; } }
 
@@ -58,7 +58,7 @@ namespace Raytracer.Materials
 		public override Vector4 Shadow(Ray ray, Intersection intersection, Vector4 light)
 		{
 			Vector3 worldNormal = GetWorldNormal(intersection);
-			float fresnel = Vector3Utils.Fresnel(ray.Direction, worldNormal, Ior);
+			float fresnel = 1 - MathF.Abs(Vector3.Dot(worldNormal, ray.Direction));
 
 			// Calculate absorption
 			float transmittance =

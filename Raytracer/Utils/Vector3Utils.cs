@@ -60,7 +60,7 @@ namespace Raytracer.Utils
 
 		public static float Fresnel(Vector3 direction, Vector3 normal, float ior)
 		{
-			float cosi = MathUtils.Clamp(Vector3.Dot(direction, normal), - 1, 1);
+			float cosi = MathUtils.Clamp(Vector3.Dot(direction, normal), -1, 1);
 			float etai = 1;
 			float etat = ior;
 
