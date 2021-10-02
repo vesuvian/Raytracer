@@ -105,7 +105,7 @@ namespace Raytracer.SceneObjects.Geometry
 
 			// Top cap
 			Ray topCapRay = ray;
-			topCapRay.Origin += Vector3.UnitY * Height / 2;
+			topCapRay.Origin -= Vector3.UnitY * Height / 2;
 			float t;
 			if (Plane.HitPlane(topCapRay, out t))
 			{
@@ -113,7 +113,7 @@ namespace Raytracer.SceneObjects.Geometry
 
 				if (position.Length() <= Radius)
 				{
-					position -= Vector3.UnitY * Height / 2;
+					position += Vector3.UnitY * Height / 2;
 					Vector2 uv = (new Vector2(position.X / Radius, position.Z / Radius) + Vector2.One) / 2;
 
 					yield return new Intersection
@@ -130,14 +130,14 @@ namespace Raytracer.SceneObjects.Geometry
 
 			// Bottom cap
 			Ray bottomCapRay = ray;
-			bottomCapRay.Origin -= Vector3.UnitY * Height / 2;
+			bottomCapRay.Origin += Vector3.UnitY * Height / 2;
 			if (Plane.HitPlane(bottomCapRay, out t))
 			{
 				Vector3 position = bottomCapRay.PositionAtDelta(t);
 
 				if (position.Length() <= Radius)
 				{
-					position += Vector3.UnitY * Height / 2;
+					position -= Vector3.UnitY * Height / 2;
 					Vector2 uv = (new Vector2(position.X / Radius, position.Z / Radius) + Vector2.One) / 2;
 
 					yield return new Intersection
