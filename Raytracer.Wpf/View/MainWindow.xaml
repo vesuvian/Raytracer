@@ -15,7 +15,8 @@
     </Window.DataContext>
 
     <Grid>
-        <Image Source="{Binding Bitmap}" Stretch="Fill" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Image Name="Image" Source="{Binding Bitmap}" Stretch="Fill" VerticalAlignment="Center" HorizontalAlignment="Center"
+               MouseMove="Image_MouseMove" MouseLeave="Image_MouseLeave">
             <Image.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Copy"
@@ -23,6 +24,13 @@
                               CommandTarget="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
                 </ContextMenu>
             </Image.ContextMenu>
+
         </Image>
+
+        <Popup Name="FloatingTip" AllowsTransparency="True" Placement="Relative" PlacementTarget="{Binding ElementName=Image}">
+            <Grid Width="auto" Height="auto" Background="White">
+                <TextBlock Name="FloatingTipLabel">Look At Me</TextBlock>
+            </Grid>
+        </Popup>
     </Grid>
 </Window>

@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Raytracer.Buffers;
 using Raytracer.Layers;
 using Raytracer.Materials;
 using Raytracer.Materials.Textures;
@@ -31,6 +32,8 @@ namespace Raytracer.Wpf.ViewModel
 		private string m_Title;
 
 		public WriteableBitmap Bitmap { get; }
+
+		public IBuffer Buffer { get; }
 
 		public string Title
 		{
@@ -267,8 +270,8 @@ namespace Raytracer.Wpf.ViewModel
 
 			scene.Layers.First().OnProgressChanged += UpdateTitle;
 
-			var buffer = new WriteableBitmapBuffer(Bitmap);
-			m_Worker = new Thread(() => scene.Layers.First().Render(scene, buffer, m_CancellationTokenSource.Token));
+			Buffer = new WriteableBitmapBuffer(Bitmap);
+			m_Worker = new Thread(() => scene.Layers.First().Render(scene, Buffer, m_CancellationTokenSource.Token));
 			m_Worker.Priority = ThreadPriority.Lowest;
 			m_Worker.Start();
 		}
