@@ -43,9 +43,7 @@ namespace Raytracer.Utils
 				faceAmount = -faceAmount;
 			else
 			{
-				float temp = fromIor;
-				fromIor = toIor;
-				toIor = temp;
+				(fromIor, toIor) = (toIor, fromIor);
 				normal = -normal;
 			}
 
@@ -65,11 +63,7 @@ namespace Raytracer.Utils
 			float etat = ior;
 
 			if (cosi > 0)
-			{
-				float temp = etai;
-				etai = etat;
-				etat = temp;
-			}
+				(etai, etat) = (etat, etai);
 
 			// Compute sini using Snell's law
 			float sint = etai / etat * MathF.Sqrt(MathF.Max(0.0f, 1 - cosi * cosi));
