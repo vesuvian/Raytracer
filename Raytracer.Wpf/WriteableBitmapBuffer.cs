@@ -44,7 +44,34 @@ namespace Raytracer.Wpf
 
 		public override Color GetPixel(int x, int y)
 		{
-			throw new NotSupportedException();
+			return Application.Current?.Dispatcher.Invoke(() => GetPixelInternal(x, y)) ?? Color.Black;
+		}
+
+		private Color GetPixelInternal(int x, int y)
+		{
+			m_Bitmap.Lock();
+
+			try
+			{
+				unsafe
+				{
+					// Get a pointer to the back buffer.
+					IntPtr pBackBuffer = m_Bitmap.BackBuffer;
+
+					// Find the address of the pixel to read.
+					pBackBuffer += y * m_Bitmap.BackBufferStride;
+					pBackBuffer += x * 4;
+
+					// Compute the pixel's color.
+					int colorData = *(int*)pBackBuffer;
+
+					return Color.FromArgb(colorData >> 16, colorData >> 8 & 0xFF, colorData & 0xFF);
+				}
+			}
+			finally
+			{
+				m_Bitmap.Unlock();
+			}
 		}
 
 		private void Worker()
