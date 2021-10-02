@@ -205,7 +205,7 @@ namespace Raytracer.Materials
 			float scatterDistance = scatter == 0 ? float.MaxValue : 1 / scatter;
 			float scatterChance = scatter == 0 ? 0 : distance / scatterDistance;
 
-			if (inside && (scatterDistance < distance || random.NextFloat() < scatterChance))
+			if (inside && random.NextFloat() < scatterChance)
 			{
 				scatterDistance = random.NextFloat(0, scatterDistance);
 				Vector3 scatterPosition = refractedRay.PositionAtDelta(scatterDistance);

@@ -72,7 +72,14 @@ namespace Raytracer.Materials
 					: 1;
 			Vector4 tint = Vector4.Lerp(Color, Vector4.One, transmittance);
 
-			return light * (1 - fresnel) * tint;
+			// Calculate shadow from scatter
+			float scatter = inside ? Scatter : 0;
+			float distance = intersection.Distance;
+			float scatterDistance = scatter == 0 ? float.MaxValue : 1 / scatter;
+			float scatters = scatter == 0 ? 0 : distance / scatterDistance;
+			float scatterShadow = MathF.Pow(2, -scatters);
+
+			return light * (1 - fresnel) * tint * scatterShadow;
 		}
 
 		private float SampleRoughness(Vector2 uv)
