@@ -184,9 +184,10 @@ namespace Raytracer.Materials
 		}
 
 		protected Vector4 GetRefraction(Scene scene, Ray ray, Vector3 position, Vector3 normal, float ior,
-		                                float roughness, Random random, int rayDepth, Vector3 rayWeight,
+		                                float scatter, float roughness, Random random, int rayDepth, Vector3 rayWeight,
 		                                CastRayDelegate castRay, CancellationToken cancellationToken = default)
 		{
+			// Calculate refraction
 			float r1 = random.NextFloat();
 			float r2 = random.NextFloat();
 
@@ -196,8 +197,27 @@ namespace Raytracer.Materials
 			Matrix4x4 surface = Matrix4x4Utils.Tbn(nt, nb, normal);
 			Vector3 worldNormal = surface.MultiplyNormal(randomNormal);
 
-			return castRay(scene, ray.Refract(position, worldNormal, ior), random, rayDepth + 1, rayWeight,
-			               out _, cancellationToken);
+			Ray refractedRay = ray.Refract(position, worldNormal, ior);
+
+			// Calculate scatter
+			bool inside = Vector3.Dot(ray.Direction, normal) >= 0;
+			float distance = (ray.Origin - position).Length();
+			float scatterDistance = scatter == 0 ? float.MaxValue : 1 / scatter;
+			float scatterChance = scatter == 0 ? 0 : distance / scatterDistance;
+
+			if (inside && (scatterDistance < distance || random.NextFloat() < scatterChance))
+			{
+				scatterDistance = random.NextFloat(0, scatterDistance);
+				Vector3 scatterPosition = refractedRay.PositionAtDelta(scatterDistance);
+				Vector3 scatterDirection = MathUtils.RandomPointOnSphere(random);
+				refractedRay = new Ray
+				{
+					Origin = scatterPosition,
+					Direction = scatterDirection
+				};
+			}
+
+			return castRay(scene, refractedRay, random, rayDepth + 1, rayWeight, out _, cancellationToken);
 		}
 	}
 }

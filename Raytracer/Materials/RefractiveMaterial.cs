@@ -11,7 +11,9 @@ namespace Raytracer.Materials
 	{
 		public float Ior { get; set; } = 1.3f;
 
-		public float Absorption { get; set; } = 0.8f;
+		public float Absorption { get; set; } = 0.5f;
+
+		public float Scatter { get; set; } = 0.2f; 
 
 		public override bool Metallic { get { return false; } }
 
@@ -29,7 +31,7 @@ namespace Raytracer.Materials
 			// Compute refraction if it is not a case of total internal reflection
 			Vector4 refractionColor =
 				fresnel < 1
-					? GetRefraction(scene, ray, intersection.Position, worldNormal, Ior, roughness, random, rayDepth,
+					? GetRefraction(scene, ray, intersection.Position, worldNormal, Ior, Scatter, roughness, random, rayDepth,
 					                rayWeight * (1 - fresnel), castRay, cancellationToken)
 					: Vector4.Zero;
 
@@ -43,10 +45,11 @@ namespace Raytracer.Materials
 			Vector4 specular = GetSpecular(scene, ray.Direction, intersection.Position, worldNormal, random, 25);
 
 			// Calculate absorption
+			bool inside = intersection.FaceRatio >= 0;
 			float transmittance =
-				intersection.FaceRatio < 0
-					? 1
-					: MathUtils.Clamp(MathF.Pow(10, -Absorption * intersection.Distance), 0, 1);
+				inside
+					? MathUtils.Clamp(MathF.Pow(10, -Absorption * intersection.Distance), 0, 1)
+					: 1;
 			Vector4 tint = Vector4.Lerp(Color, Vector4.One, transmittance);
 
 			// Mix everything
@@ -57,14 +60,16 @@ namespace Raytracer.Materials
 
 		public override Vector4 Shadow(Ray ray, Intersection intersection, Vector4 light)
 		{
+			bool inside = intersection.FaceRatio >= 0;
+
 			Vector3 worldNormal = GetWorldNormal(intersection);
 			float fresnel = 1 - MathF.Abs(Vector3.Dot(worldNormal, ray.Direction));
 
 			// Calculate absorption
 			float transmittance =
-				intersection.FaceRatio < 0
-					? 1
-					: MathUtils.Clamp(MathF.Pow(10, -Absorption * intersection.Distance), 0, 1);
+				inside
+					? MathUtils.Clamp(MathF.Pow(10, -Absorption * intersection.Distance), 0, 1)
+					: 1;
 			Vector4 tint = Vector4.Lerp(Color, Vector4.One, transmittance);
 
 			return light * (1 - fresnel) * tint;
