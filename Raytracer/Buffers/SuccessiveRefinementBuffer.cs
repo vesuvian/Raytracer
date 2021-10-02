@@ -4,14 +4,14 @@ using Raytracer.Utils;
 
 namespace Raytracer.Buffers
 {
-	public sealed class SuccessiveRefinementBuffer : IBuffer
+	public sealed class SuccessiveRefinementBuffer : AbstractBuffer
 	{
 		private readonly IBuffer m_Buffer;
 		private readonly Vector4[] m_Pixels;
 		private readonly int[] m_PixelSamples;
 
-		public int Height { get { return m_Buffer.Height; } }
-		public int Width { get { return m_Buffer.Width; } }
+		public override int Height { get { return m_Buffer.Height; } }
+		public override int Width { get { return m_Buffer.Width; } }
 
 		public SuccessiveRefinementBuffer(IBuffer buffer)
 		{
@@ -20,12 +20,12 @@ namespace Raytracer.Buffers
 			m_PixelSamples = new int[m_Buffer.Width * m_Buffer.Height];
 		}
 
-		public void Dispose()
+		public override void Dispose()
 		{
 			m_Buffer.Dispose();
 		}
 
-		public void SetPixel(int x, int y, Color color)
+		public override void SetPixel(int x, int y, Color color)
 		{
 			int index = x + y * Width;
 
@@ -37,7 +37,7 @@ namespace Raytracer.Buffers
 			}
 		}
 
-		public Color GetPixel(int x, int y)
+		public override Color GetPixel(int x, int y)
 		{
 			int index = x + y * Width;
 

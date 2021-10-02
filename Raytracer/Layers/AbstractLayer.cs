@@ -37,7 +37,8 @@ namespace Raytracer.Layers
 
 		public void Render(Scene scene, IBuffer buffer, CancellationToken cancellationToken = default)
 		{
-			IBuffer successiveBuffer = new SuccessiveRefinementBuffer(buffer);
+			IBuffer filter = new MedianFilterBuffer(buffer);
+			IBuffer successiveBuffer = new SuccessiveRefinementBuffer(filter);
 
 			int width = successiveBuffer.Width;
 			int height = successiveBuffer.Height;
