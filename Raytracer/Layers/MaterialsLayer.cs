@@ -6,7 +6,6 @@ using Raytracer.Extensions;
 using Raytracer.Math;
 using Raytracer.SceneObjects;
 using Raytracer.SceneObjects.Geometry;
-using Raytracer.Utils;
 
 namespace Raytracer.Layers
 {
@@ -17,7 +16,7 @@ namespace Raytracer.Layers
 			Gamma = 2.2f;
 		}
 
-		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
+		protected override Vector3 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
 		                                   out bool hit, CancellationToken cancellationToken = default)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -25,13 +24,13 @@ namespace Raytracer.Layers
 			hit = false;
 
 			if (rayDepth > scene.MaxReflectionRays)
-				return ColorUtils.RgbaBlack;
+				return Vector3.Zero;
 
 			// Russian Roulette
 			// Randomly terminate a path with a probability inversely equal to the throughput
 			float p = MathF.Max(rayWeight.X, MathF.Max(rayWeight.Y, rayWeight.Z));
 			if (random.NextFloat() / (rayDepth + 1) > p)
-				return ColorUtils.RgbaBlack;
+				return Vector3.Zero;
 
 			// Add the energy we 'lose' by randomly terminating paths
 			rayWeight *= 1 / p;
@@ -43,11 +42,11 @@ namespace Raytracer.Layers
 				     .FirstOrDefault();
 
 			if (geometry == null)
-				return ColorUtils.RgbaBlack;
+				return Vector3.Zero;
 			hit = true;
 
-			Vector4 sample = geometry.Material.Sample(scene, ray, intersection, random, rayDepth, rayWeight, CastRay, cancellationToken);
-			Vector4 ao = geometry.Material.GetAmbientOcclusion(scene, random, intersection.Position, intersection.Normal);
+			Vector3 sample = geometry.Material.Sample(scene, ray, intersection, random, rayDepth, rayWeight, CastRay, cancellationToken);
+			Vector3 ao = geometry.Material.GetAmbientOcclusion(scene, random, intersection.Position, intersection.Normal);
 			return sample * ao;
 		}
 	}

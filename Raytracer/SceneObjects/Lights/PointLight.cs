@@ -11,19 +11,19 @@ namespace Raytracer.SceneObjects.Lights
 		public int Samples { get; set; } = 1;
 		public float SoftShadowRadius { get; set; }
 
-		public override Vector4 Sample(Scene scene, Vector3 position, Vector3 normal, Random random)
+		public override Vector3 Sample(Scene scene, Vector3 position, Vector3 normal, Random random)
 		{
 			float faceAmount = Vector3.Dot(normal, Vector3.Normalize(Position - position));
 			faceAmount = MathF.Abs(faceAmount);
 			faceAmount = MathUtils.Clamp(faceAmount, 0, 1);
 
-			Vector4 sum = Vector4.Zero;
+			Vector3 sum = Vector3.Zero;
 
 			for (int i = 0; i < Samples; i++)
 			{
 				Ray ray = GetRay(position, random);
 				float distance = Vector3.Distance(ray.Origin, position);
-				Vector4 sample = Sample(distance, faceAmount);
+				Vector3 sample = Sample(distance, faceAmount);
 
 				sum += Shadow(scene, ray, distance, sample);
 			}
@@ -31,7 +31,7 @@ namespace Raytracer.SceneObjects.Lights
 			return Samples == 0 ? sum : sum / Samples;
 		}
 
-		private Vector4 Sample(float distance, float faceAmount)
+		private Vector3 Sample(float distance, float faceAmount)
 		{
 			float attenuation = GetAttenuation(distance);
 			return Color * faceAmount * attenuation;

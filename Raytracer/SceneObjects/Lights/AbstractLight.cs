@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Raytracer.Math;
-using Raytracer.SceneObjects.Geometry;
-using Raytracer.Utils;
 
 namespace Raytracer.SceneObjects.Lights
 {
@@ -12,34 +9,34 @@ namespace Raytracer.SceneObjects.Lights
 	{
 		protected const float SELF_SHADOW_TOLERANCE = 0.0001f;
 
-		public Vector4 Color { get; set; } = ColorUtils.RgbaWhite;
+		public Vector3 Color { get; set; } = Vector3.One;
 		public bool CastShadows { get; set; } = true;
 
-		public abstract Vector4 Sample(Scene scene, Vector3 position, Vector3 normal, Random random);
+		public abstract Vector3 Sample(Scene scene, Vector3 position, Vector3 normal, Random random);
 
-		protected Vector4 Shadow(Scene scene, Ray ray, float distance, Vector4 sample)
+		protected Vector3 Shadow(Scene scene, Ray ray, float distance, Vector3 sample)
 		{
 			if (!CastShadows)
 				return sample;
 
-			if (sample == ColorUtils.RgbaBlack)
+			if (sample == Vector3.Zero)
 				return sample;
 
-			KeyValuePair<ISceneGeometry, Intersection> intersection =
+			var (geometry, intersection) =
 				scene.GetIntersections(ray, eRayMask.CastShadows)
-					 .Where(kvp => kvp.Value.RayDelta > SELF_SHADOW_TOLERANCE &&
-								   kvp.Value.RayDelta < distance - SELF_SHADOW_TOLERANCE)
-					 .OrderBy(kvp => kvp.Value.RayDelta)
-					 .FirstOrDefault();
+				     .Where(kvp => kvp.Value.RayDelta > SELF_SHADOW_TOLERANCE &&
+				                   kvp.Value.RayDelta < distance - SELF_SHADOW_TOLERANCE)
+				     .OrderBy(kvp => kvp.Value.RayDelta)
+				     .FirstOrDefault();
 
-			if (intersection.Key == null)
+			if (geometry == null)
 				return sample;
 
-			sample = intersection.Key.Material.Shadow(ray, intersection.Value, sample);
+			sample = geometry.Material.Shadow(ray, intersection, sample);
 
 			// Move the ray up to this intersection for the next shadow calculation
-			ray.Origin = intersection.Value.Position;
-			distance -= intersection.Value.Distance;
+			ray.Origin = intersection.Position;
+			distance -= intersection.Distance;
 
 			return Shadow(scene, ray, distance, sample);
 		}

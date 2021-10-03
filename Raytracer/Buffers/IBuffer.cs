@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
-using Raytracer.Utils;
+using System.Numerics;
+using Raytracer.Extensions;
 
 namespace Raytracer.Buffers
 {
@@ -21,17 +22,19 @@ namespace Raytracer.Buffers
 			int xMax = xMin == extends.Width - 1 ? 0 : xMin + 1;
 			int yMax = yMin == extends.Height - 1 ? 0 : yMin + 1;
 
-			Color c00 = extends.GetPixel(xMin, yMin);
-			Color c01 = extends.GetPixel(xMin, yMax);
-			Color c10 = extends.GetPixel(xMax, yMin);
-			Color c11 = extends.GetPixel(xMax, yMax);
+			Vector3 c00 = extends.GetPixel(xMin, yMin).ToRgb();
+			Vector3 c01 = extends.GetPixel(xMin, yMax).ToRgb();
+			Vector3 c10 = extends.GetPixel(xMax, yMin).ToRgb();
+			Vector3 c11 = extends.GetPixel(xMax, yMax).ToRgb();
 
 			float deltaX = x - xMin;
 			float deltaY = y - yMin;
 
-			Color a = ColorUtils.Add(ColorUtils.Multiply(c00, 1 - deltaX), ColorUtils.Multiply(c10, deltaX));
-			Color b = ColorUtils.Add(ColorUtils.Multiply(c01, 1 - deltaX), ColorUtils.Multiply(c11, deltaX));
-			return ColorUtils.Add(ColorUtils.Multiply(a, 1 - deltaY), ColorUtils.Multiply(b, deltaY));
+			Vector3 a = c00 * (1 - deltaX) + c10 * deltaX;
+			Vector3 b = c01 * (1 - deltaX) + c11 * deltaX;
+			Vector3 rgb = a * (1 - deltaY) + b * deltaY;
+
+			return rgb.FromRgbToColor();
 		}
 	}
 }

@@ -11,7 +11,7 @@ namespace Raytracer.Layers
 {
 	public sealed class DepthLayer : AbstractLayer
 	{
-		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
+		protected override Vector3 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
 		                                   out bool hit, CancellationToken cancellationToken = default)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -26,14 +26,14 @@ namespace Raytracer.Layers
 				     .FirstOrDefault();
 
 			if (closestIntersection == null)
-				return ColorUtils.RgbaBlack;
+				return Vector3.Zero;
 			hit = true;
 
 			float planarDistance = Plane.Distance(scene.Camera.Position, scene.Camera.Forward,
 			                                      closestIntersection.Value.Position, out _);
 			float t = MathUtils.Clamp(planarDistance, scene.Camera.NearPlane, scene.Camera.FarPlane) /
 			          (scene.Camera.FarPlane - scene.Camera.NearPlane);
-			return ColorUtils.LerpHsl(new Vector4(1), ColorUtils.RgbaBlack, t);
+			return Vector3.Lerp(Vector3.One, Vector3.Zero, t);
 		}
 	}
 }

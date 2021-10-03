@@ -13,13 +13,13 @@ namespace Raytracer.Materials
 
 		public float Absorption { get; set; } = 0.5f;
 
-		public float Scatter { get; set; } = 0.2f; 
+		public float Scatter { get; set; } = 0.5f; 
 
 		public override bool Metallic { get { return false; } }
 
-		public ITexture Roughness { get; set; } = new SolidColorTexture { Color = ColorUtils.RgbaBlack };
+		public ITexture Roughness { get; set; } = new SolidColorTexture { Color = Vector3.Zero };
 
-		public override Vector4 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth,
+		public override Vector3 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth,
 		                               Vector3 rayWeight, CastRayDelegate castRay,
 		                               CancellationToken cancellationToken = default)
 		{
@@ -29,20 +29,20 @@ namespace Raytracer.Materials
 			float fresnel = Vector3Utils.Fresnel(ray.Direction, worldNormal, Ior);
 
 			// Compute refraction if it is not a case of total internal reflection
-			Vector4 refractionColor =
+			Vector3 refractionColor =
 				fresnel < 1
 					? GetRefraction(scene, ray, intersection.Position, worldNormal, Ior, Scatter, roughness, random, rayDepth,
 					                rayWeight * (1 - fresnel), castRay, cancellationToken)
-					: Vector4.Zero;
+					: Vector3.Zero;
 
-			Vector4 reflectionColor =
+			Vector3 reflectionColor =
 				fresnel > 0
 					? GetReflection(scene, ray, intersection.Position, worldNormal, roughness, random, rayDepth,
 					                rayWeight * fresnel, castRay, cancellationToken)
-					: Vector4.Zero;
+					: Vector3.Zero;
 
 			// Calculate specular
-			Vector4 specular = GetSpecular(scene, ray.Direction, intersection.Position, worldNormal, random, 25);
+			Vector3 specular = GetSpecular(scene, ray.Direction, intersection.Position, worldNormal, random, 200);
 
 			// Calculate absorption
 			bool inside = intersection.FaceRatio >= 0;
@@ -50,7 +50,7 @@ namespace Raytracer.Materials
 				inside
 					? MathUtils.Clamp(MathF.Pow(10, -Absorption * intersection.Distance), 0, 1)
 					: 1;
-			Vector4 tint = Vector4.Lerp(Color, Vector4.One, transmittance);
+			Vector3 tint = Vector3.Lerp(Color, Vector3.One, transmittance);
 
 			// Mix everything
 			return (reflectionColor * fresnel) +
@@ -58,7 +58,7 @@ namespace Raytracer.Materials
 			       (specular * 0.2f);
 		}
 
-		public override Vector4 Shadow(Ray ray, Intersection intersection, Vector4 light)
+		public override Vector3 Shadow(Ray ray, Intersection intersection, Vector3 light)
 		{
 			bool inside = intersection.FaceRatio >= 0;
 
@@ -70,7 +70,7 @@ namespace Raytracer.Materials
 				inside
 					? MathUtils.Clamp(MathF.Pow(10, -Absorption * intersection.Distance), 0, 1)
 					: 1;
-			Vector4 tint = Vector4.Lerp(Color, Vector4.One, transmittance);
+			Vector3 tint = Vector3.Lerp(Color, Vector3.One, transmittance);
 
 			// Calculate shadow from scatter
 			float scatter = inside ? Scatter : 0;
@@ -87,7 +87,7 @@ namespace Raytracer.Materials
 			float x = uv.X / Scale.X - Offset.X;
 			float y = uv.Y / Scale.Y - Offset.Y;
 
-			Vector4 roughness = Roughness.Sample(x, y);
+			Vector3 roughness = Roughness.Sample(x, y);
 			return roughness.X;
 		}
 	}

@@ -6,8 +6,8 @@ using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Raytracer.Buffers;
+using Raytracer.Extensions;
 using Raytracer.Math;
-using Raytracer.Utils;
 
 namespace Raytracer.Layers
 {
@@ -91,15 +91,14 @@ namespace Raytracer.Layers
 						Random random = new Random(HashCode.Combine(iteration, x, y));
 
 						Ray ray = scene.Camera.CreateRay(xViewportMin, xViewportMax, yViewportMin, yViewportMax, random);
-						Vector4 sample = CastRay(scene, ray, random, 0, Vector3.One, out _, cancellationToken);
+						Vector3 sample = CastRay(scene, ray, random, 0, Vector3.One, out _, cancellationToken);
 
 						// Gamma Correction
-						sample = new Vector4(MathF.Pow(sample.X, 1 / Gamma),
+						sample = new Vector3(MathF.Pow(sample.X, 1 / Gamma),
 						                     MathF.Pow(sample.Y, 1 / Gamma),
-						                     MathF.Pow(sample.Z, 1 / Gamma),
-						                     1);
+						                     MathF.Pow(sample.Z, 1 / Gamma));
 
-						successiveBuffer.SetPixel(x, y, ColorUtils.RgbToColor(sample));
+						successiveBuffer.SetPixel(x, y, sample.FromRgbToColor());
 						Progress = pixelsComplete++;
 					}
 					catch (OperationCanceledException)
@@ -118,7 +117,7 @@ namespace Raytracer.Layers
 			End = DateTime.UtcNow;
 		}
 
-		protected abstract Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
+		protected abstract Vector3 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
 		                                   out bool hit, CancellationToken cancellationToken = default);
 
 		/// <summary>

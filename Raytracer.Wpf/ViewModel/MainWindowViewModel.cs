@@ -84,21 +84,21 @@ namespace Raytracer.Wpf.ViewModel
 					new PointLight
 					{
 						Position = new Vector3(10, 100, -5),
-						Color = new Vector4(20000, 10000, 10000, 1),
+						Color = new Vector3(20000, 10000, 10000),
 						SoftShadowRadius = 2,
 						Falloff = eFalloff.Quadratic
 					},
 					new PointLight
 					{
 						Position = new Vector3(0, 10, 10),
-						Color = new Vector4(0, 500, 0, 1),
+						Color = new Vector3(0, 500, 0),
 						SoftShadowRadius = 2,
 						Falloff = eFalloff.Quadratic
 					},
 					new PointLight
 					{
 						Position = new Vector3(0, 1, -20),
-						Color = new Vector4(300, 300, 300, 1),
+						Color = new Vector3(300, 300, 300),
 						SoftShadowRadius = 2,
 						Falloff = eFalloff.Quadratic
 					}
@@ -121,7 +121,7 @@ namespace Raytracer.Wpf.ViewModel
 						RayMask = eRayMask.Visible | eRayMask.CastShadows,
 						Material = new RefractiveMaterial
 						{
-							Color = new Vector4(1, 0, 0, 1)
+							Color = new Vector3(1, 0, 0)
 						}
 					},
 					new Cube
@@ -131,7 +131,7 @@ namespace Raytracer.Wpf.ViewModel
 						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 45),
 						Material = new PhongMaterial
 						{
-							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
+							Diffuse = new CheckerboardTexture { ColorA = new Vector3(0.9f), ColorB = new Vector3(0.1f) },
 							Normal = normal,
 						}
 					},
@@ -141,7 +141,7 @@ namespace Raytracer.Wpf.ViewModel
 						Scale = new Vector3(2, 1, 1),
 						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 45, MathUtils.DEG2RAD * 15, MathUtils.DEG2RAD * 30),
 						Radius = 5,
-						Material = new ReflectiveMaterial { Roughness = new SolidColorTexture { Color = new Vector4(0.2f) } }
+						Material = new ReflectiveMaterial { Roughness = new SolidColorTexture { Color = new Vector3(0.2f) } }
 					},
 					new Sphere
 					{
@@ -149,7 +149,7 @@ namespace Raytracer.Wpf.ViewModel
 						Radius = 5,
 						Material = new PhongMaterial
 						{
-							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
+							Diffuse = new CheckerboardTexture { ColorA = new Vector3(0.9f), ColorB = new Vector3(0.1f) },
 							Normal = normal,
 							Scale = new Vector2(1 / 3.0f, 1)
 						}
@@ -164,8 +164,8 @@ namespace Raytracer.Wpf.ViewModel
 							A = new PhongMaterial {
 								Diffuse = new CheckerboardTexture
 								{
-									ColorA = new Vector4(0.9f),
-									ColorB = new Vector4(0.1f)
+									ColorA = new Vector3(0.9f),
+									ColorB = new Vector3(0.1f)
 								},
 								Scale = new Vector2(1 / 3.0f, 1)
 							},
@@ -180,9 +180,9 @@ namespace Raytracer.Wpf.ViewModel
 
 						Material = new LayeredMaterial
 						{
-							Blend = new SolidColorTexture { Color = new Vector4(0.5f) },
+							Blend = new SolidColorTexture { Color = new Vector3(0.5f) },
 							A = new PhongMaterial {
-								Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f), ColorB = new Vector4(0.1f) },
+								Diffuse = new CheckerboardTexture { ColorA = new Vector3(0.9f), ColorB = new Vector3(0.1f) },
 								Scale = new Vector2(1 / 3.0f, 1)
 							},
 							B = new ReflectiveMaterial()
@@ -202,7 +202,7 @@ namespace Raytracer.Wpf.ViewModel
 						{
 							Roughness = new CheckerboardTexture
 							{
-								ColorA = new Vector4(0.5f)
+								ColorA = new Vector3(0.5f)
 							},
 							Scale = new Vector2(1 / 3.0f, 1)
 						}
@@ -213,7 +213,7 @@ namespace Raytracer.Wpf.ViewModel
 						Radius = 2,
 						Material = new LambertMaterial
 						{
-							Diffuse = new SolidColorTexture { Color = new Vector4(0, 1, 0, 1) }
+							Diffuse = new SolidColorTexture { Color = new Vector3(0, 1, 0) }
 						}
 					},
 					new Sphere
@@ -223,7 +223,7 @@ namespace Raytracer.Wpf.ViewModel
 						Radius = 2,
 						Material = new EmissiveMaterial
 						{
-							Emission = new SolidColorTexture { Color = new Vector4(0, 0, 1000, 1) }
+							Emission = new SolidColorTexture { Color = new Vector3(0, 0, 1000) }
 						}
 					},
 					new Sphere
@@ -231,20 +231,20 @@ namespace Raytracer.Wpf.ViewModel
 						RayMask = eRayMask.Visible | eRayMask.CastShadows,
 						Position = new Vector3(8, 3, -6),
 						Radius = 2,
-						Material = new RefractiveMaterial { Ior = 1.5f, Color = new Vector4(0.8f, 1.0f, 1.0f, 1.0f) }
+						Material = new RefractiveMaterial { Ior = 1.5f, Color = new Vector3(0.8f, 1.0f, 1.0f) }
 					},
 					new Sphere
 					{
 						RayMask = eRayMask.Visible | eRayMask.CastShadows,
 						Position = new Vector3(8, 3, -6),
 						Radius = -1.8f,
-						Material = new RefractiveMaterial { Ior = 1.5f, Color = new Vector4(0.8f, 1.0f, 1.0f, 1.0f)  }
+						Material = new RefractiveMaterial { Ior = 1.5f, Color = new Vector3(0.8f, 1.0f, 1.0f)  }
 					},
 					new SceneObjects.Geometry.Plane
 					{
 						Material = new PhongMaterial
 						{
-							Diffuse = new CheckerboardTexture { ColorA = new Vector4(0.9f, 0.9f, 0.1f, 1.0f), ColorB = new Vector4(0.1f) },
+							Diffuse = new CheckerboardTexture { ColorA = new Vector3(0.9f, 0.9f, 0.1f), ColorB = new Vector3(0.1f) },
 							Normal = normal,
 							Scale = new Vector2(5, 5)
 						}
@@ -258,7 +258,7 @@ namespace Raytracer.Wpf.ViewModel
 						Material = new ReflectiveMaterial
 						{
 							Normal = normal,
-							Color = new Vector4(1.0f, 0.2f, 0, 1)
+							Color = new Vector3(1.0f, 0.2f, 0)
 						}
 					}
 				},

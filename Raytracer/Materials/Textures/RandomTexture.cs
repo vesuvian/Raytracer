@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Numerics;
 using Raytracer.Extensions;
-using Raytracer.Utils;
 
 namespace Raytracer.Materials.Textures
 {
 	public sealed class RandomTexture : AbstractTexture
 	{
-		public Vector4 ColorA { get; set; } = ColorUtils.RgbaWhite;
-		public Vector4 ColorB { get; set; } = ColorUtils.RgbaBlack;
+		public Vector3 ColorA { get; set; } = Vector3.One;
+		public Vector3 ColorB { get; set; } = Vector3.Zero;
 		public int Resolution { get; set; } = 2;
 
-		public override Vector4 Sample(float u, float v)
+		public override Vector3 Sample(float u, float v)
 		{
 			u = MathF.Round(u, Resolution);
 			v = MathF.Round(v, Resolution);
@@ -21,7 +20,11 @@ namespace Raytracer.Materials.Textures
 			Random random = new Random(seed);
 			float blend = random.NextFloat();
 
-			return ColorUtils.LerpHsl(ColorA, ColorB, blend);
+			Vector3 aHsl = ColorA.FromRgbToHsl();
+			Vector3 bHsl = ColorB.FromRgbToHsl();
+			Vector3 lerpHsl = Vector3.Lerp(aHsl, bHsl, blend);
+
+			return lerpHsl.FromHslToRgb();
 		}
 	}
 }

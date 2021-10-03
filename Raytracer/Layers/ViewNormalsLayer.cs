@@ -6,13 +6,12 @@ using Raytracer.Extensions;
 using Raytracer.Math;
 using Raytracer.SceneObjects;
 using Raytracer.SceneObjects.Geometry;
-using Raytracer.Utils;
 
 namespace Raytracer.Layers
 {
 	public sealed class ViewNormalsLayer : AbstractLayer
 	{
-		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
+		protected override Vector3 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
 		                                   out bool hit, CancellationToken cancellationToken = default)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -26,7 +25,7 @@ namespace Raytracer.Layers
 				     .FirstOrDefault();
 
 			if (geometry == null)
-				return ColorUtils.RgbaBlack;
+				return Vector3.Zero;
 			hit = true;
 
 			Vector3 worldNormal = geometry.Material.GetWorldNormal(intersection);
@@ -36,9 +35,7 @@ namespace Raytracer.Layers
 			Matrix4x4.Invert(scene.Camera.Projection, out cameraToWorld);
 
 			Vector3 faceNormal = cameraToWorld.MultiplyNormal(worldNormal);
-			Vector3 normalPositive = (faceNormal / 2) + (Vector3.One / 2);
-
-			return new Vector4(normalPositive, 1);
+			return (faceNormal / 2) + (Vector3.One / 2);
 		}
 	}
 }

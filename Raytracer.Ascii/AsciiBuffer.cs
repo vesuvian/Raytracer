@@ -71,9 +71,9 @@ namespace Raytracer.Ascii
 
 		private static void GetConsoleColor(Color color, out ConsoleColor background, out ConsoleColor foreground, out char character)
 		{
-			Vector4 whiteRgb = ColorUtils.ColorToRgb(ConsoleColor.White.ToColor());
-			Vector4 colorRgb = ColorUtils.ColorToRgb(color);
-			Vector4 colorLab = ColorUtils.RgbToLab(colorRgb, whiteRgb.ToVector3());
+			Vector3 whiteRgb = ConsoleColor.White.ToColor().ToRgb();
+			Vector3 colorRgb = color.ToRgb();
+			Vector3 colorLab = colorRgb.FromRgbToLab(whiteRgb);
 
 			ConsoleColor consoleA = ConsoleColor.Black;
 			ConsoleColor consoleB = ConsoleColor.Black;
@@ -82,21 +82,21 @@ namespace Raytracer.Ascii
 			
 			foreach (var a in Enum.GetValues<ConsoleColor>())
 			{
-				Vector4 aRgb = ColorUtils.ColorToRgb(a.ToColor());
-				Vector4 aLab = ColorUtils.RgbToLab(aRgb, whiteRgb.ToVector3());
+				Vector3 aRgb = a.ToColor().ToRgb();
+				Vector3 aLab = aRgb.FromRgbToLab(whiteRgb);
 
 				foreach (var b in Enum.GetValues<ConsoleColor>().Where(c => c != a))
 				{
-					Vector4 bRgb = ColorUtils.ColorToRgb(b.ToColor());
-					Vector4 bLab = ColorUtils.RgbToLab(bRgb, whiteRgb.ToVector3());
+					Vector3 bRgb = b.ToColor().ToRgb();
+					Vector3 bLab = bRgb.FromRgbToLab(whiteRgb);
 
 					// Treat a-b as a line. Find the closest point from the line to the target color
 					float t;
-					Vector3 closest = MathUtils.ClosestPointOnLine(aLab.ToVector3(), bLab.ToVector3(), colorLab.ToVector3(), out t);
+					Vector3 closest = MathUtils.ClosestPointOnLine(aLab, bLab, colorLab, out t);
 					if (t < 0 || t > 1)
 						continue;
 
-					float thisDelta = (closest - colorLab.ToVector3()).Length();
+					float thisDelta = (closest - colorLab).Length();
 					if (thisDelta > smallestDelta)
 						continue;
 

@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
 using Raytracer.Math;
 using Raytracer.SceneObjects;
 using Raytracer.SceneObjects.Geometry;
-using Raytracer.Utils;
 
 namespace Raytracer.Layers
 {
 	public sealed class AmbientOcclusionLayer : AbstractLayer
 	{
-		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
+		protected override Vector3 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
 		                                   out bool hit, CancellationToken cancellationToken = default)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -26,13 +24,13 @@ namespace Raytracer.Layers
 				     .FirstOrDefault();
 
 			if (geometry == null)
-				return ColorUtils.RgbaBlack;
+				return Vector3.Zero;
 			hit = true;
 
 			return
 				geometry.RayMask.HasFlag(eRayMask.AmbientOcclusion)
 					? geometry.Material.GetAmbientOcclusion(scene, random, intersection.Position, intersection.Normal)
-					: Vector4.One;
+					: Vector3.One;
 		}
 	}
 }

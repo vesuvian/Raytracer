@@ -4,7 +4,6 @@ using System.Numerics;
 using System.Threading;
 using Raytracer.Math;
 using Raytracer.SceneObjects;
-using Raytracer.Utils;
 
 namespace Raytracer.Layers
 {
@@ -13,7 +12,7 @@ namespace Raytracer.Layers
 		public Vector3 Min { get; set; } = Vector3.One * -10;
 		public Vector3 Max { get; set; } = Vector3.One * 10;
 
-		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
+		protected override Vector3 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
 		                                   out bool hit, CancellationToken cancellationToken = default)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -28,17 +27,15 @@ namespace Raytracer.Layers
 				     .FirstOrDefault();
 
 			if (closestIntersection == null)
-				return ColorUtils.RgbaBlack;
+				return Vector3.Zero;
 			hit = true;
 
 			Vector3 position = Vector3.Clamp(closestIntersection.Value.Position, Min, Max) - Min;
 			Vector3 range = Max - Min;
 
-			Vector3 rgb = new Vector3(position.X / range.X,
-			                          position.Y / range.Y,
-			                          position.Z / range.Z);
-
-			return new Vector4(rgb, 1);
+			return new Vector3(position.X / range.X,
+			                   position.Y / range.Y,
+			                   position.Z / range.Z);
 		}
 	}
 }

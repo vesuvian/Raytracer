@@ -1,13 +1,13 @@
 ﻿using System.Drawing;
 using System.Numerics;
-using Raytracer.Utils;
+using Raytracer.Extensions;
 
 namespace Raytracer.Buffers
 {
 	public sealed class SuccessiveRefinementBuffer : AbstractBuffer
 	{
 		private readonly IBuffer m_Buffer;
-		private readonly Vector4[] m_Pixels;
+		private readonly Vector3[] m_Pixels;
 		private readonly int[] m_PixelSamples;
 
 		public override int Height { get { return m_Buffer.Height; } }
@@ -16,7 +16,7 @@ namespace Raytracer.Buffers
 		public SuccessiveRefinementBuffer(IBuffer buffer)
 		{
 			m_Buffer = buffer;
-			m_Pixels = new Vector4[m_Buffer.Width * m_Buffer.Height];
+			m_Pixels = new Vector3[m_Buffer.Width * m_Buffer.Height];
 			m_PixelSamples = new int[m_Buffer.Width * m_Buffer.Height];
 		}
 
@@ -31,7 +31,7 @@ namespace Raytracer.Buffers
 
 			lock (m_Pixels)
 			{
-				m_Pixels[index] += ColorUtils.ColorToRgb(color);
+				m_Pixels[index] += color.ToRgb();
 				m_PixelSamples[index]++;
 				m_Buffer.SetPixel(x, y, GetPixel(x, y));
 			}
@@ -43,11 +43,11 @@ namespace Raytracer.Buffers
 
 			lock (m_Pixels)
 			{
-				Vector4 sum = m_Pixels[index];
+				Vector3 sum = m_Pixels[index];
 				int count = m_PixelSamples[index];
-				Vector4 average = count == 0 ? default : sum / count;
+				Vector3 average = count == 0 ? default : sum / count;
 
-				return ColorUtils.RgbToColor(average);
+				return average.FromRgbToColor();
 			}
 		}
 	}

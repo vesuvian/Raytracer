@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
+using Raytracer.Extensions;
 using Raytracer.Math;
 using Raytracer.SceneObjects;
 using Raytracer.SceneObjects.Geometry;
-using Raytracer.Utils;
 
 namespace Raytracer.Layers
 {
@@ -17,7 +17,7 @@ namespace Raytracer.Layers
 			Gamma = 2.2f;
 		}
 
-		protected override Vector4 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
+		protected override Vector3 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
 		                                   out bool hit, CancellationToken cancellationToken = default)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -31,16 +31,16 @@ namespace Raytracer.Layers
 				     .FirstOrDefault();
 
 			if (geometry == null)
-				return ColorUtils.RgbaBlack;
+				return Vector3.Zero;
 			hit = true;
 
 			Vector3 worldNormal = geometry.Material.GetWorldNormal(intersection);
 
-			IEnumerable<Vector4> illumination =
+			IEnumerable<Vector3> illumination =
 				scene.Lights
 				     .Select(l => l.Sample(scene, intersection.Position, worldNormal, random));
 
-			return ColorUtils.Sum(illumination);
+			return illumination.Sum();
 		}
 	}
 }

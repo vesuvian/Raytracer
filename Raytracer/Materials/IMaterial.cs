@@ -5,18 +5,18 @@ using Raytracer.Math;
 
 namespace Raytracer.Materials
 {
-	public delegate Vector4 CastRayDelegate(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
+	public delegate Vector3 CastRayDelegate(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
 	                                        out bool hit, CancellationToken cancellationToken = default);
 
 	public interface IMaterial
 	{
-		Vector4 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth, Vector3 rayWeight,
+		Vector3 Sample(Scene scene, Ray ray, Intersection intersection, Random random, int rayDepth, Vector3 rayWeight,
 		               CastRayDelegate castRay, CancellationToken cancellationToken = default);
 
-		Vector4 Shadow(Ray ray, Intersection intersection, Vector4 light);
+		Vector3 Shadow(Ray ray, Intersection intersection, Vector3 light);
 
 		Vector3 GetWorldNormal(Intersection intersection);
 
-		Vector4 GetAmbientOcclusion(Scene scene, Random random, Vector3 position, Vector3 worldNormal);
+		Vector3 GetAmbientOcclusion(Scene scene, Random random, Vector3 position, Vector3 worldNormal);
 	}
 }
