@@ -187,34 +187,37 @@ namespace Raytracer.Materials
 		                                float scatter, float roughness, Random random, int rayDepth, Vector3 rayWeight,
 		                                CastRayDelegate castRay, CancellationToken cancellationToken = default)
 		{
-			// Calculate refraction
-			float r1 = random.NextFloat();
-			float r2 = random.NextFloat();
-
-			Vector3 randomNormal = MathUtils.UniformPointOnHemisphere(r1, r2);
-			randomNormal = Vector3Utils.Slerp(Vector3.UnitY, randomNormal, roughness);
-			(Vector3 nt, Vector3 nb) = Vector3Utils.GetTangentAndBitangent(normal);
-			Matrix4x4 surface = Matrix4x4Utils.Tbn(nt, nb, normal);
-			Vector3 worldNormal = surface.MultiplyNormal(randomNormal);
-
-			Ray refractedRay = ray.Refract(position, worldNormal, ior);
-
-			// Calculate scatter
 			bool inside = Vector3.Dot(ray.Direction, normal) >= 0;
 			float distance = (ray.Origin - position).Length();
 			float scatterDistance = scatter == 0 ? float.MaxValue : 1 / scatter;
 			float scatterChance = scatter == 0 ? 0 : distance / scatterDistance;
 
+			// Calculate scatter
+			Ray refractedRay;
 			if (inside && random.NextFloat() < scatterChance)
 			{
 				scatterDistance = random.NextFloat(0, scatterDistance);
-				Vector3 scatterPosition = refractedRay.PositionAtDelta(scatterDistance);
+				Vector3 scatterPosition = ray.PositionAtDelta(scatterDistance);
 				Vector3 scatterDirection = MathUtils.RandomPointOnSphere(random);
 				refractedRay = new Ray
 				{
 					Origin = scatterPosition,
 					Direction = scatterDirection
 				};
+			}
+			// Calculate refraction
+			else
+			{
+				float r1 = random.NextFloat();
+				float r2 = random.NextFloat();
+
+				Vector3 randomNormal = MathUtils.UniformPointOnHemisphere(r1, r2);
+				randomNormal = Vector3Utils.Slerp(Vector3.UnitY, randomNormal, roughness);
+				(Vector3 nt, Vector3 nb) = Vector3Utils.GetTangentAndBitangent(normal);
+				Matrix4x4 surface = Matrix4x4Utils.Tbn(nt, nb, normal);
+				Vector3 worldNormal = surface.MultiplyNormal(randomNormal);
+
+				refractedRay = ray.Refract(position, worldNormal, ior);
 			}
 
 			return castRay(scene, refractedRay, random, rayDepth + 1, rayWeight, out _, cancellationToken);
