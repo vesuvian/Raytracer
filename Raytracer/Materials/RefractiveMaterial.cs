@@ -53,7 +53,7 @@ namespace Raytracer.Materials
 			Vector3 tint = Vector3.Lerp(Color, Vector3.One, transmittance);
 
 			// Mix everything
-			return (reflectionColor * fresnel) +
+			return (reflectionColor * fresnel * tint) +
 			       (1 - fresnel) * (refractionColor * tint) +
 			       (specular * 0.2f);
 		}
