@@ -95,7 +95,6 @@ namespace Raytracer.Materials
 		                                               CancellationToken cancellationToken = default)
 		{
 			Vector3 sum = Vector3.Zero;
-			int rays = 0;
 
 			for (int i = 0; i < scene.GlobalIlluminationSamples; i++)
 			{
@@ -113,18 +112,13 @@ namespace Raytracer.Materials
 					Direction = worldNormal
 				};
 
-				bool hit;
 				Vector3 sample = r1 * castRay(scene, giRay, random, rayDepth + 1,
-				                              rayWeight * r1 / scene.GlobalIlluminationSamples, out hit,
+				                              rayWeight * r1 / scene.GlobalIlluminationSamples, out _,
 				                              cancellationToken);
-				if (!hit)
-					continue;
-
-				rays++;
 				sum += sample;
 			}
 
-			return rays == 0 ? sum : sum / rays;
+			return scene.GlobalIlluminationSamples == 0 ? sum : sum / scene.GlobalIlluminationSamples;
 		}
 
 		public virtual Vector3 GetAmbientOcclusion(Scene scene, Random random, Vector3 position, Vector3 normal)
