@@ -13,7 +13,9 @@ namespace Raytracer.Materials
 
 		public float Absorption { get; set; } = 0.5f;
 
-		public float Scatter { get; set; } = 0.5f; 
+		public float Scatter { get; set; } = 0.2f;
+
+		public float BaseReflectivity { get; set; } = 0.1f;
 
 		public override bool Metallic { get { return false; } }
 
@@ -23,10 +25,14 @@ namespace Raytracer.Materials
 		                               Vector3 rayWeight, CastRayDelegate castRay,
 		                               CancellationToken cancellationToken = default)
 		{
+			bool inside = intersection.FaceRatio >= 0;
+
 			// Sample material
 			Vector3 worldNormal = GetWorldNormal(intersection);
 			float roughness = SampleRoughness(intersection.Uv);
 			float fresnel = Vector3Utils.Fresnel(ray.Direction, worldNormal, Ior);
+			if (!inside)
+				fresnel = MathF.Max(fresnel, BaseReflectivity);
 
 			// Compute refraction if it is not a case of total internal reflection
 			Vector3 refractionColor = Vector3.Zero;
@@ -47,10 +53,9 @@ namespace Raytracer.Materials
 			}
 
 			// Calculate specular
-			Vector3 specular = GetSpecular(scene, ray.Direction, intersection.Position, worldNormal, random, 200);
+			Vector3 specular = GetSpecular(scene, ray.Direction, intersection.Position, worldNormal, random, 500);
 
 			// Calculate absorption
-			bool inside = intersection.FaceRatio >= 0;
 			float transmittance =
 				inside
 					? MathUtils.Clamp(MathF.Pow(10, -Absorption * intersection.Distance), 0, 1)
@@ -69,6 +74,8 @@ namespace Raytracer.Materials
 
 			Vector3 worldNormal = GetWorldNormal(intersection);
 			float fresnel = 1 - MathF.Abs(Vector3.Dot(worldNormal, ray.Direction));
+			if (!inside)
+				fresnel = MathF.Max(fresnel, BaseReflectivity);
 
 			// Calculate absorption
 			float transmittance =
