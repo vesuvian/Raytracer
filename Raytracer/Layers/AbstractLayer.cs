@@ -91,7 +91,8 @@ namespace Raytracer.Layers
 						Random random = new Random(HashCode.Combine(iteration, x, y));
 
 						Ray ray = scene.Camera.CreateRay(xViewportMin, xViewportMax, yViewportMin, yViewportMax, random);
-						Vector3 sample = CastRay(scene, ray, random, 0, Vector3.One, out _, cancellationToken);
+						Vector3 sample;
+						CastRay(scene, ray, random, 0, Vector3.One, out sample, cancellationToken);
 
 						// Gamma Correction
 						sample = new Vector3(MathF.Pow(sample.X, 1 / Gamma),
@@ -117,8 +118,8 @@ namespace Raytracer.Layers
 			End = DateTime.UtcNow;
 		}
 
-		protected abstract Vector3 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
-		                                   out bool hit, CancellationToken cancellationToken = default);
+		protected abstract bool CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
+		                                out Vector3 sample, CancellationToken cancellationToken = default);
 
 		/// <summary>
 		/// Gets a "random" pixel for each input, only visiting each pixel once.

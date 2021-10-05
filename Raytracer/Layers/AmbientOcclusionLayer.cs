@@ -10,12 +10,12 @@ namespace Raytracer.Layers
 {
 	public sealed class AmbientOcclusionLayer : AbstractLayer
 	{
-		protected override Vector3 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
-		                                   out bool hit, CancellationToken cancellationToken = default)
+		protected override bool CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
+		                                   out Vector3 sample, CancellationToken cancellationToken = default)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
+			sample = Vector3.Zero;
 
-			hit = false;
+			cancellationToken.ThrowIfCancellationRequested();
 
 			(ISceneGeometry geometry, Intersection intersection) =
 				scene.GetIntersections(ray, eRayMask.Visible)
@@ -24,13 +24,14 @@ namespace Raytracer.Layers
 				     .FirstOrDefault();
 
 			if (geometry == null)
-				return Vector3.Zero;
-			hit = true;
+				return false;
 
-			return
+			sample =
 				geometry.RayMask.HasFlag(eRayMask.AmbientOcclusion)
 					? geometry.Material.GetAmbientOcclusion(scene, random, intersection.Position, intersection.Normal)
 					: Vector3.One;
+
+			return true;
 		}
 	}
 }

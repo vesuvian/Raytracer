@@ -11,12 +11,12 @@ namespace Raytracer.Layers
 {
 	public sealed class ViewNormalsLayer : AbstractLayer
 	{
-		protected override Vector3 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
-		                                   out bool hit, CancellationToken cancellationToken = default)
+		protected override bool CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
+		                                   out Vector3 sample, CancellationToken cancellationToken = default)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
+			sample = Vector3.Zero;
 
-			hit = false;
+			cancellationToken.ThrowIfCancellationRequested();
 
 			(ISceneGeometry geometry, Intersection intersection) =
 				scene.GetIntersections(ray, eRayMask.Visible)
@@ -25,8 +25,7 @@ namespace Raytracer.Layers
 				     .FirstOrDefault();
 
 			if (geometry == null)
-				return Vector3.Zero;
-			hit = true;
+				return false;
 
 			Vector3 worldNormal = geometry.Material.GetWorldNormal(intersection);
 
@@ -35,7 +34,9 @@ namespace Raytracer.Layers
 			Matrix4x4.Invert(scene.Camera.Projection, out cameraToWorld);
 
 			Vector3 faceNormal = cameraToWorld.MultiplyNormal(worldNormal);
-			return (faceNormal / 2) + (Vector3.One / 2);
+			sample = (faceNormal / 2) + (Vector3.One / 2);
+
+			return true;
 		}
 	}
 }

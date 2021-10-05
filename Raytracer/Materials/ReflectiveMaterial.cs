@@ -24,8 +24,10 @@ namespace Raytracer.Materials
 			Vector3 specular = GetSpecular(scene, ray.Direction, intersection.Position, worldNormal, random, 25);
 
 			// Calculate reflection
-			Vector3 reflection = GetReflection(scene, ray, intersection.Position, worldNormal, roughness, random,
-			                                   rayDepth, rayWeight, castRay, cancellationToken);
+			Vector3 reflection;
+			if (!GetReflection(scene, ray, intersection.Position, worldNormal, roughness, random,
+			                   rayDepth, rayWeight, castRay, out reflection, cancellationToken))
+				reflection = Color;
 
 			return specular * 0.2f + reflection;
 		}

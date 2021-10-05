@@ -33,8 +33,10 @@ namespace Raytracer.Utils
 			return new Tuple<Vector3, Vector3>(tangent, bitangent);
 		}
 
-		public static Vector3 Refract(Vector3 direction, Vector3 normal, float ior)
+		public static bool Refract(Vector3 direction, Vector3 normal, float ior, out Vector3 output)
 		{
+			output = Vector3.Zero;
+
 			float faceAmount = MathUtils.Clamp(Vector3.Dot(direction, normal), - 1, 1);
 			float fromIor = 1;
 			float toIor = ior;
@@ -50,10 +52,11 @@ namespace Raytracer.Utils
 			float ratio = fromIor / toIor;
 			float k = 1 - ratio * ratio * (1 - faceAmount * faceAmount);
 
-			return k < 0
-				? Vector3.Zero
-				: direction * ratio +
-				  normal * (ratio * faceAmount - MathF.Sqrt(k));
+			if (k < 0)
+				return false;
+
+			output = Vector3.Normalize(direction * ratio + normal * (ratio * faceAmount - MathF.Sqrt(k)));
+			return true;
 		}
 
 		public static float Fresnel(Vector3 direction, Vector3 normal, float ior)

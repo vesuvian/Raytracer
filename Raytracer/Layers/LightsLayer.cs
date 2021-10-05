@@ -17,12 +17,12 @@ namespace Raytracer.Layers
 			Gamma = 2.2f;
 		}
 
-		protected override Vector3 CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
-		                                   out bool hit, CancellationToken cancellationToken = default)
+		protected override bool CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
+		                                   out Vector3 sample, CancellationToken cancellationToken = default)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
+			sample = Vector3.Zero;
 
-			hit = false;
+			cancellationToken.ThrowIfCancellationRequested();
 
 			(ISceneGeometry geometry, Intersection intersection) =
 				scene.GetIntersections(ray, eRayMask.Visible)
@@ -31,8 +31,7 @@ namespace Raytracer.Layers
 				     .FirstOrDefault();
 
 			if (geometry == null)
-				return Vector3.Zero;
-			hit = true;
+				return false;
 
 			Vector3 worldNormal = geometry.Material.GetWorldNormal(intersection);
 
@@ -40,7 +39,9 @@ namespace Raytracer.Layers
 				scene.Lights
 				     .Select(l => l.Sample(scene, intersection.Position, worldNormal, random));
 
-			return illumination.Sum();
+			sample = illumination.Sum();
+
+			return true;
 		}
 	}
 }

@@ -5,8 +5,8 @@ using Raytracer.Math;
 
 namespace Raytracer.Materials
 {
-	public delegate Vector3 CastRayDelegate(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
-	                                        out bool hit, CancellationToken cancellationToken = default);
+	public delegate bool CastRayDelegate(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
+	                                     out Vector3 sample, CancellationToken cancellationToken = default);
 
 	public interface IMaterial
 	{

@@ -61,13 +61,21 @@ namespace Raytracer.Math
 			};
 		}
 
-		public Ray Refract(Vector3 position, Vector3 normal, float ior)
+		public bool Refract(Vector3 position, Vector3 normal, float ior, out Ray ray)
 		{
-			return new Ray
+			ray = default;
+
+			Vector3 refracted;
+			if (!Vector3Utils.Refract(Direction, normal, ior, out refracted))
+				return false;
+
+			ray = new Ray
 			{
 				Origin = position,
-				Direction = Vector3.Normalize(Vector3Utils.Refract(Direction, normal, ior))
+				Direction = refracted
 			};
+
+			return true;
 		}
 	}
 }

@@ -29,17 +29,22 @@ namespace Raytracer.Materials
 			float fresnel = Vector3Utils.Fresnel(ray.Direction, worldNormal, Ior);
 
 			// Compute refraction if it is not a case of total internal reflection
-			Vector3 refractionColor =
-				fresnel < 1
-					? GetRefraction(scene, ray, intersection.Position, worldNormal, Ior, Scatter, roughness, random, rayDepth,
-					                rayWeight * (1 - fresnel), castRay, cancellationToken)
-					: Vector3.Zero;
+			Vector3 refractionColor = Vector3.Zero;
+			if (fresnel < 1)
+			{
+				if (!GetRefraction(scene, ray, intersection.Position, worldNormal, Ior, Scatter, roughness, random,
+				                   rayDepth,
+				                   rayWeight * (1 - fresnel), castRay, out refractionColor, cancellationToken))
+					refractionColor = Color;
+			}
 
-			Vector3 reflectionColor =
-				fresnel > 0
-					? GetReflection(scene, ray, intersection.Position, worldNormal, roughness, random, rayDepth,
-					                rayWeight * fresnel, castRay, cancellationToken)
-					: Vector3.Zero;
+			Vector3 reflectionColor = Vector3.Zero;
+			if (fresnel > 0)
+			{
+				if (!GetReflection(scene, ray, intersection.Position, worldNormal, roughness, random, rayDepth,
+				                   rayWeight * fresnel, castRay, out reflectionColor, cancellationToken))
+					reflectionColor = Color;
+			}
 
 			// Calculate specular
 			Vector3 specular = GetSpecular(scene, ray.Direction, intersection.Position, worldNormal, random, 200);
