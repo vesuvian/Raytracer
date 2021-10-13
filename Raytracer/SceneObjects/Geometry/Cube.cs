@@ -35,7 +35,9 @@ namespace Raytracer.SceneObjects.Geometry
 				Bitangent = bitangent,
 				Position = posMin,
 				Ray = ray,
-				Uv = uv
+				Uv = uv,
+                Geometry = this,
+                Material = Material
 			}.Multiply(LocalToWorld);
 
 			Vector3 posMax = ray.PositionAtDelta(tMax);
@@ -51,7 +53,9 @@ namespace Raytracer.SceneObjects.Geometry
 				Bitangent = bitangent,
 				Position = posMax,
 				Ray = ray,
-				Uv = uv
+				Uv = uv,
+                Geometry = this,
+                Material = Material
 			}.Multiply(LocalToWorld);
 		}
 

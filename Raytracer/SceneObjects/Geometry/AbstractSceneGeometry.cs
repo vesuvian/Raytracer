@@ -15,13 +15,24 @@ namespace Raytracer.SceneObjects.Geometry
 
 		public Aabb Aabb { get; private set; }
 
-		protected abstract Aabb CalculateAabb();
+        protected abstract Aabb CalculateAabb();
 
-		public IEnumerable<Intersection> GetIntersections(Ray ray)
+		public IEnumerable<Intersection> GetIntersections(Ray ray, eRayMask mask, float minDelta = float.NegativeInfinity,
+                                                          float maxDelta = float.PositiveInfinity)
 		{
-			return Aabb.Intersects(ray)
-				? GetIntersectionsFinal(ray)
-				: Enumerable.Empty<Intersection>();
+			if ((RayMask & mask) == eRayMask.None)
+				return Enumerable.Empty<Intersection>();
+
+            float tMin;
+            float tMax;
+			if (!Aabb.Intersects(ray, out tMin, out tMax))
+                return Enumerable.Empty<Intersection>();
+
+            if ((tMin < minDelta && tMax < minDelta) ||
+                (tMin > maxDelta && tMax > maxDelta))
+                return Enumerable.Empty<Intersection>();
+
+			return GetIntersectionsFinal(ray).Where(i => i.RayDelta >= minDelta && i.RayDelta <= maxDelta);
 		}
 
 		protected abstract IEnumerable<Intersection> GetIntersectionsFinal(Ray ray);

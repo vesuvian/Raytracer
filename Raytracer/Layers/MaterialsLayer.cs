@@ -35,17 +35,15 @@ namespace Raytracer.Layers
 			// Add the energy we 'lose' by randomly terminating paths
 			rayWeight *= 1 / p;
 
-			(ISceneGeometry geometry, Intersection intersection) =
-				scene.GetIntersections(ray, eRayMask.Visible)
-				     .Where(kvp => kvp.Value.RayDelta > 0.00001f)
-				     .OrderBy(kvp => kvp.Value.RayDelta)
-				     .FirstOrDefault();
+            Intersection intersection =
+                scene.GetIntersections(ray, eRayMask.Visible, 0.00001f)
+                     .FirstOrDefault();
 
-			if (geometry == null)
-				return false;
+            if (intersection == null)
+                return false;
 
-			sample = geometry.Material.Sample(scene, ray, intersection, random, rayDepth, rayWeight, CastRay, cancellationToken);
-			Vector3 ao = geometry.Material.GetAmbientOcclusion(scene, random, intersection.Position, intersection.Normal);
+			sample = intersection.Material.Sample(scene, ray, intersection, random, rayDepth, rayWeight, CastRay, cancellationToken);
+			Vector3 ao = intersection.Material.GetAmbientOcclusion(scene, random, intersection.Position, intersection.Normal);
 			sample *= ao;
 
 			return true;

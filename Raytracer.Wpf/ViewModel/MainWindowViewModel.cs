@@ -267,6 +267,7 @@ namespace Raytracer.Wpf.ViewModel
 					new MaterialsLayer()
 				}
 			};
+			scene.Initialize();
 
 			scene.Layers.First().OnProgressChanged += UpdateTitle;
 

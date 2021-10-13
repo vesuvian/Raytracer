@@ -83,8 +83,10 @@ namespace Raytracer.SceneObjects.Geometry
 					Bitangent = bitangent,
 					Normal = normal,
 					Ray = ray,
-					Uv = uv
-				}.Multiply(LocalToWorld);
+					Uv = uv,
+					Geometry = this,
+					Material = Material
+                }.Multiply(LocalToWorld);
 			}
 
 			if (position2.Y <= cylinderHeight / 2 && position2.Y >= -cylinderHeight / 2)
@@ -101,7 +103,9 @@ namespace Raytracer.SceneObjects.Geometry
 					Bitangent = bitangent,
 					Normal = normal,
 					Ray = ray,
-					Uv = uv
+					Uv = uv,
+                    Geometry = this,
+                    Material = Material
 				}.Multiply(LocalToWorld);
 			}
 
@@ -128,7 +132,9 @@ namespace Raytracer.SceneObjects.Geometry
 					Bitangent = bitangent,
 					Position = position,
 					Ray = ray,
-					Uv = uv
+					Uv = uv,
+                    Geometry = this,
+                    Material = Material
 				}.Multiply(LocalToWorld);
 			}
 
@@ -155,7 +161,9 @@ namespace Raytracer.SceneObjects.Geometry
 					Bitangent = bitangent,
 					Position = position,
 					Ray = ray,
-					Uv = uv
+					Uv = uv,
+                    Geometry = this,
+                    Material = Material
 				}.Multiply(LocalToWorld);
 			}
 		}

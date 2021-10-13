@@ -10,8 +10,8 @@ namespace Raytracer.SceneObjects.Geometry.CSG
 		protected override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
 		{
 			Intersection[] intersections =
-				(A?.GetIntersections(ray) ?? Enumerable.Empty<Intersection>())
-				.Concat(B?.GetIntersections(ray) ?? Enumerable.Empty<Intersection>())
+				(A?.GetIntersections(ray, eRayMask.All) ?? Enumerable.Empty<Intersection>())
+				.Concat(B?.GetIntersections(ray, eRayMask.All) ?? Enumerable.Empty<Intersection>())
 				.OrderBy(i => i.RayDelta)
 				.ToArray();
 

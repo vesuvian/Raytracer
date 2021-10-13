@@ -18,18 +18,14 @@ namespace Raytracer.Layers
 
 			cancellationToken.ThrowIfCancellationRequested();
 
-			Intersection? closestIntersection =
-				scene.GetIntersections(ray, eRayMask.Visible)
-				     .Select(kvp => (Intersection?)kvp.Value)
-				     .Where(kvp => kvp.Value.RayDelta > 0.00001f)
-				     .OrderBy(kvp => kvp.Value.RayDelta)
+			Intersection closestIntersection =
+				scene.GetIntersections(ray, eRayMask.Visible, 0.00001f)
 				     .FirstOrDefault();
-
-			if (closestIntersection == null)
+            if (closestIntersection == null)
 				return false;
 
 			float planarDistance = Plane.Distance(scene.Camera.Position, scene.Camera.Forward,
-			                                      closestIntersection.Value.Position, out _);
+			                                      closestIntersection.Position, out _);
 			float t = MathUtils.Clamp(planarDistance, scene.Camera.NearPlane, scene.Camera.FarPlane) /
 			          (scene.Camera.FarPlane - scene.Camera.NearPlane);
 			sample = Vector3.Lerp(Vector3.One, Vector3.Zero, t);

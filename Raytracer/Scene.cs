@@ -21,12 +21,22 @@ namespace Raytracer
 		public int AmbientOcclusionSamples { get; set; } = 4;
 		public float AmbientOcclusionScale { get; set; } = 1;
 
-		public IEnumerable<KeyValuePair<ISceneGeometry, Intersection>> GetIntersections(
-			Ray ray, eRayMask mask = eRayMask.All)
-		{
-			return Geometry.Where(g => (g.RayMask & mask) != eRayMask.None)
-			               .SelectMany(g => g.GetIntersections(ray)
-			                                 .Select(i => new KeyValuePair<ISceneGeometry, Intersection>(g, i)));
-		}
+		private BoundingVolumeHierarchy m_BoundingVolumeHierarchy;
+
+        public void Initialize()
+        {
+            m_BoundingVolumeHierarchy = new BoundingVolumeHierarchy(Geometry);
+        }
+
+		public IEnumerable<Intersection> GetIntersections(Ray ray, eRayMask mask = eRayMask.All, float minDelta = float.NegativeInfinity,
+                                                          float maxDelta = float.PositiveInfinity, bool ordered = true)
+        {
+            IEnumerable<Intersection> intersections = m_BoundingVolumeHierarchy.GetIntersections(ray, mask, minDelta, maxDelta);
+
+            if (ordered)
+                intersections = intersections.OrderBy(i => i.RayDelta);
+
+            return intersections;
+        }
 	}
 }

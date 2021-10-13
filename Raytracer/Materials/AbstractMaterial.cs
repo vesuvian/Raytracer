@@ -145,9 +145,8 @@ namespace Raytracer.Materials
 				};
 
 				bool hit =
-					scene.GetIntersections(giRay, eRayMask.AmbientOcclusion)
-					     .Any(kvp => kvp.Value.RayDelta > 0.001f &&
-					                 kvp.Value.RayDelta < scene.AmbientOcclusionScale);
+					scene.GetIntersections(giRay, eRayMask.AmbientOcclusion, 0.001f, scene.AmbientOcclusionScale, false)
+					     .Any();
 
 				if (hit)
 					occlusionSum += new Vector3(1) * r1;

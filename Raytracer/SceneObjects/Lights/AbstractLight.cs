@@ -22,17 +22,14 @@ namespace Raytracer.SceneObjects.Lights
 			if (sample == Vector3.Zero)
 				return sample;
 
-			var (geometry, intersection) =
-				scene.GetIntersections(ray, eRayMask.CastShadows)
-				     .Where(kvp => kvp.Value.RayDelta > SELF_SHADOW_TOLERANCE &&
-				                   kvp.Value.RayDelta < distance - SELF_SHADOW_TOLERANCE)
-				     .OrderBy(kvp => kvp.Value.RayDelta)
-				     .FirstOrDefault();
+            Intersection intersection =
+                scene.GetIntersections(ray, eRayMask.CastShadows, SELF_SHADOW_TOLERANCE, distance - SELF_SHADOW_TOLERANCE)
+                     .FirstOrDefault();
 
-			if (geometry == null)
+			if (intersection == null)
 				return sample;
 
-			sample = geometry.Material.Shadow(ray, intersection, sample);
+			sample = intersection.Material.Shadow(ray, intersection, sample);
 
 			// Move the ray up to this intersection for the next shadow calculation
 			ray.Origin = intersection.Position;

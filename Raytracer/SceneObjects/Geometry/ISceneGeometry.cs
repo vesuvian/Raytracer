@@ -1,19 +1,17 @@
 ﻿using System.Collections.Generic;
-using Raytracer.Materials;
 using Raytracer.Math;
 
 namespace Raytracer.SceneObjects.Geometry
 {
 	public interface ISceneGeometry : ISceneObject
 	{
-		IMaterial Material { get; set; }
-
-		eRayMask RayMask { get; set; }
+        eRayMask RayMask { get; }
 
 		float SurfaceArea { get; }
 
 		Aabb Aabb { get; }
 
-		IEnumerable<Intersection> GetIntersections(Ray ray);
-	}
+		IEnumerable<Intersection> GetIntersections(Ray ray, eRayMask mask, float minDelta = float.NegativeInfinity,
+                                                   float maxDelta = float.PositiveInfinity);
+    }
 }

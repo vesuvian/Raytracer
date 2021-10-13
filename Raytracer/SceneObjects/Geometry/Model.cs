@@ -85,7 +85,9 @@ namespace Raytracer.SceneObjects.Geometry
 					Tangent = tangent,
 					Bitangent = bitangent,
 					Ray = ray,
-					Uv = uv
+					Uv = uv,
+                    Geometry = this,
+                    Material = Material
 				}.Multiply(LocalToWorld);
 			}
 		}
@@ -115,5 +117,5 @@ namespace Raytracer.SceneObjects.Geometry
 		{
 			return Aabb.FromPoints(LocalToWorld, m_Mesh?.Vertices ?? Enumerable.Empty<Vector3>());
 		}
-	}
+    }
 }

@@ -4,7 +4,6 @@ using System.Numerics;
 using System.Threading;
 using Raytracer.Math;
 using Raytracer.SceneObjects;
-using Raytracer.SceneObjects.Geometry;
 
 namespace Raytracer.Layers
 {
@@ -17,19 +16,18 @@ namespace Raytracer.Layers
 
 			cancellationToken.ThrowIfCancellationRequested();
 
-			(ISceneGeometry geometry, Intersection intersection) =
-				scene.GetIntersections(ray, eRayMask.Visible)
-				     .Where(kvp => kvp.Value.RayDelta > 0.00001f)
-				     .OrderBy(kvp => kvp.Value.RayDelta)
+			Intersection intersection =
+				scene.GetIntersections(ray, eRayMask.Visible, 0.00001f)
 				     .FirstOrDefault();
 
-			if (geometry == null)
+			if (intersection == null)
 				return false;
 
-			sample =
-				geometry.RayMask.HasFlag(eRayMask.AmbientOcclusion)
-					? geometry.Material.GetAmbientOcclusion(scene, random, intersection.Position, intersection.Normal)
-					: Vector3.One;
+            sample =
+                intersection.Geometry.RayMask.HasFlag(eRayMask.AmbientOcclusion)
+                    ? intersection.Material.GetAmbientOcclusion(scene, random, intersection.Position,
+                                                                intersection.Normal)
+                    : Vector3.One;
 
 			return true;
 		}

@@ -39,7 +39,9 @@ namespace Raytracer.SceneObjects.Geometry
 				Bitangent = new Vector3(0, 0, 1),
 				Position = position,
 				Ray = ray,
-				Uv = new Vector2(position.X, position.Z)
+				Uv = new Vector2(position.X, position.Z),
+                Geometry = this,
+                Material = Material
 			}.Multiply(LocalToWorld);
 		}
 

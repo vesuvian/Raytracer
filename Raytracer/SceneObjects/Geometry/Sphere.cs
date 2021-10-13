@@ -65,7 +65,9 @@ namespace Raytracer.SceneObjects.Geometry
 					Bitangent = bitangent,
 					Normal = normal,
 					Ray = ray,
-					Uv = uv
+					Uv = uv,
+                    Geometry = this,
+                    Material = Material
 				}.Multiply(LocalToWorld);
 			}
 		}

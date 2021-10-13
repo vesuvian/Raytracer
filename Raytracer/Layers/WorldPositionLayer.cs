@@ -19,17 +19,14 @@ namespace Raytracer.Layers
 
 			cancellationToken.ThrowIfCancellationRequested();
 
-			Intersection? closestIntersection =
-				scene.GetIntersections(ray, eRayMask.Visible)
-				     .Where(kvp => kvp.Value.RayDelta > 0.00001f)
-				     .OrderBy(kvp => kvp.Value.RayDelta)
-				     .Select(kvp => (Intersection?)kvp.Value)
-				     .FirstOrDefault();
+            Intersection intersection =
+                scene.GetIntersections(ray, eRayMask.Visible, 0.00001f)
+                     .FirstOrDefault();
 
-			if (closestIntersection == null)
-				return false;
+            if (intersection == null)
+                return false;
 
-			Vector3 position = Vector3.Clamp(closestIntersection.Value.Position, Min, Max) - Min;
+			Vector3 position = Vector3.Clamp(intersection.Position, Min, Max) - Min;
 			Vector3 range = Max - Min;
 
 			sample = new Vector3(position.X / range.X,

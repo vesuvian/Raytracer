@@ -82,7 +82,9 @@ namespace Raytracer.SceneObjects.Geometry
 					Bitangent = bitangent,
 					Normal = normal,
 					Ray = ray,
-					Uv = uv
+					Uv = uv,
+                    Geometry = this,
+                    Material = Material
 				}.Multiply(LocalToWorld);
 			}
 
@@ -99,7 +101,9 @@ namespace Raytracer.SceneObjects.Geometry
 					Bitangent = bitangent,
 					Normal = normal,
 					Ray = ray,
-					Uv = uv
+					Uv = uv,
+                    Geometry = this,
+                    Material = Material
 				}.Multiply(LocalToWorld);
 			}
 
@@ -123,7 +127,9 @@ namespace Raytracer.SceneObjects.Geometry
 						Bitangent = new Vector3(0, 0, 1),
 						Position = position,
 						Ray = ray,
-						Uv = uv
+						Uv = uv,
+                        Geometry = this,
+                        Material = Material
 					}.Multiply(LocalToWorld);
 				}
 			}
@@ -147,7 +153,9 @@ namespace Raytracer.SceneObjects.Geometry
 						Bitangent = new Vector3(0, 0, -1),
 						Position = position,
 						Ray = ray,
-						Uv = uv
+						Uv = uv,
+                        Geometry = this,
+                        Material = Material
 					}.Multiply(LocalToWorld);
 				}
 			}

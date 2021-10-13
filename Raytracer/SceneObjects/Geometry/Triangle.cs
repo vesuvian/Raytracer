@@ -124,7 +124,9 @@ namespace Raytracer.SceneObjects.Geometry
 				Tangent = Vector3.Normalize(B - A),
 				Bitangent = Vector3.Normalize(C - A),
 				Ray = ray,
-				Uv = new Vector2(u, v)
+				Uv = new Vector2(u, v),
+                Geometry = this,
+                Material = Material
 			}.Multiply(LocalToWorld);
 		}
 

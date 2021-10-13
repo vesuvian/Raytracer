@@ -9,8 +9,8 @@ namespace Raytracer.SceneObjects.Geometry.CSG
 	{
 		protected override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
 		{
-			Intersection[] aIntersections = (A?.GetIntersections(ray) ?? Enumerable.Empty<Intersection>()).ToArray();
-			Intersection[] bIntersections = (B?.GetIntersections(ray) ?? Enumerable.Empty<Intersection>()).ToArray();
+			Intersection[] aIntersections = (A?.GetIntersections(ray, eRayMask.All) ?? Enumerable.Empty<Intersection>()).ToArray();
+			Intersection[] bIntersections = (B?.GetIntersections(ray, eRayMask.All) ?? Enumerable.Empty<Intersection>()).ToArray();
 
 			KeyValuePair<Intersection, ISceneGeometry>[] intersections =
 				aIntersections.Select(i => new KeyValuePair<Intersection, ISceneGeometry>(i, A))
