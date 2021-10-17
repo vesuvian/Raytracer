@@ -1,9 +1,11 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics;
+using System.Numerics;
 using Raytracer.Extensions;
 using Raytracer.Utils;
 
 namespace Raytracer.Math
 {
+    [DebuggerDisplay("Origin = {Origin}, Direction = {Direction}")]
 	public struct Ray
 	{
 		private Vector3 m_Direction;

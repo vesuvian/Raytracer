@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using Raytracer.Extensions;
+using Raytracer.Geometry;
 using Raytracer.Math;
 
 namespace Raytracer.SceneObjects.Geometry
@@ -20,6 +21,12 @@ namespace Raytracer.SceneObjects.Geometry
         private Aabb? m_Aabb;
 
         #region Properties
+
+        public IEnumerable<ISceneGeometry> Leaves { get { return m_Leaves.ToArray(); } }
+
+        public BoundingVolumeHierarchy Left { get { return m_Left; } }
+
+        public BoundingVolumeHierarchy Right { get { return m_Right; } }
 
         private IEnumerable<ISceneGeometry> Children
         {
@@ -278,8 +285,12 @@ namespace Raytracer.SceneObjects.Geometry
                 {
                     ISceneGeometry sliceLeft = sliceable.Slice(leftAabb);
                     ISceneGeometry sliceRight = sliceable.Slice(rightAabb);
-                    left.Add(sliceLeft);
-                    right.Add(sliceRight);
+
+                    if (sliceLeft != null)
+                        left.Add(sliceLeft);
+
+                    if (sliceRight != null)
+                        right.Add(sliceRight);
                 }
                 else
                     leaves.Add(item);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using Raytracer.Geometry;
 
 namespace Raytracer.Parsers
 {
@@ -13,9 +14,11 @@ namespace Raytracer.Parsers
 			List<Vector3> vertices = new List<Vector3>();
 			List<Vector3> vertexNormals = new List<Vector3>();
 			List<Vector2> vertexUvs = new List<Vector2>();
+            List<Vector3> vertexTangents = new List<Vector3>();
 			List<int> triangles = new List<int>();
 			List<int> triangleNormals = new List<int>();
 			List<int> triangleUvs = new List<int>();
+            List<int> triangleTangents = new List<int>();
 
 			using (StreamReader reader = new StreamReader(stream))
 			{
@@ -67,48 +70,119 @@ namespace Raytracer.Parsers
 				}
 			}
 
-			Mesh output = new Mesh
-			{
-				Vertices = vertices,
-				VertexNormals = vertexNormals,
-				VertexUvs = vertexUvs,
-				Triangles = triangles,
-				TriangleNormals = triangleNormals,
-				TriangleUvs = triangleUvs
-			};
+            FillTangents(vertices,
+                         vertexNormals,
+                         vertexUvs,
+                         vertexTangents,
+                         triangles,
+                         triangleNormals,
+                         triangleUvs,
+                         triangleTangents);
 
-			FillTangents(output);
+            // Convert to triangles
+            List<Triangle> output = new List<Triangle>();
 
-			return output;
+            for (int index = 0; index < triangles.Count; index += 3)
+            {
+				// Positions
+				int vertexIndex0 = triangles[index];
+				int vertexIndex1 = triangles[index + 1];
+				int vertexIndex2 = triangles[index + 2];
+				
+				Vector3 vertex0 = vertices[vertexIndex0];
+				Vector3 vertex1 = vertices[vertexIndex1];
+				Vector3 vertex2 = vertices[vertexIndex2];
+                
+				// Normals
+				int vertexNormalIndex0 = triangleNormals[index];
+				int vertexNormalIndex1 = triangleNormals[index + 1];
+				int vertexNormalIndex2 = triangleNormals[index + 2];
+				
+				Vector3 vertexNormal0 = vertexNormals[vertexNormalIndex0];
+				Vector3 vertexNormal1 = vertexNormals[vertexNormalIndex1];
+				Vector3 vertexNormal2 = vertexNormals[vertexNormalIndex2];
+				
+				// Tangents
+				int vertexTangentIndex0 = triangleTangents[index];
+				int vertexTangentIndex1 = triangleTangents[index + 1];
+				int vertexTangentIndex2 = triangleTangents[index + 2];
+				
+				Vector3 vertexTangent0 = vertexTangents[vertexTangentIndex0];
+				Vector3 vertexTangent1 = vertexTangents[vertexTangentIndex1];
+				Vector3 vertexTangent2 = vertexTangents[vertexTangentIndex2];
+				
+				// Uvs
+				int vertexUvIndex0 = triangleUvs[index];
+				int vertexUvIndex1 = triangleUvs[index + 1];
+				int vertexUvIndex2 = triangleUvs[index + 2];
+				
+				Vector2 vertexUv0 = vertexUvs[vertexUvIndex0];
+				Vector2 vertexUv1 = vertexUvs[vertexUvIndex1];
+				Vector2 vertexUv2 = vertexUvs[vertexUvIndex2];
+
+                Triangle triangle =
+                    new Triangle
+                    {
+						A = new Vertex
+                        {
+							Position = vertex0,
+							Normal = vertexNormal0,
+                            Tangent = vertexTangent0,
+							Uv = vertexUv0
+                        },
+                        B = new Vertex
+                        {
+                            Position = vertex1,
+                            Normal = vertexNormal1,
+                            Tangent = vertexTangent1,
+                            Uv = vertexUv1
+                        },
+                        C = new Vertex
+                        {
+                            Position = vertex2,
+                            Normal = vertexNormal2,
+                            Tangent = vertexTangent2,
+                            Uv = vertexUv2
+                        }
+					};
+
+				output.Add(triangle);
+            }
+
+			return new Mesh { Triangles = output };
 		}
 
-		private static void FillTangents(Mesh mesh)
-		{
-			List<Vector3> vertexTangents = new List<Vector3>();
-			List<int> triangleTangents = new List<int>();
+		private static void FillTangents(List<Vector3> vertices,
+                                         List<Vector3> vertexNormals,
+                                         List<Vector2> vertexUvs,
+                                         List<Vector3> vertexTangents,
+                                         List<int> triangles,
+                                         List<int> triangleNormals,
+                                         List<int> triangleUvs,
+                                         List<int> triangleTangents)
+        {
+            Vector3[] tan1 = new Vector3[triangles.Count];
+			Vector3[] tan2 = new Vector3[triangles.Count];
 
-			Vector3[] tan1 = new Vector3[mesh.Triangles.Count];
-			Vector3[] tan2 = new Vector3[mesh.Triangles.Count];
-
-			for (int faceIndex = 0; faceIndex < mesh.Triangles.Count; faceIndex += 3)
+			for (int faceIndex = 0; faceIndex < triangles.Count; faceIndex += 3)
 			{
 				// Positions
-				int vertexIndex0 = mesh.Triangles[faceIndex];
-				int vertexIndex1 = mesh.Triangles[faceIndex + 1];
-				int vertexIndex2 = mesh.Triangles[faceIndex + 2];
+				int vertexIndex0 = triangles[faceIndex];
+				int vertexIndex1 = triangles[faceIndex + 1];
+				int vertexIndex2 = triangles[faceIndex + 2];
 
-				Vector3 vertex0 = mesh.Vertices[vertexIndex0];
-				Vector3 vertex1 = mesh.Vertices[vertexIndex1];
-				Vector3 vertex2 = mesh.Vertices[vertexIndex2];
+				Vector3 vertex0 = vertices[vertexIndex0];
+				Vector3 vertex1 = vertices[vertexIndex1];
+				Vector3 vertex2 = vertices[vertexIndex2];
 
 				// Uvs
-				int vertexUvIndex0 = mesh.TriangleUvs[faceIndex];
-				int vertexUvIndex1 = mesh.TriangleUvs[faceIndex + 1];
-				int vertexUvIndex2 = mesh.TriangleUvs[faceIndex + 2];
+				int vertexUvIndex0 = triangleUvs[faceIndex];
+				int vertexUvIndex1 = triangleUvs[faceIndex + 1];
+				int vertexUvIndex2 = triangleUvs[faceIndex + 2];
 
-				Vector2 vertexUv0 = mesh.VertexUvs[vertexUvIndex0];
-				Vector2 vertexUv1 = mesh.VertexUvs[vertexUvIndex1];
-				Vector2 vertexUv2 = mesh.VertexUvs[vertexUvIndex2];
+				Vector2 vertexUv0 = vertexUvs[vertexUvIndex0];
+				Vector2 vertexUv1 = vertexUvs[vertexUvIndex1];
+				Vector2 vertexUv2 = vertexUvs[vertexUvIndex2];
 
 				float x1 = vertex1.X - vertex0.X;
 				float x2 = vertex2.X - vertex0.X;
@@ -139,10 +213,10 @@ namespace Raytracer.Parsers
 				tan2[faceIndex + 2] = tdir;
 			}
     
-			for (int a = 0; a < mesh.Triangles.Count; a++)
+			for (int a = 0; a < triangles.Count; a++)
 			{
-				int vertexNormalIndex0 = mesh.TriangleNormals[a];
-				Vector3 vertexNormal0 = mesh.VertexNormals[vertexNormalIndex0];
+				int vertexNormalIndex0 = triangleNormals[a];
+				Vector3 vertexNormal0 = vertexNormals[vertexNormalIndex0];
 
 				Vector3 n = vertexNormal0;
 				Vector3 t = tan1[a];
@@ -159,10 +233,7 @@ namespace Raytracer.Parsers
 				vertexTangents.Add(tangent);
 				triangleTangents.Add(a);
 			}
-
-			mesh.VertexTangents = vertexTangents;
-			mesh.TriangleTangents = triangleTangents;
-		}
+        }
 
 		private static IEnumerable<T> Triangulate<T>(IEnumerable<T> vertices)
 		{

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Raytracer.Geometry;
 using Raytracer.Math;
 
-namespace Raytracer.SceneObjects.Geometry
+namespace Raytracer.SceneObjects.Geometry.Primitives
 {
-	public sealed class Cylinder : AbstractSceneGeometry
+	public sealed class CylinderSceneGeometry : AbstractSceneGeometry
 	{
 		private float m_Radius = 1.0f;
 		private float m_Height = 1.0f;
@@ -111,7 +112,7 @@ namespace Raytracer.SceneObjects.Geometry
 			Ray topCapRay = ray;
 			topCapRay.Origin -= Vector3.UnitY * Height / 2;
 			float t;
-			if (Plane.HitPlane(topCapRay, out t))
+			if (PlaneSceneGeometry.HitPlane(topCapRay, out t))
 			{
 				Vector3 position = topCapRay.PositionAtDelta(t);
 
@@ -137,7 +138,7 @@ namespace Raytracer.SceneObjects.Geometry
 			// Bottom cap
 			Ray bottomCapRay = ray;
 			bottomCapRay.Origin += Vector3.UnitY * Height / 2;
-			if (Plane.HitPlane(bottomCapRay, out t))
+			if (PlaneSceneGeometry.HitPlane(bottomCapRay, out t))
 			{
 				Vector3 position = bottomCapRay.PositionAtDelta(t);
 

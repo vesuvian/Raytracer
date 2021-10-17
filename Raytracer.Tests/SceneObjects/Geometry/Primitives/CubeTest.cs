@@ -2,10 +2,11 @@
 using System.Numerics;
 using NUnit.Framework;
 using Raytracer.Math;
-using Raytracer.SceneObjects.Geometry;
+using Raytracer.SceneObjects;
+using Raytracer.SceneObjects.Geometry.Primitives;
 using Raytracer.Utils;
 
-namespace Raytracer.Tests.SceneObjects.Geometry
+namespace Raytracer.Tests.SceneObjects.Geometry.Primitives
 {
     [TestFixture]
     public sealed class CubeTest
@@ -14,7 +15,7 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 	    {
 		    new object[]
 		    {
-			    new Cube(),
+			    new CubeSceneGeometry(),
 			    new Ray
 			    {
 				    Origin = new Vector3(0, -1, 0),
@@ -32,7 +33,7 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 		    },
 		    new object[]
 		    {
-			    new Cube(),
+			    new CubeSceneGeometry(),
 			    new Ray
 			    {
 				    Origin = new Vector3(0, 0, -10),
@@ -50,8 +51,8 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 		    },
 		    new object[]
 		    {
-			    new Cube
-			    {
+			    new CubeSceneGeometry
+				{
 					Scale = new Vector3(2, 2, 2)
 			    },
 			    new Ray
@@ -71,8 +72,8 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 		    },
 		    new object[]
 		    {
-			    new Cube
-			    {
+			    new CubeSceneGeometry
+				{
 					Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * 90, MathUtils.DEG2RAD * 90, MathUtils.DEG2RAD * 90)
 			    },
 			    new Ray
@@ -93,9 +94,9 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 		};
 
 		[TestCaseSource(nameof(s_GetIntersectionTestCases))]
-	    public static void GetIntersections(Cube cube, Ray ray, IEnumerable<Intersection> expectedIntersections)
+	    public static void GetIntersections(CubeSceneGeometry cube, Ray ray, IEnumerable<Intersection> expectedIntersections)
 	    {
-		    IEnumerable<Intersection> intersections = cube.GetIntersections(ray);
+		    IEnumerable<Intersection> intersections = cube.GetIntersections(ray, eRayMask.All);
 		    CollectionAssert.AreEqual(expectedIntersections, intersections);
 	    }
     }

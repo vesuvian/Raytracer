@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Raytracer.Geometry;
 using Raytracer.Math;
 
-namespace Raytracer.SceneObjects.Geometry
+namespace Raytracer.SceneObjects.Geometry.Primitives
 {
-	public sealed class Capsule : AbstractSceneGeometry
+	public sealed class CapsuleSceneGeometry : AbstractSceneGeometry
 	{
 		private float m_Radius = 1.0f;
 		private float m_Height = 1.0f;
@@ -111,7 +112,7 @@ namespace Raytracer.SceneObjects.Geometry
 
 			// Top hemisphere
 			Vector3 topHemisphereOrigin = Vector3.UnitY * ((Height / 2) - Radius);
-			foreach (float t in Sphere.HitSphere(topHemisphereOrigin, Radius, ray))
+			foreach (float t in SphereSceneGeometry.HitSphere(topHemisphereOrigin, Radius, ray))
 			{
 				Vector3 position = ray.PositionAtDelta(t);
 				if (position.Y < topHemisphereOrigin.Y)
@@ -123,7 +124,7 @@ namespace Raytracer.SceneObjects.Geometry
 						? new Vector3(1, 0, 0)
 						: Vector3.Normalize(Vector3.Cross(normal, new Vector3(0, 1, 0)));
 				Vector3 bitangent = Vector3.Normalize(Vector3.Cross(tangent, normal));
-				Vector2 uv = Sphere.GetUv(position - topHemisphereOrigin);
+				Vector2 uv = SphereSceneGeometry.GetUv(position - topHemisphereOrigin);
 
 				yield return new Intersection
 				{
@@ -140,7 +141,7 @@ namespace Raytracer.SceneObjects.Geometry
 
 			// Bottom hemisphere
 			Vector3 bottomHemisphereOrigin = topHemisphereOrigin * -1;
-			foreach (float t in Sphere.HitSphere(bottomHemisphereOrigin, Radius, ray))
+			foreach (float t in SphereSceneGeometry.HitSphere(bottomHemisphereOrigin, Radius, ray))
 			{
 				Vector3 position = ray.PositionAtDelta(t);
 				if (position.Y > bottomHemisphereOrigin.Y)
@@ -152,7 +153,7 @@ namespace Raytracer.SceneObjects.Geometry
 						? new Vector3(1, 0, 0)
 						: Vector3.Normalize(Vector3.Cross(normal, new Vector3(0, 1, 0)));
 				Vector3 bitangent = Vector3.Normalize(Vector3.Cross(tangent, normal));
-				Vector2 uv = Sphere.GetUv(position - bottomHemisphereOrigin);
+				Vector2 uv = SphereSceneGeometry.GetUv(position - bottomHemisphereOrigin);
 
 				yield return new Intersection
 				{

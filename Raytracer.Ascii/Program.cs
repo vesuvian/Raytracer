@@ -9,6 +9,8 @@ using Raytracer.Parsers;
 using Raytracer.SceneObjects;
 using Raytracer.SceneObjects.Cameras;
 using Raytracer.SceneObjects.Geometry;
+using Raytracer.SceneObjects.Geometry.Models;
+using Raytracer.SceneObjects.Geometry.Primitives;
 using Raytracer.SceneObjects.Lights;
 using Raytracer.Utils;
 
@@ -69,7 +71,7 @@ namespace Raytracer.Ascii
 				},
 				Geometry = new List<ISceneGeometry>
 				{
-					new Sphere
+					new SphereSceneGeometry
 					{
 						Radius = 100000,
 						RayMask = eRayMask.Visible,
@@ -78,7 +80,7 @@ namespace Raytracer.Ascii
 							Emission = BitmapTexture.FromPath("Resources\\skysphere.jpg")
 						}
 					},
-					new Cylinder
+					new CylinderSceneGeometry
 					{
 						Position = new Vector3(5, 2, -10),
 						Height = 4,
@@ -88,7 +90,7 @@ namespace Raytracer.Ascii
 							Color = new Vector3(1, 0, 0)
 						}
 					},
-					new Cube
+					new CubeSceneGeometry
 					{
 						Position = new Vector3(13f, 5, 0),
 						Scale = new Vector3(2, 2, 2),
@@ -99,7 +101,7 @@ namespace Raytracer.Ascii
 							Normal = normal,
 						}
 					},
-					new Sphere
+					new SphereSceneGeometry
 					{
 						Position = new Vector3(3, 1, 7.5f),
 						Scale = new Vector3(2, 1, 1),
@@ -107,7 +109,7 @@ namespace Raytracer.Ascii
 						Radius = 5,
 						Material = new ReflectiveMaterial { Roughness = new SolidColorTexture { Color = new Vector3(0.2f) } }
 					},
-					new Sphere
+					new SphereSceneGeometry
 					{
 						Position = new Vector3(-3, 10, 0),
 						Radius = 5,
@@ -118,7 +120,7 @@ namespace Raytracer.Ascii
 							Scale = new Vector2(1 / 3.0f, 1)
 						}
 					},
-					new Sphere
+					new SphereSceneGeometry
 					{
 						Position = new Vector3(-4, 2, 0),
 						Radius = 2,
@@ -137,7 +139,7 @@ namespace Raytracer.Ascii
 							Scale = new Vector2(1 / 3.0f, 1)
 						}
 					},
-					new Sphere
+					new SphereSceneGeometry
 					{
 						Position = new Vector3(0, 2, 0),
 						Radius = 2,
@@ -152,13 +154,13 @@ namespace Raytracer.Ascii
 							B = new ReflectiveMaterial()
 						}
 					},
-					new Sphere
+					new SphereSceneGeometry
 					{
 						Position = new Vector3(4, 2, 0),
 						Radius = 2,
 						Material = new ReflectiveMaterial()
 					},
-					new Sphere
+					new SphereSceneGeometry
 					{
 						Position = new Vector3(8, 2, 0),
 						Radius = 2,
@@ -171,7 +173,7 @@ namespace Raytracer.Ascii
 							Scale = new Vector2(1 / 3.0f, 1)
 						}
 					},
-					new Sphere
+					new SphereSceneGeometry
 					{
 						Position = new Vector3(12, 2, 0),
 						Radius = 2,
@@ -180,7 +182,7 @@ namespace Raytracer.Ascii
 							Diffuse = new SolidColorTexture { Color = new Vector3(0, 1, 0) }
 						}
 					},
-					new Sphere
+					new SphereSceneGeometry
 					{
 						RayMask = eRayMask.Visible | eRayMask.CastShadows,
 						Position = new Vector3(16, 2, 0),
@@ -190,21 +192,21 @@ namespace Raytracer.Ascii
 							Emission = new SolidColorTexture { Color = new Vector3(0, 0, 1000) }
 						}
 					},
-					new Sphere
+					new SphereSceneGeometry
 					{
 						RayMask = eRayMask.Visible | eRayMask.CastShadows,
 						Position = new Vector3(8, 3, -6),
 						Radius = 2,
 						Material = new RefractiveMaterial { Ior = 1.5f, Color = new Vector3(0.8f, 1.0f, 1.0f) }
 					},
-					new Sphere
+					new SphereSceneGeometry
 					{
 						RayMask = eRayMask.Visible | eRayMask.CastShadows,
 						Position = new Vector3(8, 3, -6),
 						Radius = -1.8f,
 						Material = new RefractiveMaterial { Ior = 1.5f, Color = new Vector3(0.8f, 1.0f, 1.0f)  }
 					},
-					new SceneObjects.Geometry.Plane
+					new PlaneSceneGeometry
 					{
 						Material = new PhongMaterial
 						{
@@ -213,7 +215,7 @@ namespace Raytracer.Ascii
 							Scale = new Vector2(5, 5)
 						}
 					},
-					new Model
+					new ModelSceneGeometry
 					{
 						Scale = Vector3.One * 0.2f,
 						Position = new Vector3(3, 2, -5),
@@ -231,6 +233,7 @@ namespace Raytracer.Ascii
 					new MaterialsLayer()
 				}
 			};
+            scene.Initialize();
 
 			Parallel.ForEach(scene.Layers,
 			                 layer =>

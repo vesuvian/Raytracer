@@ -2,9 +2,10 @@
 using System.Numerics;
 using NUnit.Framework;
 using Raytracer.Math;
-using Raytracer.SceneObjects.Geometry;
+using Raytracer.SceneObjects;
+using Raytracer.SceneObjects.Geometry.Primitives;
 
-namespace Raytracer.Tests.SceneObjects.Geometry
+namespace Raytracer.Tests.SceneObjects.Geometry.Primitives
 {
 	[TestFixture]
 	public sealed class SphereTest
@@ -13,7 +14,7 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 		{
 			new object[]
 			{
-				new Sphere(),
+				new SphereSceneGeometry(),
 				new Ray
 				{
 					Origin = new Vector3(0, 0, -10),
@@ -31,7 +32,7 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 			},
 			new object[]
 			{
-				new Sphere
+				new SphereSceneGeometry
 				{
 					Scale = new Vector3(2, 2, 2)
 				},
@@ -53,9 +54,9 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 		};
 
 		[TestCaseSource(nameof(s_GetIntersectionTestCases))]
-		public static void GetIntersection(Sphere sphere, Ray ray, IEnumerable<Intersection> expectedIntersections)
+		public static void GetIntersection(SphereSceneGeometry sphere, Ray ray, IEnumerable<Intersection> expectedIntersections)
 		{
-			IEnumerable<Intersection> intersections = sphere.GetIntersections(ray);
+			IEnumerable<Intersection> intersections = sphere.GetIntersections(ray, eRayMask.All);
 			CollectionAssert.AreEqual(expectedIntersections, intersections);
 		}
 	}

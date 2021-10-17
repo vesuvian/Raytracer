@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Raytracer.Geometry;
 using Raytracer.Materials;
 using Raytracer.Math;
 

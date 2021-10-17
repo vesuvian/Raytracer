@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Raytracer.Geometry;
 using Raytracer.Math;
 
 namespace Raytracer.SceneObjects.Geometry

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Raytracer.Geometry;
 using Raytracer.Math;
 
-namespace Raytracer.SceneObjects.Geometry
+namespace Raytracer.SceneObjects.Geometry.Primitives
 {
-	public sealed class Plane : AbstractSceneGeometry
+	public sealed class PlaneSceneGeometry : AbstractSceneGeometry
 	{
 		private static readonly Vector3 s_Normal = new Vector3(0, 1, 0);
 

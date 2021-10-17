@@ -11,7 +11,7 @@ namespace Raytracer.Materials
 	{
 		public float Ior { get; set; } = 1.3f;
 
-		public float Absorption { get; set; } = 0.5f;
+		public float Absorption { get; set; } = 1f;
 
 		public float Scatter { get; set; } = 0.2f;
 

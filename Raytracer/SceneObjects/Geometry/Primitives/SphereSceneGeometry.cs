@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Raytracer.Geometry;
 using Raytracer.Math;
 
-namespace Raytracer.SceneObjects.Geometry
+namespace Raytracer.SceneObjects.Geometry.Primitives
 {
-	public sealed class Sphere : AbstractSceneGeometry
+	public sealed class SphereSceneGeometry : AbstractSceneGeometry
 	{
 		private float m_Radius = 1.0f;
 

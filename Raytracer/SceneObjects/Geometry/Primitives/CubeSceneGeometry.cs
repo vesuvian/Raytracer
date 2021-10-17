@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Raytracer.Geometry;
 using Raytracer.Math;
 
-namespace Raytracer.SceneObjects.Geometry
+namespace Raytracer.SceneObjects.Geometry.Primitives
 {
-	public sealed class Cube : AbstractSceneGeometry
+	public sealed class CubeSceneGeometry : AbstractSceneGeometry
 	{
 		protected override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
 		{

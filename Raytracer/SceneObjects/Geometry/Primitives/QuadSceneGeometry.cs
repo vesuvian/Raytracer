@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Raytracer.Geometry;
 using Raytracer.Math;
 
-namespace Raytracer.SceneObjects.Geometry
+namespace Raytracer.SceneObjects.Geometry.Primitives
 {
-	public sealed class Quad : AbstractSceneGeometry
+	public sealed class QuadSceneGeometry : AbstractSceneGeometry
 	{
 		private static readonly Vector3 s_Normal = new Vector3(0, 1, 0);
 
@@ -31,7 +32,7 @@ namespace Raytracer.SceneObjects.Geometry
 			ray = ray.Multiply(WorldToLocal);
 
 			float t;
-			if (!Plane.HitPlane(ray, out t))
+			if (!PlaneSceneGeometry.HitPlane(ray, out t))
 				yield break;
 
 			Vector3 position = ray.PositionAtDelta(t);

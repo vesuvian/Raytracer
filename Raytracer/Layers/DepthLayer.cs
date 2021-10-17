@@ -4,8 +4,9 @@ using System.Numerics;
 using System.Threading;
 using Raytracer.Math;
 using Raytracer.SceneObjects;
+using Raytracer.SceneObjects.Geometry;
+using Raytracer.SceneObjects.Geometry.Primitives;
 using Raytracer.Utils;
-using Plane = Raytracer.SceneObjects.Geometry.Plane;
 
 namespace Raytracer.Layers
 {
@@ -24,7 +25,7 @@ namespace Raytracer.Layers
             if (closestIntersection == null)
 				return false;
 
-			float planarDistance = Plane.Distance(scene.Camera.Position, scene.Camera.Forward,
+			float planarDistance = PlaneSceneGeometry.Distance(scene.Camera.Position, scene.Camera.Forward,
 			                                      closestIntersection.Position, out _);
 			float t = MathUtils.Clamp(planarDistance, scene.Camera.NearPlane, scene.Camera.FarPlane) /
 			          (scene.Camera.FarPlane - scene.Camera.NearPlane);

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Raytracer.Geometry;
 using Raytracer.Math;
 
 namespace Raytracer.SceneObjects.Geometry.CSG

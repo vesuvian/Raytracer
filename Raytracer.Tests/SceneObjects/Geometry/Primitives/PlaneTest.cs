@@ -2,10 +2,11 @@
 using System.Numerics;
 using NUnit.Framework;
 using Raytracer.Math;
+using Raytracer.SceneObjects;
 using Raytracer.Utils;
-using Plane = Raytracer.SceneObjects.Geometry.Plane;
+using Raytracer.SceneObjects.Geometry.Primitives;
 
-namespace Raytracer.Tests.SceneObjects.Geometry
+namespace Raytracer.Tests.SceneObjects.Geometry.Primitives
 {
 	[TestFixture]
 	public sealed class PlaneTest
@@ -14,7 +15,7 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 		{
 			new object[]
 			{
-				new Plane(),
+				new PlaneSceneGeometry(),
 				new Ray
 				{
 					Origin = new Vector3(0, 1, 0),
@@ -32,7 +33,7 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 			},
 			new object[]
 			{
-				new Plane
+				new PlaneSceneGeometry
 				{
 					Position = new Vector3(0, -1, 0)
 				},
@@ -53,7 +54,7 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 			},
 			new object[]
 			{
-				new Plane(),
+				new PlaneSceneGeometry(),
 				new Ray
 				{
 					Origin = new Vector3(0, -1, 0),
@@ -71,7 +72,7 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 			},
 			new object[]
 			{
-				new Plane
+				new PlaneSceneGeometry
 				{
 					Rotation = Quaternion.CreateFromYawPitchRoll(0, MathUtils.DEG2RAD * 45, 0)
 				},
@@ -93,9 +94,9 @@ namespace Raytracer.Tests.SceneObjects.Geometry
 		};
 
 		[TestCaseSource(nameof(s_GetIntersectionTestCases))]
-		public static void GetIntersection(Plane plane, Ray ray, IEnumerable<Intersection> expectedIntersections)
+		public static void GetIntersection(PlaneSceneGeometry plane, Ray ray, IEnumerable<Intersection> expectedIntersections)
 		{
-			IEnumerable<Intersection> intersections = plane.GetIntersections(ray);
+			IEnumerable<Intersection> intersections = plane.GetIntersections(ray, eRayMask.All);
 			CollectionAssert.AreEqual(expectedIntersections, intersections);
 		}
 	}

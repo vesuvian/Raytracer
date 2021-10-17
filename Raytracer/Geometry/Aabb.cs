@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Numerics;
 using Raytracer.Extensions;
+using Raytracer.Math;
 
-namespace Raytracer.Math
+namespace Raytracer.Geometry
 {
-	public struct Aabb
+    [DebuggerDisplay("Min = {Min}, Max = {Max}")]
+    public struct Aabb
 	{
 		private Vector3 m_Min;
 		private Vector3 m_Max;
@@ -49,6 +52,19 @@ namespace Raytracer.Math
         }
 
         public Vector3 Extents { get { return (Max - Min) / 2; } }
+
+        public IEnumerable<Plane> Planes
+        {
+            get
+            {
+                yield return new Plane(new Vector3(1, 0, 0), Min.X);
+                yield return new Plane(new Vector3(-1, 0, 0), -Max.X);
+                yield return new Plane(new Vector3(0, 1, 0), Min.Y);
+                yield return new Plane(new Vector3(0, -1, 0), -Max.Y);
+                yield return new Plane(new Vector3(0, 0, 1), Min.Z);
+                yield return new Plane(new Vector3(0, 0, -1), -Max.Z);
+            }
+        }
 
         public static Aabb operator +(Aabb a, Aabb b)
 		{
