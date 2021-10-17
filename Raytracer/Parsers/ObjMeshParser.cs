@@ -9,6 +9,8 @@ namespace Raytracer.Parsers
 {
 	public sealed class ObjMeshParser : AbstractMeshParser
 	{
+		public bool FlipZ { get; set; } = true;
+
 		public override Mesh Parse(Stream stream)
 		{
 			List<Vector3> vertices = new List<Vector3>();
@@ -29,15 +31,16 @@ namespace Raytracer.Parsers
 						continue;
 
 					string[] split = line.Split(new char[]{}, StringSplitOptions.RemoveEmptyEntries);
+					float zScalar = FlipZ ? -1 : 1;
 
 					switch (split[0])
 					{
 						case "v":
-							vertices.Add(new Vector3(float.Parse(split[1]), float.Parse(split[2]), float.Parse(split[3])));
+							vertices.Add(new Vector3(float.Parse(split[1]), float.Parse(split[2]), float.Parse(split[3]) * zScalar));
 							break;
 
 						case "vn":
-							vertexNormals.Add(Vector3.Normalize(new Vector3(float.Parse(split[1]), float.Parse(split[2]), float.Parse(split[3]))));
+							vertexNormals.Add(Vector3.Normalize(new Vector3(float.Parse(split[1]), float.Parse(split[2]), float.Parse(split[3]) * zScalar)));
 							break;
 
 						case "vt":
