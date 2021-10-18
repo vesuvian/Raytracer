@@ -30,11 +30,11 @@ namespace Raytracer.Extensions
             if (System.Math.Abs(dotDenominator) < 0.00001f)
                 return false;
 
-            float dotNumerator = -extends.Distance(ray.Origin);
+            float dotNumerator = extends.Distance(ray.Origin);
             float length = dotNumerator / dotDenominator;
 
             if (System.Math.Abs(length) > 0.00001f)
-                t = length;
+                t = dotDenominator < 0 ? length * -1 : length;
 
             return true;
         }

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Numerics;
 using Raytracer.Geometry;
 using Raytracer.Math;
-using Raytracer.Parsers;
 
 namespace Raytracer.SceneObjects.Geometry.Models
 {
@@ -12,6 +11,8 @@ namespace Raytracer.SceneObjects.Geometry.Models
     {
         private readonly Mesh m_Mesh;
         private readonly ModelSceneGeometry m_Model;
+
+        public int Complexity { get { return m_Mesh.Triangles.Count; } }
 
         Vector3 ISceneObject.Position { get => Vector3.Zero; set => throw new NotSupportedException(); }
 
@@ -40,7 +41,7 @@ namespace Raytracer.SceneObjects.Geometry.Models
                    ?? Enumerable.Empty<Intersection>();
         }
 
-        public ISceneGeometry Slice(Aabb aabb)
+        public ISliceableSceneGeometry Slice(Aabb aabb)
         {
             return m_Model.Slice(aabb);
         }

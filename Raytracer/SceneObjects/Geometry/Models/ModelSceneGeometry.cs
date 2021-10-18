@@ -9,6 +9,8 @@ namespace Raytracer.SceneObjects.Geometry.Models
 	{
 		private Mesh m_Mesh;
 
+		public int Complexity { get { return m_Mesh.Triangles.Count; } }
+
 		public Mesh Mesh
 		{
 			get { return m_Mesh; }
@@ -39,10 +41,9 @@ namespace Raytracer.SceneObjects.Geometry.Models
 			return m_Mesh?.CalculateAabb(LocalToWorld) ?? default;
 		}
 
-        public ISceneGeometry Slice(Aabb aabb)
+        public ISliceableSceneGeometry Slice(Aabb aabb)
         {
-            ISceneGeometry output = new ModelSliceSceneGeometry(this, aabb);
-            return output.SurfaceArea == 0 ? null : output;
+            return new ModelSliceSceneGeometry(this, aabb);
         }
     }
 }

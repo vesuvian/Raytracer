@@ -281,18 +281,20 @@ namespace Raytracer.SceneObjects.Geometry
                     left.Add(item);
                 else if (rightAabb.Contains(aabb))
                     right.Add(item);
-                else if (item is ISliceableSceneGeometry sliceable)
-                {
-                    ISceneGeometry sliceLeft = sliceable.Slice(leftAabb);
-                    ISceneGeometry sliceRight = sliceable.Slice(rightAabb);
+				else if (item is ISliceableSceneGeometry sliceable && sliceable.Complexity > 2)
+				{
+					Trace.WriteLine($"{axis} - {position} - {sliceable.Complexity}");
 
-                    if (sliceLeft != null)
-                        left.Add(sliceLeft);
+					ISliceableSceneGeometry sliceLeft = sliceable.Slice(leftAabb);
+					ISliceableSceneGeometry sliceRight = sliceable.Slice(rightAabb);
 
-                    if (sliceRight != null)
-                        right.Add(sliceRight);
-                }
-                else
+					if (sliceLeft.Complexity > 0)
+						left.Add(sliceLeft);
+
+					if (sliceRight.Complexity > 0)
+						right.Add(sliceRight);
+				}
+				else
                     leaves.Add(item);
             }
 
