@@ -1,10 +1,11 @@
 ﻿using Raytracer.Geometry;
-using Raytracer.Math;
 
 namespace Raytracer.SceneObjects.Geometry
 {
     public interface ISliceableSceneGeometry : ISceneGeometry
     {
-        ISceneGeometry Slice(Aabb aabb);
+        int Complexity { get; }
+
+        ISliceableSceneGeometry Slice(Aabb aabb);
     }
 }

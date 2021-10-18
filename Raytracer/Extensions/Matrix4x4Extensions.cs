@@ -27,17 +27,26 @@ namespace Raytracer.Extensions
 		{
 			Vector3 res;
 
-			float w;
 			res.X = matrix.M11 * point.X + matrix.M21 * point.Y + matrix.M31 * point.Z + matrix.M41;
 			res.Y = matrix.M12 * point.X + matrix.M22 * point.Y + matrix.M32 * point.Z + matrix.M42;
 			res.Z = matrix.M13 * point.X + matrix.M23 * point.Y + matrix.M33 * point.Z + matrix.M43;
-			w = matrix.M14 * point.X + matrix.M24 * point.Y + matrix.M34 * point.Z + matrix.M44;
+			var w = matrix.M14 * point.X + matrix.M24 * point.Y + matrix.M34 * point.Z + matrix.M44;
 
 			w = 1F / w;
 			res.X *= w;
 			res.Y *= w;
 			res.Z *= w;
 
+			return res;
+		}
+
+		public static Vector4 MultiplyPoint(this Matrix4x4 matrix, Vector4 point)
+		{
+			Vector4 res;
+			res.X = matrix.M11 * point.X + matrix.M21 * point.Y + matrix.M31 * point.Z + matrix.M41 * point.W;
+			res.Y = matrix.M12 * point.X + matrix.M22 * point.Y + matrix.M32 * point.Z + matrix.M42 * point.W;
+			res.Z = matrix.M13 * point.X + matrix.M23 * point.Y + matrix.M33 * point.Z + matrix.M43 * point.W;
+			res.W = matrix.M14 * point.X + matrix.M24 * point.Y + matrix.M34 * point.Z + matrix.M44 * point.W;
 			return res;
 		}
 

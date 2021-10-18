@@ -71,7 +71,19 @@ namespace Raytracer.Tests.Extensions
                 new Plane(Vector3.UnitY, 0),
                 new Vector3(0, -1, 0),
                 1
-            }
+            },
+            new object[]
+            {
+	            new Plane(Vector3.UnitY, 1),
+	            new Vector3(0, 1, 0),
+	            0
+            },
+            new object[]
+            {
+	            new Plane(-Vector3.UnitY, 1),
+	            new Vector3(0, -1, 0),
+	            0
+            },
         };
 
         private static readonly object[] s_GetIntersectionCases =

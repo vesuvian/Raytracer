@@ -283,12 +283,16 @@ namespace Raytracer.Wpf.ViewModel
 					new MaterialsLayer()
 				}
 			};
-			scene.Initialize();
 
 			scene.Layers.First().OnProgressChanged += UpdateTitle;
 
 			Buffer = new WriteableBitmapBuffer(Bitmap);
-			m_Worker = new Thread(() => scene.Layers.First().Render(scene, Buffer, m_CancellationTokenSource.Token));
+
+			m_Worker = new Thread(() =>
+			{
+				scene.Initialize(Buffer);
+				scene.Layers.First().Render(scene, Buffer, m_CancellationTokenSource.Token);
+			});
 			m_Worker.Priority = ThreadPriority.Lowest;
 			m_Worker.Start();
 		}

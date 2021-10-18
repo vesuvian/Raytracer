@@ -240,6 +240,35 @@ namespace Raytracer.Geometry
 			                  new Vector3(Max.X, Max.Y, Max.Z));
 		}
 
+        public bool ClipLine(Vector3 a, Vector3 b, out Vector3 clippedA, out Vector3 clippedB)
+        {
+	        clippedA = Vector3.Zero;
+	        clippedB = Vector3.Zero;
+
+	        Ray ray = new Ray
+	        {
+		        Origin = a,
+		        Direction = Vector3.Normalize(b - a)
+	        };
+
+            // Ray doesn't intersect the box
+	        float min;
+	        float max;
+	        if (!Intersects(ray, out min, out max))
+		        return false;
+
+	        float originalLength = (b - a).Length();
+
+            // Line doesn't reach the box
+	        if (max < 0 || min > originalLength)
+		        return false;
+
+	        clippedA = ray.PositionAtDelta(MathF.Max(min, 0));
+	        clippedB = ray.PositionAtDelta(MathF.Min(max, originalLength));
+
+	        return true;
+        }
+
         public static Aabb FromPoints(Matrix4x4 transform, params Vector3[] points)
 		{
 			return FromPoints(transform, (IEnumerable<Vector3>)points);
@@ -283,5 +312,5 @@ namespace Raytracer.Geometry
 				Max = new Vector3(maxX, maxY, maxZ)
 			};
 		}
-    }
+	}
 }

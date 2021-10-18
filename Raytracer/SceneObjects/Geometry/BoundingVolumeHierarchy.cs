@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Threading.Tasks;
 using Raytracer.Extensions;
 using Raytracer.Geometry;
 using Raytracer.Math;
@@ -87,11 +88,12 @@ namespace Raytracer.SceneObjects.Geometry
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-        public BoundingVolumeHierarchy(IEnumerable<ISceneGeometry> geometry, int maxDepth = 10)
+        public BoundingVolumeHierarchy(IEnumerable<ISceneGeometry> geometry, int maxDepth = 10,
+                                       Action<ISceneGeometry> nodeAdded = null)
         {
             m_Leaves = new HashSet<ISceneGeometry>();
 
-            ProcessGeometry(geometry, maxDepth);
+            ProcessGeometry(geometry, maxDepth, nodeAdded);
         }
 
         #region Methods
@@ -115,13 +117,27 @@ namespace Raytracer.SceneObjects.Geometry
                            .Where(i => i.RayDelta >= minDelta && i.RayDelta <= maxDelta);
         }
 
+        public IEnumerable<BoundingVolumeHierarchy> GetNodesRecursive()
+        {
+	        IEnumerable<BoundingVolumeHierarchy> left = Left == null
+		        ? Enumerable.Empty<BoundingVolumeHierarchy>()
+		        : Left.GetNodesRecursive().Prepend(Left);
+
+	        IEnumerable<BoundingVolumeHierarchy> right = Right == null
+		        ? Enumerable.Empty<BoundingVolumeHierarchy>()
+		        : Right.GetNodesRecursive().Prepend(Right);
+
+	        return left.Concat(right);
+        }
+
         #endregion
 
         #region Private Methods
 
-        private void ProcessGeometry(IEnumerable<ISceneGeometry> geometry, int maxDepth)
+        private void ProcessGeometry(IEnumerable<ISceneGeometry> geometry, int maxDepth, Action<ISceneGeometry> nodeAdded)
         {
             HashSet<ISceneGeometry> toProcess = geometry.ToHashSet();
+            nodeAdded ??= s => { };
 
             // Depth is zero
             if (maxDepth == 0)
@@ -142,11 +158,30 @@ namespace Raytracer.SceneObjects.Geometry
 
             m_Leaves.AddRange(leaves);
 
-            if (left.Count > 0)
-                m_Left = new BoundingVolumeHierarchy(left, maxDepth - 1);
+            foreach (ISceneGeometry node in leaves)
+	            nodeAdded(node);
 
-            if (right.Count > 0)
-                m_Right = new BoundingVolumeHierarchy(right, maxDepth - 1);
+            Action[] recurse =
+            {
+	            () =>
+	            {
+		            if (left.Count > 0)
+		            {
+			            m_Left = new BoundingVolumeHierarchy(left, maxDepth - 1, nodeAdded);
+			            nodeAdded(m_Left);
+		            }
+                },
+	            () =>
+	            {
+		            if (right.Count > 0)
+		            {
+			            m_Right = new BoundingVolumeHierarchy(right, maxDepth - 1, nodeAdded);
+			            nodeAdded(m_Right);
+		            }
+                }
+            };
+
+            Parallel.ForEach(recurse, r => r());
         }
 
         /// <summary>
@@ -237,7 +272,7 @@ namespace Raytracer.SceneObjects.Geometry
                 if (left.Count == 0 || right.Count == 0)
                     thisError += leaves.Count;
 
-                Trace.WriteLine($"{axis} - {position} - {thisError}");
+                //Trace.WriteLine($"{axis} - {position} - {thisError}");
 
                 if (thisError >= error)
                     continue;
@@ -281,7 +316,7 @@ namespace Raytracer.SceneObjects.Geometry
                     left.Add(item);
                 else if (rightAabb.Contains(aabb))
                     right.Add(item);
-				else if (item is ISliceableSceneGeometry sliceable && sliceable.Complexity > 2)
+				else if (item is ISliceableSceneGeometry sliceable && sliceable.Complexity > 4)
 				{
 					Trace.WriteLine($"{axis} - {position} - {sliceable.Complexity}");
 
@@ -310,5 +345,5 @@ namespace Raytracer.SceneObjects.Geometry
         }
 
         #endregion
-    }
+	}
 }
