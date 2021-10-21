@@ -10,35 +10,13 @@ namespace Raytracer.Geometry
     [DebuggerDisplay("Min = {Min}, Max = {Max}")]
     public struct Aabb
 	{
-		private Vector3 m_Min;
-		private Vector3 m_Max;
-		private Vector3[] m_Bounds;
+		public Vector3 Min { get; set; }
 
-		public Vector3 Min
-		{
-			get { return m_Min; }
-			set
-			{
-				m_Min = value;
-				m_Bounds = new[] {m_Min, m_Max};
-			}
-		}
-
-		public Vector3 Max
-		{
-			get { return m_Max; }
-			set
-			{
-				m_Max = value;
-				m_Bounds = new[] {m_Min, m_Max};
-			}
-		}
+		public Vector3 Max { get; set; }
 
 		public Vector3 Center { get { return (Min + Max) / 2; } }
 
-		public Vector3[] Bounds { get { return m_Bounds ?? new Vector3[2]; } }
-
-        public bool IsInfinite
+		public bool IsInfinite
         {
             get
             {
@@ -65,6 +43,10 @@ namespace Raytracer.Geometry
                 yield return new Plane(new Vector3(0, 0, -1), -Max.Z);
             }
         }
+
+        public Vector3 Size { get { return Max - Min; } }
+
+        public float Volume { get { return Size.X * Size.Y * Size.Z; } }
 
         public static Aabb operator +(Aabb a, Aabb b)
 		{
@@ -149,6 +131,11 @@ namespace Raytracer.Geometry
             return a;
         }
 
+		public override string ToString()
+		{
+			return $"{nameof(Aabb)}(Min = {Min}, Max = {Max})";
+		}
+
 		public Aabb Intersection(Aabb other)
         {
             return new Aabb
@@ -195,7 +182,7 @@ namespace Raytracer.Geometry
 
         public bool Intersects(Ray ray, out float tmin, out float tmax)
 		{
-			Vector3[] bounds = Bounds;
+			Vector3[] bounds = { Min, Max };
 
 			tmin = (bounds[ray.Sign.X].X - ray.Origin.X) * ray.InverseDirection.X;
 			tmax = (bounds[1 - ray.Sign.X].X - ray.Origin.X) * ray.InverseDirection.X;
