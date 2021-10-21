@@ -64,11 +64,12 @@ namespace Raytracer.SceneObjects.Geometry
 
         public Aabb Aabb
         {
-            get
-            {
-                m_Aabb ??= Children.Aggregate(new Aabb(), (aabb, child) => aabb + child.Aabb);
-                return m_Aabb.Value;
-			}
+	        get
+	        {
+		        if (!Children.Any())
+			        return default;
+		        return m_Aabb ??= Children.Select(c => c.Aabb).Sum();
+	        }
         }
 
         Vector3 ISceneObject.Position { get => Vector3.Zero; set => throw new NotSupportedException(); }

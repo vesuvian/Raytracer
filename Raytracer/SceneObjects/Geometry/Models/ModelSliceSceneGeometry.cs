@@ -36,6 +36,17 @@ namespace Raytracer.SceneObjects.Geometry.Models
                                                           float minDelta = float.NegativeInfinity,
                                                           float maxDelta = float.PositiveInfinity)
         {
+	        if ((m_Model.RayMask & mask) == eRayMask.None)
+		        return Enumerable.Empty<Intersection>();
+
+		        float tMin;
+		        float tMax;
+		        if (!Aabb.Intersects(ray, out tMin, out tMax))
+			        return Enumerable.Empty<Intersection>();
+
+		        if ((tMin < minDelta && tMax < minDelta) ||
+		            (tMin > maxDelta && tMax > maxDelta))
+			        return Enumerable.Empty<Intersection>();
             return m_Mesh?.GetIntersections(ray, m_Model, m_Model.Material)
                          .Where(i => i.RayDelta >= minDelta && i.RayDelta <= maxDelta)
                    ?? Enumerable.Empty<Intersection>();
