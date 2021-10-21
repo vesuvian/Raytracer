@@ -7,7 +7,7 @@ namespace Raytracer.SceneObjects
 	public abstract class AbstractSceneObject : ISceneObject
 	{
 		private Vector3 m_Position;
-		private Vector3 m_Scale;
+		private Vector3 m_Scale = Vector3.One;
 		private Quaternion m_Rotation;
 		private Matrix4x4? m_LocalToWorld;
 		private Matrix4x4? m_WorldToLocal;
