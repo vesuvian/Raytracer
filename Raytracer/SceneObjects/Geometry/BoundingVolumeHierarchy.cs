@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Raytracer.Extensions;
 using Raytracer.Geometry;
 using Raytracer.Math;
+using Raytracer.Utils;
 
 namespace Raytracer.SceneObjects.Geometry
 {
@@ -90,32 +90,57 @@ namespace Raytracer.SceneObjects.Geometry
 		/// Constructor.
 		/// </summary>
         public BoundingVolumeHierarchy(IEnumerable<ISceneGeometry> geometry, int maxDepth = 10,
-                                       Action<ISceneGeometry> nodeAdded = null)
+                                       Action<IEnumerable<ISceneGeometry>, IEnumerable<ISceneGeometry>> onSlice = null)
         {
             m_Leaves = new HashSet<ISceneGeometry>();
 
-            ProcessGeometry(geometry, maxDepth, nodeAdded);
+            ProcessGeometry(geometry, maxDepth, onSlice);
         }
 
         #region Methods
 
-        public IEnumerable<Intersection> GetIntersections(Ray ray, eRayMask mask, float minDelta = float.NegativeInfinity,
-                                                          float maxDelta = float.PositiveInfinity)
+        public bool GetIntersection(Ray ray, eRayMask mask, out Intersection intersection, float minDelta = float.NegativeInfinity,
+                                    float maxDelta = float.PositiveInfinity)
         {
+	        intersection = default;
+
             if ((RayMask & mask) == eRayMask.None)
-                return Enumerable.Empty<Intersection>();
+                return false;
 
             float tMin;
             float tMax;
             if (!Aabb.Intersects(ray, out tMin, out tMax))
-                return Enumerable.Empty<Intersection>();
+	            return false;
 
             if ((tMin < minDelta && tMax < minDelta) ||
                 (tMin > maxDelta && tMax > maxDelta))
-                return Enumerable.Empty<Intersection>();
+	            return false;
 
-            return Children.SelectMany(g => g.GetIntersections(ray, mask, minDelta, maxDelta))
-                           .Where(i => i.RayDelta >= minDelta && i.RayDelta <= maxDelta);
+            intersection = default;
+            float bestT = float.MaxValue;
+            bool found = false;
+
+            foreach (var child in Children)
+            {
+	            Intersection thisIntersection;
+	            if (!child.GetIntersection(ray, mask, out thisIntersection, minDelta, maxDelta))
+		            continue;
+            
+				float t = thisIntersection.RayDelta;
+				maxDelta = MathF.Min(t, maxDelta);
+
+	            if (t < minDelta || t > maxDelta)
+		            continue;
+
+	            if (t > bestT)
+		            continue;
+
+	            bestT = thisIntersection.RayDelta;
+	            found = true;
+	            intersection = thisIntersection;
+            }
+
+            return found;
         }
 
         public IEnumerable<BoundingVolumeHierarchy> GetNodesRecursive()
@@ -135,10 +160,10 @@ namespace Raytracer.SceneObjects.Geometry
 
         #region Private Methods
 
-        private void ProcessGeometry(IEnumerable<ISceneGeometry> geometry, int maxDepth, Action<ISceneGeometry> nodeAdded)
+        private void ProcessGeometry(IEnumerable<ISceneGeometry> geometry, int maxDepth, Action<IEnumerable<ISceneGeometry>, IEnumerable<ISceneGeometry>> onSlice)
         {
             HashSet<ISceneGeometry> toProcess = geometry.ToHashSet();
-            nodeAdded ??= s => { };
+            onSlice ??= (l, r) => { };
 
             // Depth is zero
             if (maxDepth == 0)
@@ -149,7 +174,7 @@ namespace Raytracer.SceneObjects.Geometry
 
             // Find the best way to slice the remaining items in half
             eAxis bestAxis;
-            float position = FindSlicePosition(toProcess, out bestAxis);
+            float position = FindSlicePosition(toProcess, maxDepth, out bestAxis);
 
             // Perform the slice
             HashSet<ISceneGeometry> leaves;
@@ -157,41 +182,35 @@ namespace Raytracer.SceneObjects.Geometry
             HashSet<ISceneGeometry> right;
             Slice(toProcess, position, bestAxis, out leaves, out left, out right);
 
+            onSlice(left, right);
+
             m_Leaves.AddRange(leaves);
 
-            foreach (ISceneGeometry node in leaves)
-	            nodeAdded(node);
-
             Action[] recurse =
-            {
-	            () =>
-	            {
-		            if (left.Count > 0)
-		            {
-			            m_Left = new BoundingVolumeHierarchy(left, maxDepth - 1, nodeAdded);
-			            nodeAdded(m_Left);
-		            }
-                },
-	            () =>
-	            {
-		            if (right.Count > 0)
-		            {
-			            m_Right = new BoundingVolumeHierarchy(right, maxDepth - 1, nodeAdded);
-			            nodeAdded(m_Right);
-		            }
-                }
-            };
+			{
+				() =>
+				{
+					if (left.Count > 0)
+						m_Left = new BoundingVolumeHierarchy(left, maxDepth - 1, onSlice);
+				},
+				() =>
+				{
+					if (right.Count > 0)
+						m_Right = new BoundingVolumeHierarchy(right, maxDepth - 1, onSlice);
+				}
+			};
 
-            Parallel.ForEach(recurse, r => r());
-        }
+			Parallel.ForEach(recurse, r => r());
+		}
 
         /// <summary>
         /// Finds the best way to bisect the given items in half.
         /// </summary>
         /// <param name="geometry"></param>
+        /// <param name="maxDepth"></param>
         /// <param name="bestAxis"></param>
         /// <returns></returns>
-        private static float FindSlicePosition(IEnumerable<ISceneGeometry> geometry, out eAxis bestAxis)
+        private static float FindSlicePosition(IEnumerable<ISceneGeometry> geometry, int maxDepth, out eAxis bestAxis)
         {
             IList<ISceneGeometry> items = geometry as IList<ISceneGeometry> ?? geometry.ToList();
 
@@ -204,6 +223,8 @@ namespace Raytracer.SceneObjects.Geometry
             {
                 float error;
                 float position = FindSlicePosition(items, axis, out error);
+
+                error += System.Math.Abs((maxDepth % 3) - (int)axis);
 
                 if (error >= bestError)
                     continue;
@@ -231,12 +252,14 @@ namespace Raytracer.SceneObjects.Geometry
                         .OrderBy(g => g.Aabb.Min.GetValue(axis))
                         .ToArray();
 
+            const int resolution = 5;
             float[] edges =
-                sorted.SelectMany(g => new[]
+                sorted.SelectMany(g =>
                       {
-                          g.Aabb.Min.GetValue(axis),
-                          g.Aabb.Center.GetValue(axis),
-                          g.Aabb.Max.GetValue(axis)
+	                      float min = g.Aabb.Min.GetValue(axis);
+	                      float max = g.Aabb.Max.GetValue(axis);
+	                      return Enumerable.Range(0, resolution)
+	                                       .Select(i => MathUtils.Lerp(min, max, i / (float)(resolution - 1)));
                       })
                       .Distinct()
                       .OrderBy(e => e)
@@ -256,23 +279,20 @@ namespace Raytracer.SceneObjects.Geometry
                 Slice(sorted, position, axis, out leaves, out left, out right);
 
                 // Items that couldn't be split count towards the error
-                float leafError = leaves.Count / (float)sorted.Length;
+                float leafError = CalculateLeafError(leaves, sorted);
 
                 // Surface area should be balanced between nodes
-                float leftSurfaceArea = left.Aggregate(0.0f, (area, g) => area + g.SurfaceArea);
-                float rightSurfaceArea = right.Aggregate(0.0f, (area, g) => area + g.SurfaceArea);
-                float totalSurfaceArea = leftSurfaceArea + rightSurfaceArea;
-                float surfaceAreaError =
-                    totalSurfaceArea == 0
-                    ? 0
-                    : MathF.Abs(leftSurfaceArea - rightSurfaceArea) / (leftSurfaceArea + rightSurfaceArea);
+                float surfaceAreaError = CalculateSurfaceAreaError(left, right);
 
-                float thisError = leafError + surfaceAreaError;
-
+                // Prefer cubes
+                float cubeError = 0;//CalculateCubeError(left, right);
+                
                 // We should have a split
+                float splitError = 0;
                 if (left.Count == 0 || right.Count == 0)
-                    thisError += leaves.Count;
+	                splitError = leaves.Count;
 
+                float thisError = leafError + surfaceAreaError + cubeError + splitError;
                 //Trace.WriteLine($"{axis} - {position} - {thisError}");
 
                 if (thisError >= error)
@@ -283,6 +303,22 @@ namespace Raytracer.SceneObjects.Geometry
             }
 
             return bestPosition;
+        }
+
+		private static float CalculateLeafError(IEnumerable<ISceneGeometry> leaves, IEnumerable<ISceneGeometry> total)
+        {
+	        return leaves.Count() / (float)total.Count();
+        }
+
+        private static float CalculateSurfaceAreaError(IEnumerable<ISceneGeometry> left, IEnumerable<ISceneGeometry> right)
+        {
+	        float leftSurfaceArea = left.Aggregate(0.0f, (area, g) => area + g.SurfaceArea);
+	        float rightSurfaceArea = right.Aggregate(0.0f, (area, g) => area + g.SurfaceArea);
+	        float totalSurfaceArea = leftSurfaceArea + rightSurfaceArea;
+	        return
+		        totalSurfaceArea == 0
+			        ? 0
+			        : MathF.Abs(leftSurfaceArea - rightSurfaceArea) / (leftSurfaceArea + rightSurfaceArea);
         }
 
         /// <summary>
@@ -319,12 +355,10 @@ namespace Raytracer.SceneObjects.Geometry
                     right.Add(item);
 				else if (item is ISliceableSceneGeometry sliceable && sliceable.Complexity > 4)
 				{
-					Trace.WriteLine($"{axis} - {position} - {sliceable.Complexity}");
-
-					ISliceableSceneGeometry sliceLeft = sliceable.Slice(leftAabb);
+                    ISliceableSceneGeometry sliceLeft = sliceable.Slice(leftAabb);
 					ISliceableSceneGeometry sliceRight = sliceable.Slice(rightAabb);
 
-					if (sliceLeft.Complexity > 0)
+                    if (sliceLeft.Complexity > 0)
 						left.Add(sliceLeft);
 
 					if (sliceRight.Complexity > 0)

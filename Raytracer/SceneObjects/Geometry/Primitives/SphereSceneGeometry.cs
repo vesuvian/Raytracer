@@ -42,15 +42,20 @@ namespace Raytracer.SceneObjects.Geometry.Primitives
 			yield return t2;
 		}
 
-		protected override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
+		protected override bool GetIntersectionFinal(Ray ray, out Intersection intersection, float minDelta = float.NegativeInfinity,
+		                                             float maxDelta = float.PositiveInfinity)
 		{
+			intersection = default;
+
 			// First transform the ray into local space
 			ray = ray.Multiply(WorldToLocal);
 
 			// Find the intersects
-			foreach (float intersect in HitSphere(Vector3.Zero, Radius, ray))
+			float bestT = float.MaxValue;
+			bool found = false;
+			foreach (float t in HitSphere(Vector3.Zero, Radius, ray))
 			{
-				Vector3 position = ray.PositionAtDelta(intersect);
+				Vector3 position = ray.PositionAtDelta(t);
 				Vector3 normal = Vector3.Normalize(MathF.Sign(Radius) * position);
 				Vector3 tangent =
 					normal == new Vector3(0, 1, 0) || normal == new Vector3(0, -1, 0)
@@ -59,7 +64,7 @@ namespace Raytracer.SceneObjects.Geometry.Primitives
 				Vector3 bitangent = Vector3.Normalize(Vector3.Cross(tangent, normal));
 				Vector2 uv = GetUv(position);
 
-				yield return new Intersection
+				Intersection thisIntersection = new Intersection
 				{
 					Position = position,
 					Tangent = tangent,
@@ -70,7 +75,19 @@ namespace Raytracer.SceneObjects.Geometry.Primitives
                     Geometry = this,
                     Material = Material
 				}.Multiply(LocalToWorld);
+
+				if (t < minDelta || t > maxDelta)
+					continue;
+
+				if (t > bestT)
+					continue;
+
+				bestT = t;
+				found = true;
+				intersection = thisIntersection;
 			}
+
+			return found;
 		}
 
 		protected override float CalculateUnscaledSurfaceArea()

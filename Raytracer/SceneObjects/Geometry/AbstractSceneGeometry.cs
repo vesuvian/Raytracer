@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Raytracer.Geometry;
+﻿using Raytracer.Geometry;
 using Raytracer.Materials;
 using Raytracer.Math;
 
@@ -16,27 +14,31 @@ namespace Raytracer.SceneObjects.Geometry
 
 		public Aabb Aabb { get; private set; }
 
-        protected abstract Aabb CalculateAabb();
-
-		public IEnumerable<Intersection> GetIntersections(Ray ray, eRayMask mask, float minDelta = float.NegativeInfinity,
-                                                          float maxDelta = float.PositiveInfinity)
+		public bool GetIntersection(Ray ray, eRayMask mask, out Intersection intersection, float minDelta = float.NegativeInfinity,
+		                            float maxDelta = float.PositiveInfinity)
 		{
+			intersection = default;
+
 			if ((RayMask & mask) == eRayMask.None)
-				return Enumerable.Empty<Intersection>();
+				return false;
 
-            float tMin;
-            float tMax;
+			float tMin;
+			float tMax;
 			if (!Aabb.Intersects(ray, out tMin, out tMax))
-                return Enumerable.Empty<Intersection>();
+				return false;
 
-            if ((tMin < minDelta && tMax < minDelta) ||
-                (tMin > maxDelta && tMax > maxDelta))
-                return Enumerable.Empty<Intersection>();
+			if ((tMin < minDelta && tMax < minDelta) ||
+			    (tMin > maxDelta && tMax > maxDelta))
+				return false;
 
-			return GetIntersectionsFinal(ray).Where(i => i.RayDelta >= minDelta && i.RayDelta <= maxDelta);
+			return GetIntersectionFinal(ray, out intersection, minDelta, maxDelta);
 		}
 
-		protected abstract IEnumerable<Intersection> GetIntersectionsFinal(Ray ray);
+		protected abstract Aabb CalculateAabb();
+
+		protected abstract bool GetIntersectionFinal(Ray ray, out Intersection intersection,
+		                                             float minDelta = float.NegativeInfinity,
+		                                             float maxDelta = float.PositiveInfinity);
 
 		protected override void HandleTransformChange()
 		{

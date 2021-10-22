@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Raytracer.Geometry;
 using Raytracer.Math;
 
@@ -22,13 +21,35 @@ namespace Raytracer.SceneObjects.Geometry.Models
 			}
 		}
 
-		protected override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
+		protected override bool GetIntersectionFinal(Ray ray, out Intersection intersection, float minDelta = float.NegativeInfinity,
+		                                             float maxDelta = float.PositiveInfinity)
 		{
+			intersection = default;
+
+			if (m_Mesh == null)
+				return false;
+
 			// First transform the ray into local space
 			ray = ray.Multiply(WorldToLocal);
 
-            return m_Mesh?.GetIntersections(ray, this, Material)
-                         .Select(i => i.Multiply(LocalToWorld)) ?? Enumerable.Empty<Intersection>();
+			float bestT = float.MaxValue;
+			bool found = false;
+			foreach (Intersection thisIntersection in m_Mesh.GetIntersections(ray, this, Material).Select(i => i.Multiply(LocalToWorld)))
+			{
+				float t = thisIntersection.RayDelta;
+
+				if (t < minDelta || t > maxDelta)
+					continue;
+
+				if (t > bestT)
+					continue;
+
+				bestT = thisIntersection.RayDelta;
+				found = true;
+				intersection = thisIntersection;
+			}
+
+            return found;
         }
 
 		protected override float CalculateUnscaledSurfaceArea()
@@ -41,7 +62,7 @@ namespace Raytracer.SceneObjects.Geometry.Models
 			return m_Mesh?.CalculateAabb(LocalToWorld) ?? default;
 		}
 
-        public ISliceableSceneGeometry Slice(Aabb aabb)
+		public ISliceableSceneGeometry Slice(Aabb aabb)
         {
             return new ModelSliceSceneGeometry(this, aabb);
         }

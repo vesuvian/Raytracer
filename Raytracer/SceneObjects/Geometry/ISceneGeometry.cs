@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Raytracer.Geometry;
+﻿using Raytracer.Geometry;
 using Raytracer.Math;
 
 namespace Raytracer.SceneObjects.Geometry
@@ -12,7 +11,8 @@ namespace Raytracer.SceneObjects.Geometry
 
 		Aabb Aabb { get; }
 
-		IEnumerable<Intersection> GetIntersections(Ray ray, eRayMask mask, float minDelta = float.NegativeInfinity,
-                                                   float maxDelta = float.PositiveInfinity);
+		bool GetIntersection(Ray ray, eRayMask mask, out Intersection intersection,
+		                     float minDelta = float.NegativeInfinity,
+		                     float maxDelta = float.PositiveInfinity);
     }
 }

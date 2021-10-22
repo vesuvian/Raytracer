@@ -8,7 +8,33 @@ namespace Raytracer.SceneObjects.Geometry.Primitives
 {
 	public sealed class CubeSceneGeometry : AbstractSceneGeometry
 	{
-		protected override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
+		protected override bool GetIntersectionFinal(Ray ray, out Intersection intersection,
+		                                             float minDelta = float.NegativeInfinity,
+		                                             float maxDelta = float.PositiveInfinity)
+		{
+			intersection = default;
+			float bestT = float.MaxValue;
+			bool found = false;
+
+			foreach (Intersection thisIntersection in GetIntersections(ray))
+			{
+				float t = thisIntersection.RayDelta;
+
+				if (t < minDelta || t > maxDelta)
+					continue;
+
+				if (t > bestT)
+					continue;
+
+				bestT = thisIntersection.RayDelta;
+				found = true;
+				intersection = thisIntersection;
+			}
+
+			return found;
+		}
+
+		private IEnumerable<Intersection> GetIntersections(Ray ray)
 		{
 			// First transform ray to local space.
 			ray = ray.Multiply(WorldToLocal);
@@ -37,8 +63,8 @@ namespace Raytracer.SceneObjects.Geometry.Primitives
 				Position = posMin,
 				Ray = ray,
 				Uv = uv,
-                Geometry = this,
-                Material = Material
+				Geometry = this,
+				Material = Material
 			}.Multiply(LocalToWorld);
 
 			Vector3 posMax = ray.PositionAtDelta(tMax);
@@ -55,8 +81,8 @@ namespace Raytracer.SceneObjects.Geometry.Primitives
 				Position = posMax,
 				Ray = ray,
 				Uv = uv,
-                Geometry = this,
-                Material = Material
+				Geometry = this,
+				Material = Material
 			}.Multiply(LocalToWorld);
 		}
 

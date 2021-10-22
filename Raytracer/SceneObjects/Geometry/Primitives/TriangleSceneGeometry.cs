@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Numerics;
+﻿using System.Numerics;
 using Raytracer.Geometry;
 using Raytracer.Math;
-using Raytracer.Parsers;
 
 namespace Raytracer.SceneObjects.Geometry.Primitives
 {
@@ -45,18 +43,22 @@ namespace Raytracer.SceneObjects.Geometry.Primitives
 			}
 		}
 
-        protected override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
-		{
+        protected override bool GetIntersectionFinal(Ray ray, out Intersection intersection,
+                                                     float minDelta = float.NegativeInfinity,
+                                                     float maxDelta = float.PositiveInfinity)
+        {
+	        intersection = default;
+
 			// First transform the ray into local space
 			ray = ray.Multiply(WorldToLocal);
 
 			float t, u, v;
 			if (!Triangle.HitTriangle(A, B, C, ray, out t, out u, out v))
-				yield break;
+				return false;
 
 			Vector3 normal = Triangle.GetNormal(A, B, C);
 
-			yield return new Intersection
+			intersection = new Intersection
 			{
 				Position = ray.PositionAtDelta(t),
 				Normal = normal,
@@ -64,12 +66,14 @@ namespace Raytracer.SceneObjects.Geometry.Primitives
 				Bitangent = Vector3.Normalize(C - A),
 				Ray = ray,
 				Uv = new Vector2(u, v),
-                Geometry = this,
-                Material = Material
+				Geometry = this,
+				Material = Material
 			}.Multiply(LocalToWorld);
-		}
 
-		protected override float CalculateUnscaledSurfaceArea()
+			return intersection.RayDelta >= minDelta && intersection.RayDelta <= maxDelta;
+        }
+
+        protected override float CalculateUnscaledSurfaceArea()
 		{
 			return Triangle.GetSurfaceArea(A, B, C);
 		}

@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Numerics;
 using System.Threading;
 using Raytracer.Extensions;
 using Raytracer.Math;
 using Raytracer.SceneObjects;
-using Raytracer.SceneObjects.Geometry;
 
 namespace Raytracer.Layers
 {
@@ -35,12 +33,9 @@ namespace Raytracer.Layers
 			// Add the energy we 'lose' by randomly terminating paths
 			rayWeight *= 1 / p;
 
-            Intersection intersection =
-                scene.GetIntersections(ray, eRayMask.Visible, 0.00001f)
-                     .FirstOrDefault();
-
-            if (intersection == null)
-                return false;
+			Intersection intersection;
+			if (!scene.GetIntersection(ray, out intersection, eRayMask.Visible, 0.00001f))
+				return false;
 
 			sample = intersection.Material.Sample(scene, ray, intersection, random, rayDepth, rayWeight, CastRay, cancellationToken);
 			Vector3 ao = intersection.Material.GetAmbientOcclusion(scene, random, intersection.Position, intersection.Normal);

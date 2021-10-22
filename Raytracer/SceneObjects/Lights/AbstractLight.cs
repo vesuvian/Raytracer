@@ -19,23 +19,21 @@ namespace Raytracer.SceneObjects.Lights
 			if (!CastShadows)
 				return sample;
 
-			if (sample == Vector3.Zero)
-				return sample;
+			while (true)
+			{
+				if (sample == Vector3.Zero)
+					return sample;
 
-            Intersection intersection =
-                scene.GetIntersections(ray, eRayMask.CastShadows, SELF_SHADOW_TOLERANCE, distance - SELF_SHADOW_TOLERANCE)
-                     .FirstOrDefault();
+				Intersection intersection;
+				if (!scene.GetIntersection(ray, out intersection, eRayMask.CastShadows, SELF_SHADOW_TOLERANCE, distance - SELF_SHADOW_TOLERANCE))
+					return sample;
 
-			if (intersection == null)
-				return sample;
+				sample = intersection.Material.Shadow(ray, intersection, sample);
 
-			sample = intersection.Material.Shadow(ray, intersection, sample);
-
-			// Move the ray up to this intersection for the next shadow calculation
-			ray.Origin = intersection.Position;
-			distance -= intersection.Distance;
-
-			return Shadow(scene, ray, distance, sample);
+				// Move the ray up to this intersection for the next shadow calculation
+				ray.Origin = intersection.Position;
+				distance -= intersection.Distance;
+			}
 		}
 	}
 }

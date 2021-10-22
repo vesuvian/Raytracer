@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Numerics;
 using System.Threading;
 using Raytracer.Math;
 using Raytracer.SceneObjects;
-using Raytracer.SceneObjects.Geometry;
 using Raytracer.SceneObjects.Geometry.Primitives;
 using Raytracer.Utils;
 
@@ -19,14 +17,12 @@ namespace Raytracer.Layers
 
 			cancellationToken.ThrowIfCancellationRequested();
 
-			Intersection closestIntersection =
-				scene.GetIntersections(ray, eRayMask.Visible, 0.00001f)
-				     .FirstOrDefault();
-            if (closestIntersection == null)
-				return false;
+            Intersection intersection;
+            if (!scene.GetIntersection(ray, out intersection, eRayMask.Visible, 0.00001f))
+	            return false;
 
-			float planarDistance = PlaneSceneGeometry.Distance(scene.Camera.Position, scene.Camera.Forward,
-			                                      closestIntersection.Position, out _);
+            float planarDistance = PlaneSceneGeometry.Distance(scene.Camera.Position, scene.Camera.Forward,
+                                                               intersection.Position, out _);
 			float t = MathUtils.Clamp(planarDistance, scene.Camera.NearPlane, scene.Camera.FarPlane) /
 			          (scene.Camera.FarPlane - scene.Camera.NearPlane);
 			sample = Vector3.Lerp(Vector3.One, Vector3.Zero, t);

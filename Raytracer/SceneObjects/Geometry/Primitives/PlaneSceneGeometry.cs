@@ -22,18 +22,21 @@ namespace Raytracer.SceneObjects.Geometry.Primitives
 			return t > 0.00001f;
 		}
 
-		protected override IEnumerable<Intersection> GetIntersectionsFinal(Ray ray)
+		protected override bool GetIntersectionFinal(Ray ray, out Intersection intersection, float minDelta = float.NegativeInfinity,
+		                                             float maxDelta = float.PositiveInfinity)
 		{
+			intersection = default;
+
 			// First transform the ray into local space
 			ray = ray.Multiply(WorldToLocal);
 
 			float t;
 			if (!HitPlane(ray, out t))
-				yield break;
+				return false;
 
 			Vector3 position = ray.PositionAtDelta(t);
 
-			yield return new Intersection
+			intersection = new Intersection
 			{
 				Normal = s_Normal,
 				Tangent = new Vector3(1, 0, 0),
@@ -44,6 +47,8 @@ namespace Raytracer.SceneObjects.Geometry.Primitives
                 Geometry = this,
                 Material = Material
 			}.Multiply(LocalToWorld);
+
+			return intersection.RayDelta >= minDelta && intersection.RayDelta <= maxDelta;
 		}
 
 		protected override float CalculateUnscaledSurfaceArea()

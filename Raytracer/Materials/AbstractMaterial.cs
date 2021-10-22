@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Numerics;
 using System.Threading;
 using Raytracer.Extensions;
@@ -144,11 +143,7 @@ namespace Raytracer.Materials
 					Direction = worldNormal
 				};
 
-				bool hit =
-					scene.GetIntersections(giRay, eRayMask.AmbientOcclusion, 0.001f, scene.AmbientOcclusionScale, false)
-					     .Any();
-
-				if (hit)
+				if (scene.GetIntersection(giRay, out _, eRayMask.AmbientOcclusion, 0.001f, scene.AmbientOcclusionScale))
 					occlusionSum += new Vector3(1) * r1;
 			}
 

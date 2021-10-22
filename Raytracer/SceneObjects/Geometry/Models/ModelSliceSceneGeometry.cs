@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using Raytracer.Geometry;
 using Raytracer.Math;
@@ -13,6 +11,11 @@ namespace Raytracer.SceneObjects.Geometry.Models
         private readonly ModelSceneGeometry m_Model;
 
         public int Complexity { get { return m_Mesh.Triangles.Count; } }
+
+        public Mesh Mesh
+        {
+	        get { return m_Mesh; }
+        }
 
         Vector3 ISceneObject.Position { get => Vector3.Zero; set => throw new NotSupportedException(); }
 
@@ -32,24 +35,44 @@ namespace Raytracer.SceneObjects.Geometry.Models
 
         public Aabb Aabb { get; }
 
-        public IEnumerable<Intersection> GetIntersections(Ray ray, eRayMask mask,
-                                                          float minDelta = float.NegativeInfinity,
-                                                          float maxDelta = float.PositiveInfinity)
+        public bool GetIntersection(Ray ray, eRayMask mask, out Intersection intersection, float minDelta = float.NegativeInfinity,
+                                    float maxDelta = float.PositiveInfinity)
         {
-	        if ((m_Model.RayMask & mask) == eRayMask.None)
-		        return Enumerable.Empty<Intersection>();
+	        intersection = default;
 
-		        float tMin;
-		        float tMax;
-		        if (!Aabb.Intersects(ray, out tMin, out tMax))
-			        return Enumerable.Empty<Intersection>();
+	        if (m_Mesh == null)
+		        return false;
 
-		        if ((tMin < minDelta && tMax < minDelta) ||
-		            (tMin > maxDelta && tMax > maxDelta))
-			        return Enumerable.Empty<Intersection>();
-            return m_Mesh?.GetIntersections(ray, m_Model, m_Model.Material)
-                         .Where(i => i.RayDelta >= minDelta && i.RayDelta <= maxDelta)
-                   ?? Enumerable.Empty<Intersection>();
+            if ((m_Model.RayMask & mask) == eRayMask.None)
+		        return false;
+
+            float tMin;
+            float tMax;
+            if (!Aabb.Intersects(ray, out tMin, out tMax))
+	            return false;
+
+            if ((tMin < minDelta && tMax < minDelta) ||
+                (tMin > maxDelta && tMax > maxDelta))
+	            return false;
+
+            float bestT = float.MaxValue;
+			bool found = false;
+			foreach (Intersection thisIntersection in m_Mesh.GetIntersections(ray, this, m_Model.Material))
+			{
+				float t = thisIntersection.RayDelta;
+
+				if (t < minDelta || t > maxDelta)
+					continue;
+
+				if (t > bestT)
+					continue;
+
+				bestT = thisIntersection.RayDelta;
+				found = true;
+				intersection = thisIntersection;
+			}
+
+            return found;
         }
 
         public ISliceableSceneGeometry Slice(Aabb aabb)

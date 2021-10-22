@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Numerics;
 using System.Threading;
 using Raytracer.Math;
@@ -16,12 +15,9 @@ namespace Raytracer.Layers
 
 			cancellationToken.ThrowIfCancellationRequested();
 
-            Intersection intersection =
-                scene.GetIntersections(ray, eRayMask.Visible, 0.00001f)
-                     .FirstOrDefault();
-
-            if (intersection == null)
-                return false;
+			Intersection intersection;
+			if (!scene.GetIntersection(ray, out intersection, eRayMask.Visible, 0.00001f))
+				return false;
 
 			Vector3 worldNormal = intersection.Material.GetWorldNormal(intersection);
 			sample = (worldNormal / 2) + (Vector3.One / 2);

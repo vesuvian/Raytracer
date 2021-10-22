@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using Raytracer.Buffers;
+using Raytracer.Extensions;
 using Raytracer.Geometry;
 using Raytracer.Layers;
 using Raytracer.Math;
@@ -31,42 +34,82 @@ namespace Raytracer
 
 		public void Initialize(IBuffer buffer = null)
 		{
-			DrawGeometry(buffer);
+			if (buffer != null)
+				DrawGeometry(buffer, Color.Green);
 
-			Bvh = new BoundingVolumeHierarchy(Geometry, maxDepth: 5, nodeAdded: s => DrawBvh(s, buffer));
+			Bvh = new BoundingVolumeHierarchy(Geometry, 10, (l, r) =>
+			{
+				if (buffer != null)
+					DrawBvh(l, r, buffer);
+			});
 
 			Trace.WriteLine($"{Bvh.GetNodesRecursive().Count()} BVH Nodes");
 		}
 
-		public IEnumerable<Intersection> GetIntersections(Ray ray, eRayMask mask = eRayMask.All,
-		                                                  float minDelta = float.NegativeInfinity,
-		                                                  float maxDelta = float.PositiveInfinity, bool ordered = true)
+		public bool GetIntersection(Ray ray, out Intersection intersection, eRayMask mask = eRayMask.All,
+		                            float minDelta = float.NegativeInfinity, float maxDelta = float.PositiveInfinity)
 		{
-			IEnumerable<Intersection> intersections = Bvh.GetIntersections(ray, mask, minDelta, maxDelta);
-
-			if (ordered)
-				intersections = intersections.OrderBy(i => i.RayDelta);
-
-			return intersections;
+			return Bvh.GetIntersection(ray, mask, out intersection, minDelta, maxDelta);
 		}
 
-		private void DrawGeometry(IBuffer buffer)
+		private void DrawGeometry(IBuffer buffer, Color color)
 		{
-			foreach (ModelSceneGeometry model in Geometry.OfType<ModelSceneGeometry>())
+			foreach (ISceneGeometry model in Geometry)
+				DrawGeometry(buffer, model, color);
+		}
+
+		private void DrawGeometry(IBuffer buffer, ISceneGeometry geometry, Color color)
+		{
+			Mesh mesh = null;
+
+			if (geometry is ModelSceneGeometry m)
+				mesh = m.Mesh;
+			else if (geometry is ModelSliceSceneGeometry s)
+				mesh = s.Mesh;
+			else
+				return;
+
+			foreach (Triangle triangle in mesh.Triangles.Select(t => t.Multiply(geometry.LocalToWorld)))
 			{
-				foreach (Triangle triangle in model.Mesh.Triangles.Select(t => t.Multiply(model.LocalToWorld)))
-				{
-					DrawingUtils.DrawLine(Camera, triangle.A.Position, triangle.B.Position, buffer, Color.Green);
-					DrawingUtils.DrawLine(Camera, triangle.B.Position, triangle.C.Position, buffer, Color.Green);
-					DrawingUtils.DrawLine(Camera, triangle.C.Position, triangle.A.Position, buffer, Color.Green);
-				}
+				DrawingUtils.DrawLine(Camera, triangle.A.Position, triangle.B.Position, buffer, color);
+				DrawingUtils.DrawLine(Camera, triangle.B.Position, triangle.C.Position, buffer, color);
+				DrawingUtils.DrawLine(Camera, triangle.C.Position, triangle.A.Position, buffer, color);
+			}
+		}
+
+		private void DrawBvh(IEnumerable<ISceneGeometry> left, IEnumerable<ISceneGeometry> right, IBuffer buffer)
+		{
+			HashSet<ISceneGeometry> leftSet = left.ToHashSet();
+			HashSet<ISceneGeometry> rightSet = right.ToHashSet();
+
+			foreach (ISceneGeometry item in leftSet)
+				DrawGeometry(buffer, item, Color.Blue);
+
+			foreach (ISceneGeometry item in rightSet)
+				DrawGeometry(buffer, item, Color.Red);
+
+			if (leftSet.Count > 0)
+			{
+				Aabb leftAabb = leftSet.Select(g => g.Aabb).Sum();
+				DrawingUtils.DrawAabb(Camera, leftAabb, buffer, Color.Yellow);
+			}
+
+			if (rightSet.Count > 0)
+			{
+				Aabb rightAabb = rightSet.Select(g => g.Aabb).Sum();
+				DrawingUtils.DrawAabb(Camera, rightAabb, buffer, Color.Yellow);
 			}
 		}
 
 		private void DrawBvh(ISceneGeometry geometry, IBuffer buffer)
 		{
-			var color = geometry is BoundingVolumeHierarchy ? Color.Blue : Color.Red;
-			DrawingUtils.DrawAabb(Camera, geometry.Aabb, buffer, color);
+			lock (buffer)
+			{
+				var color = geometry is BoundingVolumeHierarchy ? Color.Blue : Color.Red;
+				DrawingUtils.DrawAabb(Camera, geometry.Aabb, buffer, color);
+
+				Thread.Sleep(2000);
+			}
 		}
 	}
 }
