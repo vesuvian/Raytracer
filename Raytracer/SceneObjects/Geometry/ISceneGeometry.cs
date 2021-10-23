@@ -13,6 +13,6 @@ namespace Raytracer.SceneObjects.Geometry
 
 		bool GetIntersection(Ray ray, eRayMask mask, out Intersection intersection,
 		                     float minDelta = float.NegativeInfinity,
-		                     float maxDelta = float.PositiveInfinity);
-    }
+		                     float maxDelta = float.PositiveInfinity, bool testAabb = true);
+	}
 }

@@ -5,57 +5,58 @@ using Raytracer.Math;
 
 namespace Raytracer.SceneObjects.Geometry.Models
 {
-    public sealed class ModelSliceSceneGeometry : ISliceableSceneGeometry
-    {
-        private readonly Mesh m_Mesh;
-        private readonly ModelSceneGeometry m_Model;
+	public sealed class ModelSliceSceneGeometry : ISliceableSceneGeometry
+	{
+		private readonly Mesh m_Mesh;
+		private readonly ModelSceneGeometry m_Model;
 
-        public int Complexity { get { return m_Mesh.Triangles.Count; } }
+		public int Complexity { get { return m_Mesh.Triangles.Count; } }
 
-        public Mesh Mesh
-        {
-	        get { return m_Mesh; }
-        }
+		public Mesh Mesh { get { return m_Mesh; } }
 
-        Vector3 ISceneObject.Position { get => Vector3.Zero; set => throw new NotSupportedException(); }
+		Vector3 ISceneObject.Position { get => Vector3.Zero; set => throw new NotSupportedException(); }
 
-        Vector3 ISceneObject.Scale { get => Vector3.One; set => throw new NotSupportedException(); }
+		Vector3 ISceneObject.Scale { get => Vector3.One; set => throw new NotSupportedException(); }
 
-        Quaternion ISceneObject.Rotation { get => Quaternion.Identity; set => throw new NotSupportedException(); }
+		Quaternion ISceneObject.Rotation { get => Quaternion.Identity; set => throw new NotSupportedException(); }
 
-        Matrix4x4 ISceneObject.LocalToWorld => Matrix4x4.Identity;
+		Matrix4x4 ISceneObject.LocalToWorld => Matrix4x4.Identity;
 
-        Matrix4x4 ISceneObject.WorldToLocal => Matrix4x4.Identity;
+		Matrix4x4 ISceneObject.WorldToLocal => Matrix4x4.Identity;
 
-        Vector3 ISceneObject.Forward => Vector3.UnitZ;
+		Vector3 ISceneObject.Forward => Vector3.UnitZ;
 
-        eRayMask ISceneGeometry.RayMask => m_Model.RayMask;
+		eRayMask ISceneGeometry.RayMask => m_Model.RayMask;
 
-        public float SurfaceArea { get; }
+		public float SurfaceArea { get; }
 
-        public Aabb Aabb { get; }
+		public Aabb Aabb { get; }
 
-        public bool GetIntersection(Ray ray, eRayMask mask, out Intersection intersection, float minDelta = float.NegativeInfinity,
-                                    float maxDelta = float.PositiveInfinity)
-        {
-	        intersection = default;
+		public bool GetIntersection(Ray ray, eRayMask mask, out Intersection intersection,
+		                            float minDelta = float.NegativeInfinity,
+		                            float maxDelta = float.PositiveInfinity, bool testAabb = true)
+		{
+			intersection = default;
 
-	        if (m_Mesh == null)
-		        return false;
+			if (m_Mesh == null)
+				return false;
 
-            if ((m_Model.RayMask & mask) == eRayMask.None)
-		        return false;
+			if ((m_Model.RayMask & mask) == eRayMask.None)
+				return false;
 
-            float tMin;
-            float tMax;
-            if (!Aabb.Intersects(ray, out tMin, out tMax))
-	            return false;
+			if (testAabb)
+			{
+				float tMin;
+				float tMax;
+				if (!Aabb.Intersects(ray, out tMin, out tMax))
+					return false;
 
-            if ((tMin < minDelta && tMax < minDelta) ||
-                (tMin > maxDelta && tMax > maxDelta))
-	            return false;
+				if ((tMin < minDelta && tMax < minDelta) ||
+				    (tMin > maxDelta && tMax > maxDelta))
+					return false;
+			}
 
-            float bestT = float.MaxValue;
+			float bestT = float.MaxValue;
 			bool found = false;
 			foreach (Intersection thisIntersection in m_Mesh.GetIntersections(ray, this, m_Model.Material))
 			{
@@ -72,21 +73,21 @@ namespace Raytracer.SceneObjects.Geometry.Models
 				intersection = thisIntersection;
 			}
 
-            return found;
-        }
+			return found;
+		}
 
-        public ISliceableSceneGeometry Slice(Aabb aabb)
-        {
-            return m_Model.Slice(aabb);
-        }
+		public ISliceableSceneGeometry Slice(Aabb aabb)
+		{
+			return m_Model.Slice(aabb);
+		}
 
-        public ModelSliceSceneGeometry(ModelSceneGeometry model, Aabb aabb)
-        {
-            m_Model = model;
-            m_Mesh = model.Mesh.Clip(model.LocalToWorld, aabb);
+		public ModelSliceSceneGeometry(ModelSceneGeometry model, Aabb aabb)
+		{
+			m_Model = model;
+			m_Mesh = model.Mesh.Clip(model.LocalToWorld, aabb);
 
-            SurfaceArea = m_Mesh.CalculateSurfaceArea();
-            Aabb = m_Mesh.CalculateAabb(Matrix4x4.Identity);
-        }
-    }
+			SurfaceArea = m_Mesh.CalculateSurfaceArea();
+			Aabb = m_Mesh.CalculateAabb(Matrix4x4.Identity);
+		}
+	}
 }

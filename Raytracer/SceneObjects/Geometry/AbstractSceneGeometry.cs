@@ -14,22 +14,26 @@ namespace Raytracer.SceneObjects.Geometry
 
 		public Aabb Aabb { get; private set; }
 
-		public bool GetIntersection(Ray ray, eRayMask mask, out Intersection intersection, float minDelta = float.NegativeInfinity,
-		                            float maxDelta = float.PositiveInfinity)
+		public bool GetIntersection(Ray ray, eRayMask mask, out Intersection intersection,
+		                            float minDelta = float.NegativeInfinity,
+		                            float maxDelta = float.PositiveInfinity, bool testAabb = true)
 		{
 			intersection = default;
 
 			if ((RayMask & mask) == eRayMask.None)
 				return false;
 
-			float tMin;
-			float tMax;
-			if (!Aabb.Intersects(ray, out tMin, out tMax))
-				return false;
+			if (testAabb)
+			{
+				float tMin;
+				float tMax;
+				if (!Aabb.Intersects(ray, out tMin, out tMax))
+					return false;
 
-			if ((tMin < minDelta && tMax < minDelta) ||
-			    (tMin > maxDelta && tMax > maxDelta))
-				return false;
+				if ((tMin < minDelta && tMax < minDelta) ||
+				    (tMin > maxDelta && tMax > maxDelta))
+					return false;
+			}
 
 			return GetIntersectionFinal(ray, out intersection, minDelta, maxDelta);
 		}
