@@ -8,6 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Raytracer.Buffers;
+using Raytracer.Extensions;
 using Raytracer.Layers;
 using Raytracer.Materials;
 using Raytracer.Materials.Textures;
@@ -25,8 +26,8 @@ namespace Raytracer.Wpf.ViewModel
 {
 	public sealed class MainWindowViewModel : AbstractViewModel
 	{
-		private const int WIDTH = 1920 / 4;
-		private const int HEIGHT = 1080 / 4;
+		private const int WIDTH = 1920;
+		private const int HEIGHT = 1080;
 
 		private readonly Thread m_Worker;
 		private readonly CancellationTokenSource m_CancellationTokenSource;
@@ -78,7 +79,7 @@ namespace Raytracer.Wpf.ViewModel
 					Fov = 40,
 					Samples = int.MaxValue,
 					FocalLength = 10,
-					ApertureSize = 0.2f,
+					ApertureSize = 0.02f,
 					Aspect = WIDTH / (float)HEIGHT
 				},
 				Lights = new List<ILight>
@@ -114,15 +115,6 @@ namespace Raytracer.Wpf.ViewModel
                 },
 				Geometry = new List<ISceneGeometry>
 				{
-					new SphereSceneGeometry
-					{
-						Radius = 100000,
-						RayMask = eRayMask.Visible,
-						Material = new EmissiveMaterial
-						{
-							Emission = BitmapTexture.FromPath("Resources\\skysphere.jpg")
-						}
-					},
 					//new CubeSceneGeometry
 					//{
 					//	Position = new Vector3(13f, 5, 0),
@@ -233,6 +225,19 @@ namespace Raytracer.Wpf.ViewModel
 					//	Radius = -1.8f,
 					//	Material = new RefractiveMaterial { Ior = 1.5f, Color = new Vector4(0.8f, 1.0f, 1.0f, 1.0f)  }
 					//},
+
+
+
+
+					new SphereSceneGeometry
+					{
+						Radius = 100000,
+						RayMask = eRayMask.Visible,
+						Material = new EmissiveMaterial
+						{
+							Emission = BitmapTexture.FromPath("Resources\\skysphere.jpg")
+						}
+					},
 					new PlaneSceneGeometry
 					{
 						Material = new PhongMaterial
@@ -249,9 +254,8 @@ namespace Raytracer.Wpf.ViewModel
 						Position = new Vector3(1.5f, 3, -8),
 						Rotation = Quaternion.CreateFromYawPitchRoll(MathUtils.DEG2RAD * -45, MathUtils.DEG2RAD * -15, MathUtils.DEG2RAD * 30),
 						Mesh = new ObjMeshParser().Parse("Resources\\teapot.obj"),
-						Material = new RefractiveMaterial
+						Material = new ReflectiveMaterial
 						{
-							Ior = 1.5f,
 							Normal = normal,
 							Color = new Vector3(1.0f, 0.2f, 0) * 0.9f
 						}
@@ -262,8 +266,9 @@ namespace Raytracer.Wpf.ViewModel
 						Radius = 2,
 						Material = new RefractiveMaterial
 						{
+							Scatter = 0,
 							Ior = 1.5f,
-							Color = new Vector3(0.1f, 1.0f, 0.4f) * 0.9f
+							Color = new Vector3(0.1f, 1.0f, 0.4f) * 0.1f
 						}
 					},
 					new CylinderSceneGeometry
@@ -283,6 +288,24 @@ namespace Raytracer.Wpf.ViewModel
 					new MaterialsLayer()
 				}
 			};
+
+			Random random = new Random(12345);
+			for (int i = 0; i < 1000; i++)
+			{
+				var geometry = new SphereSceneGeometry
+				{
+					Position = random.NextVector3(new Vector3(-20, 0, 0), new Vector3(30, 30, 50)),
+					Radius = random.NextFloat(0.5f, 2.0f),
+					Material = new RefractiveMaterial
+					{
+						Ior = random.NextFloat(1, 2),
+						Scatter = random.NextFloat(0, 5),
+						Color = random.NextVector3(new Vector3(0, 0.5f, 0), new Vector3(360, 1, 0.9f)).FromHslToRgb()
+					}
+				};
+
+				scene.Geometry.Add(geometry);
+			}
 
 			scene.Layers.First().OnProgressChanged += UpdateTitle;
 

@@ -41,6 +41,11 @@ namespace Raytracer.Layers
 			Vector3 ao = intersection.Material.GetAmbientOcclusion(scene, random, intersection.Position, intersection.Normal);
 			sample *= ao;
 
+			if (float.IsNaN(sample.X) ||
+			    float.IsNaN(sample.Y) ||
+			    float.IsNaN(sample.Z))
+				sample = new Vector3(1, 0, 0);
+
 			return true;
 		}
 	}

@@ -65,7 +65,8 @@ namespace Raytracer.Layers
 
 			ParallelOptions po = new ParallelOptions
 			{
-				CancellationToken = cancellationToken
+				CancellationToken = cancellationToken,
+				//MaxDegreeOfParallelism = 1
 			};
 
 			try

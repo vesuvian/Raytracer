@@ -10,8 +10,23 @@ namespace Raytracer.Buffers
 		private readonly IBuffer m_Buffer;
 		private readonly Color?[] m_Cache;
 
-		public override int Height { get { return m_Buffer.Height; } }
-		public override int Width { get { return m_Buffer.Width; } }
+		public override int Height
+		{
+			get
+			{
+				lock (m_Buffer)
+					return m_Buffer.Height;
+			}
+		}
+
+		public override int Width
+		{
+			get
+			{
+				lock (m_Buffer)
+					return m_Buffer.Width;
+			}
+		}
 
 		public MedianFilterBuffer(IBuffer buffer)
 		{
@@ -108,15 +123,6 @@ namespace Raytracer.Buffers
 
 			public int Compare([AllowNull] Color x, [AllowNull] Color y)
             {
-                if (x == null && y == null)
-					return 0;
-
-				if (x == null)
-					return -1;
-
-				if (y == null)
-					return 1;
-
 				int channelX = m_GetChannel(x);
 				int channelY = m_GetChannel(y);
 

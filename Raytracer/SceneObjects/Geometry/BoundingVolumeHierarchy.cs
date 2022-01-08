@@ -153,8 +153,8 @@ namespace Raytracer.SceneObjects.Geometry
 
 			foreach (var aabbRayIntersection in aabbRayIntersections)
 			{
-				if ((aabbRayIntersection.MinDelta < minDelta && aabbRayIntersection.MaxDelta < minDelta) ||
-					(aabbRayIntersection.MinDelta > maxDelta && aabbRayIntersection.MaxDelta > maxDelta))
+				if (aabbRayIntersection.MaxDelta < minDelta ||
+				    aabbRayIntersection.MinDelta > maxDelta)
 					continue;
 
 				Intersection thisIntersection;
