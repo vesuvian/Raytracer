@@ -12,7 +12,7 @@ namespace Raytracer.Extensions
 		/// <summary>
 		/// Gets the CIE D65 (white) structure.
 		/// </summary>
-		public static Vector3 XyzD65White = new Vector3(0.9505f, 1.0f, 1.0890f);
+		public static Vector3 XyzD65White = new(0.9505f, 1.0f, 1.0890f);
 
 		#region RGB
 
@@ -23,7 +23,7 @@ namespace Raytracer.Extensions
 		/// <returns></returns>
 		public static Vector4 ToRgba(this Color extends)
 		{
-			return new Vector4(extends.R, extends.G, extends.B, extends.A) / 255;
+            return new Vector4(extends.R, extends.G, extends.B, extends.A) / 255;
 		}
 
 		/// <summary>
@@ -55,10 +55,8 @@ namespace Raytracer.Extensions
 		/// <param name="extends"></param>
 		/// <returns></returns>
 		public static Color FromRgbToColor(this Vector3 extends)
-		{
-			return Color.FromArgb((int)MathUtils.Clamp(extends.X * 255, 0, 255),
-			                      (int)MathUtils.Clamp(extends.Y * 255, 0, 255),
-			                      (int)MathUtils.Clamp(extends.Z * 255, 0, 255));
+        {
+            return extends.ToVector4(1).FromRgbaToColor();
 		}
 
 		#endregion
@@ -232,6 +230,71 @@ namespace Raytracer.Extensions
 		{
 			Vector3 xyz = extends.FromRgbToXyz();
 			return xyz.FromXyzToLab(XyzD65White);
+		}
+
+		#endregion
+
+        // https://bottosson.github.io/posts/oklab/
+		#region Oklab
+
+        /// <summary>
+        /// Converts from RGBA to Oklab with Alpha.
+        /// </summary>
+        /// <param name="extends"></param>
+        /// <returns></returns>
+        public static Vector4 FromRgbaToOklaba(this Vector4 extends)
+		{
+			return FromRgbToOklab(extends.ToVector3()).ToVector4(extends.W);
+		}
+
+        /// <summary>
+        /// Converts from RGB to Oklab.
+        /// </summary>
+        /// <param name="extends"></param>
+        /// <returns></returns>
+        public static Vector3 FromRgbToOklab(this Vector3 extends)
+        {
+            float l = 0.4122214708f * extends.X + 0.5363325363f * extends.Y + 0.0514459929f * extends.Z;
+            float m = 0.2119034982f * extends.X + 0.6806995451f * extends.Y + 0.1073969566f * extends.Z;
+            float s = 0.0883024619f * extends.X + 0.2817188376f * extends.Y + 0.6299787005f * extends.Z;
+
+            float l_ = MathF.Pow(l, 1 / 3.0f);
+            float m_ = MathF.Pow(m, 1 / 3.0f);
+			float s_ = MathF.Pow(s, 1 / 3.0f);
+
+            return new Vector3(0.2104542553f * l_ + 0.7936177850f * m_ - 0.0040720468f * s_,
+                               1.9779984951f * l_ - 2.4285922050f * m_ + 0.4505937099f * s_,
+                               0.0259040371f * l_ + 0.7827717662f * m_ - 0.8086757660f * s_);
+        }
+
+        /// <summary>
+        /// Converts from Oklab with Alpha to RGBA.
+        /// </summary>
+        /// <param name="extends"></param>
+        /// <returns></returns>
+        public static Vector4 FromOklabaToRgba(this Vector4 extends)
+        {
+            return FromOklabToRgb(extends.ToVector3()).ToVector4(extends.W);
+        }
+
+        /// <summary>
+        /// Converts from Oklab to RGB.
+        /// </summary>
+        /// <param name="extends"></param>
+        /// <returns></returns>
+        public static Vector3 FromOklabToRgb(this Vector3 extends)
+        {
+            float l_ = extends.X + 0.3963377774f * extends.Y + 0.2158037573f * extends.Z;
+            float m_ = extends.X - 0.1055613458f * extends.Y - 0.0638541728f * extends.Z;
+            float s_ = extends.X - 0.0894841775f * extends.Y - 1.2914855480f * extends.Z;
+
+            float l = l_ * l_ * l_;
+            float m = m_ * m_ * m_;
+            float s = s_ * s_ * s_;
+
+            return new Vector3(+4.0767416621f * l - 3.3077115913f * m + 0.2309699292f * s,
+                               -1.2684380046f * l + 2.6097574011f * m - 0.3413193965f * s,
+                               -0.0041960863f * l - 0.7034186147f * m + 1.7076147010f * s);
 		}
 
 		#endregion

@@ -90,16 +90,15 @@ namespace Raytracer.Layers
 
 						Random random = new Random(HashCode.Combine(iteration, x, y));
 
-						Ray ray = scene.Camera.CreateRay(xViewportMin, xViewportMax, yViewportMin, yViewportMax, random);
-						Vector3 sample;
-						CastRay(scene, ray, random, 0, Vector3.One, out sample, cancellationToken);
+                        Vector3 sample = Sample(scene, xViewportMin, xViewportMax, yViewportMin, yViewportMax, random,
+                                                cancellationToken);
 
 						// Gamma Correction
-						sample = new Vector3(MathF.Pow(sample.X, 1 / Gamma),
-						                     MathF.Pow(sample.Y, 1 / Gamma),
-						                     MathF.Pow(sample.Z, 1 / Gamma));
+						sample = new Vector3(MathF.Pow(MathF.Max(0, sample.X), 1 / Gamma),
+						                     MathF.Pow(MathF.Max(0, sample.Y), 1 / Gamma),
+						                     MathF.Pow(MathF.Max(0, sample.Z), 1 / Gamma));
 
-						successiveBuffer.SetPixel(x, y, sample.FromRgbToColor());
+                        successiveBuffer.SetPixel(x, y, sample.FromRgbToColor());
 						Progress = pixelsComplete++;
 					}
 					catch (OperationCanceledException)
@@ -118,8 +117,17 @@ namespace Raytracer.Layers
 			End = DateTime.UtcNow;
 		}
 
-		protected abstract bool CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
-		                                out Vector3 sample, CancellationToken cancellationToken = default);
+        protected virtual Vector3 Sample(Scene scene, float xViewportMin, float xViewportMax, float yViewportMin,
+                                         float yViewportMax, Random random,
+                                         CancellationToken cancellationToken = default)
+        {
+            Ray ray = scene.Camera.CreateRay(xViewportMin, xViewportMax, yViewportMin, yViewportMax, random);
+            CastRay(scene, ray, random, 0, Vector3.One, out Vector3 sample, cancellationToken);
+            return sample;
+        }
+
+        protected abstract bool CastRay(Scene scene, Ray ray, Random random, int rayDepth, Vector3 rayWeight,
+                                        out Vector3 sample, CancellationToken cancellationToken = default);
 
 		/// <summary>
 		/// Gets a "random" pixel for each input, only visiting each pixel once.

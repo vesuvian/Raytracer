@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 using Raytracer.Extensions;
+using Raytracer.Utils;
 
 namespace Raytracer.Materials.Textures
 {
@@ -20,11 +21,7 @@ namespace Raytracer.Materials.Textures
 			Random random = new Random(seed);
 			float blend = random.NextFloat();
 
-			Vector3 aHsl = ColorA.FromRgbToHsl();
-			Vector3 bHsl = ColorB.FromRgbToHsl();
-			Vector3 lerpHsl = Vector3.Lerp(aHsl, bHsl, blend);
-
-			return lerpHsl.FromHslToRgb();
+            return Gradient.LerpOklab(ColorA.ToVector4(1), ColorB.ToVector4(1), blend).ToVector3();
 		}
 	}
 }

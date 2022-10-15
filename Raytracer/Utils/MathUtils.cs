@@ -105,5 +105,19 @@ namespace Raytracer.Utils
 
 			return a + t * ab;
 		}
+
+		public static double MapRange(double inputStart, double inputEnd, double outputStart, double outputEnd, double value)
+		{
+			if (inputStart.Equals(inputEnd))
+				return outputStart;
+
+			double slope = (outputEnd - outputStart) / (inputEnd - inputStart);
+			return outputStart + slope * (value - inputStart);
+		}
+
+    	public static float MapRange(float inputStart, float inputEnd, float outputStart, float outputEnd, float value)
+		{
+			return (float)MapRange((double)inputStart, inputEnd, outputStart, outputEnd, value);
+		}
 	}
 }
