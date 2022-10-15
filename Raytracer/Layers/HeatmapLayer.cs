@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Numerics;
 using System.Threading;
+using Raytracer.Buffers;
 using Raytracer.Extensions;
 using Raytracer.Utils;
 
@@ -27,13 +28,12 @@ namespace Raytracer.Layers
             m_Gradient.Add(1, Color.Red.ToRgba());
         }
 
-        protected override Vector3 Sample(Scene scene, float xViewportMin, float xViewportMax, float yViewportMin,
-                                          float yViewportMax, Random random,
+        protected override Vector3 Sample(Scene scene, IBuffer buffer, int x, int y, Random random,
                                           CancellationToken cancellationToken = default)
         {
             var stopwatch = Stopwatch.StartNew();
 
-            base.Sample(scene, xViewportMin, xViewportMax, yViewportMin, yViewportMax, random, cancellationToken);
+            base.Sample(scene, buffer, x, y, random, cancellationToken);
 
             var ticks = stopwatch.ElapsedTicks;
             m_AverageTicks = ApproxRollingAverage(m_AverageTicks, ticks);

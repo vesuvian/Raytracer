@@ -35,7 +35,7 @@ namespace Raytracer.Layers
 
 		public ulong RenderSize { get; private set; }
 
-		public void Render(Scene scene, IBuffer buffer, CancellationToken cancellationToken = default)
+		public virtual void Render(Scene scene, IBuffer buffer, CancellationToken cancellationToken = default)
 		{
 			IBuffer filter = new MedianFilterBuffer(buffer);
 			IBuffer successiveBuffer = new SuccessiveRefinementBuffer(filter);
@@ -82,16 +82,9 @@ namespace Raytracer.Layers
 						int iteration = px.Item1;
 						int x = px.Item2;
 						int y = px.Item3;
-
-						float xViewportMin = x / (float)width;
-						float xViewportMax = (x + 1) / (float)width;
-						float yViewportMin = y / (float)height;
-						float yViewportMax = (y + 1) / (float)height;
-
-						Random random = new Random(HashCode.Combine(iteration, x, y));
-
-                        Vector3 sample = Sample(scene, xViewportMin, xViewportMax, yViewportMin, yViewportMax, random,
-                                                cancellationToken);
+                        Random random = new Random(HashCode.Combine(iteration, x, y));
+                        
+                        Vector3 sample = Sample(scene, buffer, x, y, random, cancellationToken);
 
 						// Gamma Correction
 						sample = new Vector3(MathF.Pow(MathF.Max(0, sample.X), 1 / Gamma),
@@ -117,12 +110,17 @@ namespace Raytracer.Layers
 			End = DateTime.UtcNow;
 		}
 
-        protected virtual Vector3 Sample(Scene scene, float xViewportMin, float xViewportMax, float yViewportMin,
-                                         float yViewportMax, Random random,
+        protected virtual Vector3 Sample(Scene scene, IBuffer buffer, int x, int y, Random random,
                                          CancellationToken cancellationToken = default)
         {
+            float xViewportMin = x / (float)buffer.Width;
+            float xViewportMax = (x + 1) / (float)buffer.Width;
+            float yViewportMin = y / (float)buffer.Height;
+            float yViewportMax = (y + 1) / (float)buffer.Height;
+			
             Ray ray = scene.Camera.CreateRay(xViewportMin, xViewportMax, yViewportMin, yViewportMax, random);
-            CastRay(scene, ray, random, 0, Vector3.One, out Vector3 sample, cancellationToken);
+
+			CastRay(scene, ray, random, 0, Vector3.One, out Vector3 sample, cancellationToken);
             return sample;
         }
 

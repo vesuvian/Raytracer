@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Numerics;
 using Raytracer.Extensions;
 
 namespace Raytracer.Math
 {
+    [DebuggerDisplay("Min = {Min}, Max = {Max}")]
 	public struct Aabb
 	{
 		private Vector3 m_Min;
