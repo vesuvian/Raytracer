@@ -46,21 +46,10 @@ namespace Raytracer.SceneObjects.Cameras
 		/// <returns></returns>
 		public override Ray CreateRay(float minX, float maxX, float minY, float maxY, Random random)
 		{
-			float x;
-			float y;
+            var x = random.NextFloat(minX, maxX);
+            var y = random.NextFloat(minY, maxY);
 
-			if (Samples == 1)
-			{
-				x = (minX + maxX) / 2;
-				y = (minY + maxY) / 2;
-			}
-			else
-			{
-				x = random.NextFloat(minX, maxX);
-				y = random.NextFloat(minY, maxY);
-			}
-
-			// Calculate the local viewport ray
+            // Calculate the local viewport ray
 			float rayX = -1 + x * 2;
 			float rayY = 1 - y * 2;
 

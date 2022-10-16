@@ -33,6 +33,7 @@ namespace Raytracer.Cmd
 
 			Scene scene = new Scene
 			{
+                Samples = int.MaxValue,
 				GlobalIlluminationSamples = 4,
 				AmbientOcclusionSamples = 16,
 				AmbientOcclusionScale = 0.5f,
@@ -42,7 +43,6 @@ namespace Raytracer.Cmd
 					NearPlane = 0.01f,
 					FarPlane = 40.0f,
 					Fov = 40,
-					Samples = int.MaxValue,
 					FocalLength = 18,
 					ApertureSize = 0.2f,
 					Aspect = WIDTH / (float)HEIGHT

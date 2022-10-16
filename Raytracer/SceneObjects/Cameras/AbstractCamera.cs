@@ -11,8 +11,6 @@ namespace Raytracer.SceneObjects.Cameras
 		private Matrix4x4? m_Projection;
 		private Matrix4x4? m_ProjectionInverse;
 
-		public int Samples { get; set; } = 1;
-
 		public float NearPlane
 		{
 			get { return m_NearPlane; }

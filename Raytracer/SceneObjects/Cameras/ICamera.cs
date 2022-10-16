@@ -6,8 +6,6 @@ namespace Raytracer.SceneObjects.Cameras
 {
 	public interface ICamera : ISceneObject
 	{
-		int Samples { get; set; }
-
 		float NearPlane { get; }
 
 		float FarPlane { get; }

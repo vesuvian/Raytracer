@@ -47,12 +47,12 @@ namespace Raytracer.Layers
 
 			Start = DateTime.UtcNow;
 			Progress = 0;
-			RenderSize = (ulong)region.Width * (ulong)region.Height * (ulong)scene.Camera.Samples;
+			RenderSize = (ulong)region.Width * (ulong)region.Height * (ulong)scene.Samples;
 
 			ulong pixelsComplete = 0;
 
 			IEnumerable<Tuple<int, int, int>> pixels =
-				Enumerable.Range(0, scene.Camera.Samples)
+				Enumerable.Range(0, scene.Samples)
 				          .SelectMany(s => Enumerable.Range(0, region.Width * region.Height)
 				                                     .Select(px =>
 				                                     {
@@ -117,6 +117,15 @@ namespace Raytracer.Layers
             float xViewportMax = (x + 1) / (float)buffer.Width;
             float yViewportMin = y / (float)buffer.Height;
             float yViewportMax = (y + 1) / (float)buffer.Height;
+
+			// Don't randomize the rays if we're doing a single pass
+            if (scene.Samples == 1)
+            {
+                xViewportMin = (xViewportMin + xViewportMax) / 2;
+                xViewportMax = xViewportMin;
+                yViewportMin = (yViewportMin + yViewportMax) / 2;
+                yViewportMax = yViewportMin;
+			}
 			
             Ray ray = scene.Camera.CreateRay(xViewportMin, xViewportMax, yViewportMin, yViewportMax, random);
 

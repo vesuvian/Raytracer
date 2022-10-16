@@ -17,7 +17,8 @@ namespace Raytracer
 		public List<ILayer> Layers { get; set; }
 
 		public int MaxReflectionRays { get; set; } = 10;
-		public int GlobalIlluminationSamples { get; set; } = 4;
+        public int Samples { get; set; } = 32;
+        public int GlobalIlluminationSamples { get; set; } = 4;
 		public int AmbientOcclusionSamples { get; set; } = 4;
 		public float AmbientOcclusionScale { get; set; } = 1;
 
