@@ -71,11 +71,17 @@ namespace Raytracer.Layers
                     {
                         cancellationToken.ThrowIfCancellationRequested();
 
-                        // Makes each sample deterministic
-                        Random random = new Random(HashCode.Combine(s, x, y));
-                        Vector3 sample = Sample(scene, buffer, x, y, random, cancellationToken);
-                        sample = GammaCorrection(sample);
-                        successiveBuffer.SetPixel(x, y, sample.FromRgbToColor());
+                        // Skip pixels with low variance
+                        var variance = s < 4 || successiveBuffer.HasVariance(x, y);
+
+                        if (variance)
+                        {
+                            // Makes each sample deterministic
+                            Random random = new Random(HashCode.Combine(s, x, y));
+                            Vector3 sample = Sample(scene, buffer, x, y, random, cancellationToken);
+                            sample = GammaCorrection(sample);
+                            successiveBuffer.SetPixel(x, y, sample.FromRgbToColor());
+                        }
 
                         Progress = pixelsComplete++;
                     }

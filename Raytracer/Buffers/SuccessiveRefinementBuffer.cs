@@ -1,6 +1,8 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Numerics;
 using Raytracer.Extensions;
+using Raytracer.Math;
 
 namespace Raytracer.Buffers
 {
@@ -9,6 +11,7 @@ namespace Raytracer.Buffers
 		private readonly IBuffer m_Buffer;
 		private readonly Vector3[] m_Pixels;
 		private readonly int[] m_PixelSamples;
+        private readonly Aabb[] m_Variance;
 
 		public override int Height { get { return m_Buffer.Height; } }
 		public override int Width { get { return m_Buffer.Width; } }
@@ -22,6 +25,16 @@ namespace Raytracer.Buffers
 			m_Buffer = buffer;
 			m_Pixels = new Vector3[m_Buffer.Width * m_Buffer.Height];
 			m_PixelSamples = new int[m_Buffer.Width * m_Buffer.Height];
+            m_Variance = new Aabb[m_Buffer.Width * m_Buffer.Height];
+
+            for (int index = 0; index < buffer.Width * buffer.Height; index++)
+            {
+                m_Variance[index] = new Aabb
+                {
+                    Min = new Vector3(float.MaxValue),
+                    Max = new Vector3(float.MinValue)
+                };
+            }
 		}
 
         /// <summary>
@@ -34,13 +47,23 @@ namespace Raytracer.Buffers
 
 		public override void SetPixel(int x, int y, Color color)
 		{
-			int index = x + y * Width;
+			var index = x + y * Width;
+            var rgb = color.ToRgb();
 
 			lock (m_Pixels)
 			{
-				m_Pixels[index] += color.ToRgb();
+				// Update the pixel value
+				m_Pixels[index] += rgb;
 				m_PixelSamples[index]++;
-				m_Buffer.SetPixel(x, y, GetPixel(x, y));
+
+				// Update variance
+                var bounds = m_Variance[index];
+                bounds.Min = Vector3.Min(bounds.Min, rgb);
+                bounds.Max = Vector3.Max(bounds.Max, rgb);
+                m_Variance[index] = bounds;
+
+				// Write to the underlying buffer
+                m_Buffer.SetPixel(x, y, GetPixel(x, y));
 			}
 		}
 
@@ -56,6 +79,20 @@ namespace Raytracer.Buffers
 
 				return average.FromRgbToColor();
 			}
+		}
+
+        public bool HasVariance(int x, int y)
+        {
+            const float maxMagnitude = 2.0f / 256.0f;
+
+            int index = x + y * Width;
+
+            lock (m_Pixels)
+            {
+                var bounds = m_Variance[index];
+				var magnitude = (bounds.Max - bounds.Min).Length();
+                return magnitude >= maxMagnitude;
+            }
 		}
 	}
 }
