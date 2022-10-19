@@ -110,9 +110,9 @@ namespace Raytracer.Buffers
 
 		private sealed class ColorChannelComparer : IComparer<Color>
         {
-			public static ColorChannelComparer Red { get; } = new ColorChannelComparer(c => c.R);
-			public static ColorChannelComparer Green { get; } = new ColorChannelComparer(c => c.G);
-			public static ColorChannelComparer Blue { get; } = new ColorChannelComparer(c => c.B);
+			public static ColorChannelComparer Red { get; } = new(c => c.R);
+			public static ColorChannelComparer Green { get; } = new(c => c.G);
+			public static ColorChannelComparer Blue { get; } = new(c => c.B);
 
 			private readonly Func<Color, int> m_GetChannel;
 

@@ -26,8 +26,8 @@ namespace Raytracer.Wpf.ViewModel
 {
 	public sealed class MainWindowViewModel : AbstractViewModel
 	{
-		private const int WIDTH = 1920;
-		private const int HEIGHT = 1080;
+		private const int WIDTH = 1920 / 4;
+		private const int HEIGHT = 1080 / 4;
 
 		private readonly Thread m_Worker;
 		private readonly CancellationTokenSource m_CancellationTokenSource;
@@ -68,6 +68,7 @@ namespace Raytracer.Wpf.ViewModel
 
 			Scene scene = new Scene
 			{
+                Samples = 32,
 				GlobalIlluminationSamples = 4,
 				AmbientOcclusionSamples = 4,
 				AmbientOcclusionScale = 2f,
@@ -77,7 +78,6 @@ namespace Raytracer.Wpf.ViewModel
 					NearPlane = 0.01f,
 					FarPlane = 1000.0f,
 					Fov = 40,
-					Samples = int.MaxValue,
 					FocalLength = 10,
 					ApertureSize = 0.02f,
 					Aspect = WIDTH / (float)HEIGHT
@@ -340,13 +340,14 @@ namespace Raytracer.Wpf.ViewModel
 							? TimeSpan.MaxValue
 							: TimeSpan.FromMilliseconds(MathUtils.Clamp((float)elapsed.TotalMilliseconds / percent, 0, (float)TimeSpan.MaxValue.TotalMilliseconds)) * (1 - percent);
 
-				Title = $"Raytracer - {percent:P} ({elapsed} elapsed, {remaining} remaining)";
+				Title = $"Raytracer - {percent:P} ({elapsed:g} elapsed, {remaining:g} remaining)";
 			}
 		}
 
 		public void Closing()
 		{
 			m_CancellationTokenSource.Cancel();
+			Buffer.Dispose();
 		}
 
 		private void CopyImage()

@@ -13,6 +13,10 @@ namespace Raytracer.Buffers
 		public override int Height { get { return m_Buffer.Height; } }
 		public override int Width { get { return m_Buffer.Width; } }
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="buffer"></param>
 		public SuccessiveRefinementBuffer(IBuffer buffer)
 		{
 			m_Buffer = buffer;
@@ -20,7 +24,10 @@ namespace Raytracer.Buffers
 			m_PixelSamples = new int[m_Buffer.Width * m_Buffer.Height];
 		}
 
-		public override void Dispose()
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public override void Dispose()
 		{
 			m_Buffer.Dispose();
 		}
