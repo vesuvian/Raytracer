@@ -296,7 +296,7 @@ namespace Raytracer.Wpf.ViewModel
 							? TimeSpan.MaxValue
 							: TimeSpan.FromMilliseconds(MathUtils.Clamp((float)elapsed.TotalMilliseconds / percent, 0, (float)TimeSpan.MaxValue.TotalMilliseconds)) * (1 - percent);
 
-				Title = $"Raytracer - {percent:P} ({elapsed} elapsed, {remaining} remaining)";
+				Title = $"Raytracer - {percent:P} ({elapsed:g} elapsed, {remaining:g} remaining)";
 			}
 		}
 
