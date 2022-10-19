@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -8,117 +9,140 @@ using Raytracer.Buffers;
 
 namespace Raytracer.Wpf
 {
-	public sealed class WriteableBitmapBuffer : AbstractBuffer
-	{
-		private readonly WriteableBitmap m_Bitmap;
-		private readonly Queue<Tuple<int, int, Color>> m_Queue;
+    public sealed class WriteableBitmapBuffer : AbstractBuffer
+    {
+        private readonly WriteableBitmap m_Bitmap;
+        private readonly Queue<Tuple<int, int, Color>> m_Queue;
+        private readonly Thread m_WorkerThread;
+        private readonly CancellationTokenSource m_WorkerCancellationTokenSource;
+        private readonly IntPtr m_BackBuffer;
+        private readonly int m_BackBufferStride;
 
-		public override int Height { get; }
-		public override int Width { get; }
+        public override int Height { get; }
+        public override int Width { get; }
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="bitmap"></param>
-		public WriteableBitmapBuffer(WriteableBitmap bitmap)
-		{
-			m_Queue = new Queue<Tuple<int, int, Color>>();
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="bitmap"></param>
+        public WriteableBitmapBuffer(WriteableBitmap bitmap)
+        {
+            m_Queue = new Queue<Tuple<int, int, Color>>();
 
-			m_Bitmap = bitmap;
+            m_Bitmap = bitmap;
+            m_BackBuffer = bitmap.BackBuffer;
+            m_BackBufferStride = bitmap.BackBufferStride;
 
-			Height = m_Bitmap.PixelHeight;
-			Width = m_Bitmap.PixelWidth;
-		}
+            Height = m_Bitmap.PixelHeight;
+            Width = m_Bitmap.PixelWidth;
 
-		public override void Dispose()
-		{
-		}
+            m_WorkerCancellationTokenSource = new CancellationTokenSource();
+            m_WorkerThread = new Thread(() => Worker(m_WorkerCancellationTokenSource.Token));
+            m_WorkerThread.Start();
+        }
 
-		public override void SetPixel(int x, int y, Color color)
-		{
-			lock (m_Queue)
-				m_Queue.Enqueue(new Tuple<int, int, Color>(x, y, color));
+        public override void Dispose()
+        {
+            m_WorkerCancellationTokenSource.Cancel();
+            m_WorkerCancellationTokenSource.Dispose();
+        }
 
-			Application.Current?.Dispatcher.Invoke(DispatcherPriority.Render, (Action)Worker);
-		}
+        public override void SetPixel(int x, int y, Color color)
+        {
+            lock (m_Queue)
+                m_Queue.Enqueue(new Tuple<int, int, Color>(x, y, color));
+        }
 
-		public override Color GetPixel(int x, int y)
-		{
-			return Application.Current?.Dispatcher.Invoke(() => GetPixelInternal(x, y)) ?? Color.Black;
-		}
+        public override Color GetPixel(int x, int y)
+        {
+            unsafe
+            {
+                // Get a pointer to the back buffer.
+                IntPtr pBackBuffer = m_BackBuffer;
 
-		private Color GetPixelInternal(int x, int y)
-		{
-			m_Bitmap.Lock();
+                // Find the address of the pixel to read.
+                pBackBuffer += y * m_BackBufferStride;
+                pBackBuffer += x * 4;
 
-			try
-			{
-				unsafe
-				{
-					// Get a pointer to the back buffer.
-					IntPtr pBackBuffer = m_Bitmap.BackBuffer;
+                // Compute the pixel's color.
+                int colorData = *(int*)pBackBuffer;
 
-					// Find the address of the pixel to read.
-					pBackBuffer += y * m_Bitmap.BackBufferStride;
-					pBackBuffer += x * 4;
+                return Color.FromArgb(colorData >> 16, colorData >> 8 & 0xFF, colorData & 0xFF);
+            }
+        }
 
-					// Compute the pixel's color.
-					int colorData = *(int*)pBackBuffer;
+        private void Worker(CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                int minX = Width;
+                int minY = Height;
+                int maxX = 0;
+                int maxY = 0;
 
-					return Color.FromArgb(colorData >> 16, colorData >> 8 & 0xFF, colorData & 0xFF);
-				}
-			}
-			finally
-			{
-				m_Bitmap.Unlock();
-			}
-		}
+                Tuple<int, int, Color> tuple;
+                while (TryDequeue(out tuple))
+                {
+                    int x = tuple.Item1;
+                    int y = tuple.Item2;
 
-		private void Worker()
-		{
-			if (!m_Bitmap.TryLock(TimeSpan.Zero))
-				return;
+                    Color color = tuple.Item3;
+                    if (color == GetPixel(x, y))
+                        continue;
 
-			try
-			{
-				Tuple<int, int, Color> tuple;
-				while (TryDequeue(out tuple))
-				{
-					int x = tuple.Item1;
-					int y = tuple.Item2;
-					Color color = tuple.Item3;
+                    minX = System.Math.Min(minX, x);
+                    minY = System.Math.Min(minY, y);
+                    maxX = System.Math.Max(maxX, x);
+                    maxY = System.Math.Max(maxY, y);
 
-					unsafe
-					{
-						// Get a pointer to the back buffer.
-						IntPtr pBackBuffer = m_Bitmap.BackBuffer;
+                    unsafe
+                    {
+                        // Get a pointer to the back buffer.
+                        IntPtr pBackBuffer = m_BackBuffer;
 
-						// Find the address of the pixel to draw.
-						pBackBuffer += y * m_Bitmap.BackBufferStride;
-						pBackBuffer += x * 4;
+                        // Find the address of the pixel to draw.
+                        pBackBuffer += y * m_BackBufferStride;
+                        pBackBuffer += x * 4;
 
-						// Compute the pixel's color.
-						int colorData = color.R << 16;
-						colorData |= color.G << 8;
-						colorData |= color.B;
+                        // Compute the pixel's color.
+                        int colorData = color.R << 16;
+                        colorData |= color.G << 8;
+                        colorData |= color.B;
 
-						// Assign the color data to the pixel.
-						*(int*)pBackBuffer = colorData;
-					}
+                        // Assign the color data to the pixel.
+                        *(int*)pBackBuffer = colorData;
+                    }
+                }
 
-					m_Bitmap.AddDirtyRect(new Int32Rect(x, y, 1, 1));
-				}
-			}
-			finally
-			{
-				m_Bitmap.Unlock();
-			}
-		}
+                if (maxX > 0)
+                    Blit(minX, minY, maxX, maxY);
+            }
+        }
 
-		private bool TryDequeue(out Tuple<int, int, Color> tuple)
-		{
-			lock (m_Queue)
-				return m_Queue.TryDequeue(out tuple);
-		}
-	}
+        private void Blit(int minX, int minY, int maxX, int maxY)
+        {
+            int dirtyWidth = (maxX - minX) + 1;
+            int dirtyHeight = (maxY - minY) + 1;
+
+            Application.Current?.Dispatcher.Invoke(DispatcherPriority.Render, () =>
+            {
+                m_Bitmap.Lock();
+
+                try
+                {
+                    m_Bitmap.AddDirtyRect(new Int32Rect(minX, minY, dirtyWidth, dirtyHeight));
+                }
+                finally
+                {
+                    m_Bitmap.Unlock();
+                }
+            });
+        }
+
+        private bool TryDequeue(out Tuple<int, int, Color> tuple)
+        {
+            lock (m_Queue)
+                return m_Queue.TryDequeue(out tuple);
+        }
+    }
 }
