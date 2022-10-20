@@ -94,10 +94,10 @@ namespace Raytracer.SceneObjects.Geometry.Primitives
 		protected override Aabb CalculateAabb()
 		{
 			return new Aabb
-			{
-				Min = new Vector3(-0.5f),
-				Max = new Vector3(0.5f)
-			}.Multiply(LocalToWorld);
+			(
+				new Vector3(-0.5f),
+                new Vector3(0.5f)
+			).Multiply(LocalToWorld);
 		}
 
 		private static Vector3 GetTangent(Vector3 pos)

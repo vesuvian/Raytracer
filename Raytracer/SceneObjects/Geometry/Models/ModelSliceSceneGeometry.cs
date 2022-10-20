@@ -46,13 +46,7 @@ namespace Raytracer.SceneObjects.Geometry.Models
 
 			if (testAabb)
 			{
-				float tMin;
-				float tMax;
-				if (!Aabb.Intersects(ray, out tMin, out tMax))
-					return false;
-
-				if ((tMin < minDelta && tMax < minDelta) ||
-				    (tMin > maxDelta && tMax > maxDelta))
+				if (!Aabb.Intersects(ray, minDelta, maxDelta))
 					return false;
 			}
 

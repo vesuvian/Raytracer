@@ -14,9 +14,9 @@ namespace Raytracer.Geometry
 	[DebuggerDisplay("A = {A}, B = {B}, C = {C}")]
 	public record Triangle
 	{
-		public Vertex A { get; set; } = new Vertex();
-		public Vertex B { get; set; } = new Vertex();
-		public Vertex C { get; set; } = new Vertex();
+		public Vertex A { get; set; } = new();
+		public Vertex B { get; set; } = new();
+		public Vertex C { get; set; } = new();
 
 		public IEnumerable<Vertex> Vertices { get { return new[] { A, B, C }; } }
 		public float SurfaceArea { get { return GetSurfaceArea(A.Position, B.Position, C.Position); } }
@@ -186,11 +186,7 @@ namespace Raytracer.Geometry
 					bool currentInFront = !clippingPlane.IsBehind(current.Position);
 
 					// Find the point where the line intersects the plane
-					Ray ray = new Ray
-					{
-						Origin = previous.Position,
-						Direction = Vector3.Normalize(current.Position - previous.Position)
-					};
+					Ray ray = new Ray(previous.Position, Vector3.Normalize(current.Position - previous.Position));
 
 					// Line is parallel to the plane, add the second vertex
 					float t;

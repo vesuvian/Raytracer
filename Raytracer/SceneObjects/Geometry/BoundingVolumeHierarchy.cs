@@ -12,10 +12,9 @@ namespace Raytracer.SceneObjects.Geometry
 {
 	public sealed class BoundingVolumeHierarchy : ISceneGeometry
 	{
-		private readonly HashSet<ISceneGeometry> m_Leaves;
-
-		private BoundingVolumeHierarchy m_Left;
+        private BoundingVolumeHierarchy m_Left;
 		private BoundingVolumeHierarchy m_Right;
+        private ISceneGeometry[] m_Children = Array.Empty<ISceneGeometry>();
 
 		private eRayMask? m_RayMask;
 		private float? m_SurfaceArea;
@@ -23,32 +22,11 @@ namespace Raytracer.SceneObjects.Geometry
 
 		#region Properties
 
-		public IEnumerable<ISceneGeometry> Leaves { get { return m_Leaves.ToArray(); } }
-
-		public BoundingVolumeHierarchy Left { get { return m_Left; } }
-
-		public BoundingVolumeHierarchy Right { get { return m_Right; } }
-
-		private IEnumerable<ISceneGeometry> Children
-		{
-			get
-			{
-				foreach (ISceneGeometry leaf in m_Leaves)
-					yield return leaf;
-
-				if (m_Left != null)
-					yield return m_Left;
-
-				if (m_Right != null)
-					yield return m_Right;
-			}
-		}
-
 		public eRayMask RayMask
 		{
 			get
 			{
-				m_RayMask ??= Children.Aggregate(eRayMask.None, (mask, child) => mask | child.RayMask);
+				m_RayMask ??= m_Children.Aggregate(eRayMask.None, (mask, child) => mask | child.RayMask);
 				return m_RayMask.Value;
 			}
 		}
@@ -57,7 +35,7 @@ namespace Raytracer.SceneObjects.Geometry
 		{
 			get
 			{
-				m_SurfaceArea ??= Children.Aggregate(0.0f, (area, child) => area + child.SurfaceArea);
+				m_SurfaceArea ??= m_Children.Aggregate(0.0f, (area, child) => area + child.SurfaceArea);
 				return m_SurfaceArea.Value;
 			}
 		}
@@ -66,9 +44,9 @@ namespace Raytracer.SceneObjects.Geometry
 		{
 			get
 			{
-				if (!Children.Any())
+				if (!m_Children.Any())
 					return default;
-				return m_Aabb ??= Children.Select(c => c.Aabb).Sum();
+				return m_Aabb ??= m_Children.Select(c => c.Aabb).Sum();
 			}
 		}
 
@@ -92,8 +70,6 @@ namespace Raytracer.SceneObjects.Geometry
 		public BoundingVolumeHierarchy(IEnumerable<ISceneGeometry> geometry, int maxDepth = 10,
 									   Action<IEnumerable<ISceneGeometry>, IEnumerable<ISceneGeometry>> onSlice = null)
 		{
-			m_Leaves = new HashSet<ISceneGeometry>();
-
 			ProcessGeometry(geometry, maxDepth, onSlice);
 		}
 
@@ -117,34 +93,29 @@ namespace Raytracer.SceneObjects.Geometry
 
 			if (testAabb)
 			{
-				float tMin;
-				float tMax;
-				if (!Aabb.Intersects(ray, out tMin, out tMax))
-					return false;
-
-				if ((tMin < minDelta && tMax < minDelta) ||
-					(tMin > maxDelta && tMax > maxDelta))
+				if (!Aabb.Intersects(ray, minDelta, maxDelta))
 					return false;
 			}
 
 			// Get the children that intersect by distance
 			IEnumerable<AabbRayIntersection> aabbRayIntersections =
-				Children.Select(n =>
-					 {
-						 float tMin;
-						 float tMax;
-						 bool hit = Aabb.Intersects(ray, out tMin, out tMax);
+                m_Children.Select(n =>
+                          {
+                              float tMin;
+                              float tMax;
+                              bool hit = n.Aabb.Intersects(ray, out tMin, out tMax);
 
-						 return new AabbRayIntersection
-						 {
-							 MinDelta = tMin,
-							 MaxDelta = tMax,
-							 Hit = hit,
-							 Geometry = n
-						 };
-					 })
-					 .Where(i => i.Hit)
-					 .OrderBy(i => MathF.Min(i.MinDelta, i.MaxDelta));
+                              return new AabbRayIntersection
+                              {
+                                  MinDelta = tMin,
+                                  MaxDelta = tMax,
+                                  Hit = hit,
+                                  Geometry = n
+                              };
+                          })
+                          .Where(i => i.Hit)
+                          .Where(i => !(i.MaxDelta < minDelta) && !(i.MinDelta > maxDelta))
+                          .OrderBy(i => MathF.Min(i.MinDelta, i.MaxDelta));
 
 			// Now find the best intersection by actual geometry
 			intersection = default;
@@ -153,10 +124,6 @@ namespace Raytracer.SceneObjects.Geometry
 
 			foreach (var aabbRayIntersection in aabbRayIntersections)
 			{
-				if (aabbRayIntersection.MaxDelta < minDelta ||
-				    aabbRayIntersection.MinDelta > maxDelta)
-					continue;
-
 				Intersection thisIntersection;
 				if (!aabbRayIntersection.Geometry.GetIntersection(ray, mask, out thisIntersection, minDelta, maxDelta, false))
 					continue;
@@ -180,13 +147,13 @@ namespace Raytracer.SceneObjects.Geometry
 
 		public IEnumerable<BoundingVolumeHierarchy> GetNodesRecursive()
 		{
-			IEnumerable<BoundingVolumeHierarchy> left = Left == null
+			IEnumerable<BoundingVolumeHierarchy> left = m_Left == null
 				? Enumerable.Empty<BoundingVolumeHierarchy>()
-				: Left.GetNodesRecursive().Prepend(Left);
+				: m_Left.GetNodesRecursive().Prepend(m_Left);
 
-			IEnumerable<BoundingVolumeHierarchy> right = Right == null
+			IEnumerable<BoundingVolumeHierarchy> right = m_Right == null
 				? Enumerable.Empty<BoundingVolumeHierarchy>()
-				: Right.GetNodesRecursive().Prepend(Right);
+				: m_Right.GetNodesRecursive().Prepend(m_Right);
 
 			return left.Concat(right);
 		}
@@ -198,12 +165,12 @@ namespace Raytracer.SceneObjects.Geometry
 		private void ProcessGeometry(IEnumerable<ISceneGeometry> geometry, int maxDepth, Action<IEnumerable<ISceneGeometry>, IEnumerable<ISceneGeometry>> onSlice)
 		{
 			HashSet<ISceneGeometry> toProcess = geometry.ToHashSet();
-			onSlice ??= (l, r) => { };
+			onSlice ??= (_, _) => { };
 
 			// Depth is zero
 			if (maxDepth == 0)
 			{
-				m_Leaves.AddRange(toProcess);
+				m_Children = toProcess.ToArray();
 				return;
 			}
 
@@ -216,10 +183,7 @@ namespace Raytracer.SceneObjects.Geometry
 			HashSet<ISceneGeometry> left;
 			HashSet<ISceneGeometry> right;
 			Slice(toProcess, position, bestAxis, out leaves, out left, out right);
-
-			onSlice(left, right);
-
-			m_Leaves.AddRange(leaves);
+            onSlice(left, right);
 
 			Action[] recurse =
 			{
@@ -236,7 +200,12 @@ namespace Raytracer.SceneObjects.Geometry
 			};
 
 			Parallel.ForEach(recurse, r => r());
-		}
+
+            m_Children = leaves.Append(m_Left).Append(m_Right).Where(g => g != null).ToArray();
+            m_RayMask = null;
+            m_SurfaceArea = null;
+            m_Aabb = null;
+        }
 
 		/// <summary>
 		/// Finds the best way to bisect the given items in half.
@@ -374,12 +343,8 @@ namespace Raytracer.SceneObjects.Geometry
 			foreach (ISceneGeometry item in geometry.Distinct())
 			{
 				Aabb aabb = item.Aabb;
-
-				Aabb leftAabb = aabb;
-				leftAabb.Max = leftAabb.Max.SetValue(axis, position);
-
-				Aabb rightAabb = aabb;
-				rightAabb.Min = rightAabb.Min.SetValue(axis, position);
+                Aabb leftAabb = new Aabb(aabb.Min, aabb.Max.SetValue(axis, position));
+                Aabb rightAabb = new Aabb(aabb.Min.SetValue(axis, position), aabb.Max);
 
 				if (leftAabb.Contains(aabb))
 					left.Add(item);

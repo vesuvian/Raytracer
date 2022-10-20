@@ -42,10 +42,10 @@ namespace Raytracer.SceneObjects.Geometry.Primitives
 		protected override Aabb CalculateAabb()
 		{
 			return new Aabb
-			{
-				Min = new Vector3(-Radius, -Height / 2, -Radius),
-				Max = new Vector3(Radius, Height / 2, Radius)
-			}.Multiply(LocalToWorld);
+			(
+				new Vector3(-Radius, -Height / 2, -Radius),
+				new Vector3(Radius, Height / 2, Radius)
+			).Multiply(LocalToWorld);
 		}
 
 		protected override bool GetIntersectionFinal(Ray ray, out Intersection intersection,
@@ -135,8 +135,7 @@ namespace Raytracer.SceneObjects.Geometry.Primitives
 			}
 
 			// Top cap
-			Ray topCapRay = ray;
-			topCapRay.Origin -= Vector3.UnitY * Height / 2;
+			Ray topCapRay = new Ray(ray.Origin - Vector3.UnitY * Height / 2, ray.Direction);
 			float t;
 			if (PlaneSceneGeometry.HitPlane(topCapRay, out t))
 			{
@@ -162,8 +161,7 @@ namespace Raytracer.SceneObjects.Geometry.Primitives
 			}
 
 			// Bottom cap
-			Ray bottomCapRay = ray;
-			bottomCapRay.Origin += Vector3.UnitY * Height / 2;
+			Ray bottomCapRay = new Ray(ray.Origin + Vector3.UnitY * Height / 2, ray.Direction);
 			if (PlaneSceneGeometry.HitPlane(bottomCapRay, out t))
 			{
 				Vector3 position = bottomCapRay.PositionAtDelta(t);

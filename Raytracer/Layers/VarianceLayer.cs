@@ -39,13 +39,7 @@ namespace Raytracer.Layers
                 m_Variance.Clear();
 
                 for (int index = 0; index < buffer.Width * buffer.Height; index++)
-                {
-                    m_Variance.Add(new Aabb
-                    {
-                        Min = new Vector3(float.MaxValue),
-                        Max = new Vector3(float.MinValue)
-                    });
-                }
+                    m_Variance.Add(new Aabb(new Vector3(float.MaxValue), new Vector3(float.MinValue)));
             }
 
             base.Render(scene, buffer, cancellationToken);
@@ -57,15 +51,14 @@ namespace Raytracer.Layers
             var sample = base.Sample(scene, buffer, x, y, random, cancellationToken);
             sample = Vector3.Min(sample, Vector3.One);
 
-            var delta = 0.0f;
+            float delta;
 
             lock (m_Variance)
             {
                 var index = x + y * buffer.Width;
 
                 var bounds = m_Variance[x + y * buffer.Width];
-                bounds.Min = Vector3.Min(bounds.Min, sample);
-                bounds.Max = Vector3.Max(bounds.Max, sample);
+                bounds = new Aabb(Vector3.Min(bounds.Min, sample), Vector3.Max(bounds.Max, sample));
                 m_Variance[index] = bounds;
 
                 var magnitude = (bounds.Max - bounds.Min).Length();

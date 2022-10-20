@@ -28,52 +28,11 @@ namespace Raytracer.Tests.Geometry
                     }
                 },
                 new Aabb
-                {
-                    Min = Vector3.Zero,
-                    Max = Vector3.One
-                },
-                new Triangle[]
-                {
-                    new Triangle
-                    {
-                        A = new Vertex
-                        {
-                            Position = new Vector3(0, 0, 0)
-                        },
-                        B = new Vertex
-                        {
-                            Position = new Vector3(0, 1, 0)
-                        },
-                        C = new Vertex
-                        {
-                            Position = new Vector3(1, 1, 0)
-                        }
-                    }
-                }
-            },
-            new object[]
-            {
-                new Triangle
-                {
-                    A = new Vertex
-                    {
-                        Position = new Vector3(0, 0, 0)
-                    },
-                    B = new Vertex
-                    {
-                        Position = new Vector3(0, 1, 0)
-                    },
-                    C = new Vertex
-                    {
-                        Position = new Vector3(1, 1, 0)
-                    }
-                },
-                new Aabb
-                {
-                    Min = Vector3.Zero,
-                    Max = Vector3.One / 2
-                },
-                new Triangle[]
+                (
+                    Vector3.Zero,
+                    Vector3.One
+                ),
+                new[]
                 {
                     new Triangle
                     {
@@ -110,10 +69,51 @@ namespace Raytracer.Tests.Geometry
                     }
                 },
                 new Aabb
+                (
+                    Vector3.Zero,
+                    Vector3.One / 2
+                ),
+                new[]
                 {
-                    Min = Vector3.One * 10,
-                    Max = Vector3.One * 10 + Vector3.One
+                    new Triangle
+                    {
+                        A = new Vertex
+                        {
+                            Position = new Vector3(0, 0, 0)
+                        },
+                        B = new Vertex
+                        {
+                            Position = new Vector3(0, 1, 0)
+                        },
+                        C = new Vertex
+                        {
+                            Position = new Vector3(1, 1, 0)
+                        }
+                    }
+                }
+            },
+            new object[]
+            {
+                new Triangle
+                {
+                    A = new Vertex
+                    {
+                        Position = new Vector3(0, 0, 0)
+                    },
+                    B = new Vertex
+                    {
+                        Position = new Vector3(0, 1, 0)
+                    },
+                    C = new Vertex
+                    {
+                        Position = new Vector3(1, 1, 0)
+                    }
                 },
+                new Aabb
+                (
+                    Vector3.One * 10,
+                    Vector3.One * 10 + Vector3.One
+                ),
                 new Triangle[]
                 {
                 }

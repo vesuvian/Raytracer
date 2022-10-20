@@ -9,14 +9,14 @@ namespace Raytracer.Geometry
 {
     [DebuggerDisplay("Min = {Min}, Max = {Max}")]
     public struct Aabb
-	{
-		public Vector3 Min { get; set; }
+    {
+        private readonly Vector3[] m_Bounds;
 
-		public Vector3 Max { get; set; }
+        public Vector3 Min { get { return m_Bounds?[0] ?? Vector3.Zero; } }
 
-		public Vector3 Center { get { return (Min + Max) / 2; } }
+        public Vector3 Max { get { return m_Bounds?[1] ?? Vector3.Zero; } }
 
-		public bool IsInfinite
+        public bool IsInfinite
         {
             get
             {
@@ -28,9 +28,7 @@ namespace Raytracer.Geometry
                        float.IsInfinity(Max.Z);
             }
         }
-
-        public Vector3 Extents { get { return (Max - Min) / 2; } }
-
+        
         public IEnumerable<Plane> Planes
         {
             get
@@ -44,18 +42,24 @@ namespace Raytracer.Geometry
             }
         }
 
-        public Vector3 Size { get { return Max - Min; } }
-
-        public float Volume { get { return Size.X * Size.Y * Size.Z; } }
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        public Aabb(Vector3 min, Vector3 max)
+        {
+            m_Bounds = new[]
+            {
+                Vector3.Min(min, max),
+                Vector3.Max(min, max)
+            };
+        }
 
         public static Aabb operator +(Aabb a, Aabb b)
-		{
-            return new Aabb
-            {
-                Min = Vector3.Min(a.Min, b.Min),
-                Max = Vector3.Max(a.Max, b.Max)
-            };
-		}
+        {
+            return new Aabb(Vector3.Min(a.Min, b.Min), Vector3.Max(a.Max, b.Max));
+        }
 
 		public static Aabb operator -(Aabb a, Aabb b)
 		{
@@ -67,19 +71,11 @@ namespace Raytracer.Geometry
             {
 				// Trim left
                 if (b.Min.X <= a.Min.X && b.Max.X >= a.Min.X)
-                    a = new Aabb
-                    {
-                        Min = new Vector3(MathF.Min(a.Max.X, b.Max.X), a.Min.Y, a.Min.Z),
-                        Max = a.Max
-                    };
+                    a = new Aabb(new Vector3(MathF.Min(a.Max.X, b.Max.X), a.Min.Y, a.Min.Z), a.Max);
 
                 // Trim right
                 if (b.Max.X >= a.Max.X && b.Min.X <= a.Max.X)
-                    a = new Aabb
-                    {
-                        Min = a.Min,
-                        Max = new Vector3(MathF.Max(a.Min.X, b.Min.X), a.Max.Y, a.Max.Z)
-					};
+                    a = new Aabb(a.Min, new Vector3(MathF.Max(a.Min.X, b.Min.X), a.Max.Y, a.Max.Z));
             }
 
             // Slice along Y
@@ -90,19 +86,11 @@ namespace Raytracer.Geometry
             {
                 // Trim bottom
                 if (b.Min.Y <= a.Min.Y && b.Max.Y >= a.Min.Y)
-                    a = new Aabb
-                    {
-                        Min = new Vector3(a.Min.X, MathF.Min(a.Max.Y, b.Max.Y), a.Min.Z),
-                        Max = a.Max
-                    };
+                    a = new Aabb(new Vector3(a.Min.X, MathF.Min(a.Max.Y, b.Max.Y), a.Min.Z), a.Max);
 
                 // Trim right
                 if (b.Max.X >= a.Max.X && b.Min.X <= a.Max.X)
-                    a = new Aabb
-                    {
-                        Min = a.Min,
-                        Max = new Vector3(a.Max.X, MathF.Max(a.Min.Y, b.Min.Y), a.Max.Z)
-                    };
+                    a = new Aabb(a.Min, new Vector3(a.Max.X, MathF.Max(a.Min.Y, b.Min.Y), a.Max.Z));
 			}
 
             // Slice along Z
@@ -113,19 +101,11 @@ namespace Raytracer.Geometry
             {
                 // Trim back
                 if (b.Min.Z <= a.Min.Z && b.Max.Z >= a.Min.Z)
-                    a = new Aabb
-                    {
-                        Min = new Vector3(a.Min.X, a.Min.Y, MathF.Min(a.Max.Z, b.Max.Z)),
-                        Max = a.Max
-                    };
+                    a = new Aabb(new Vector3(a.Min.X, a.Min.Y, MathF.Min(a.Max.Z, b.Max.Z)), a.Max);
 
                 // Trim front
                 if (b.Max.Z >= a.Max.Z && b.Min.Z <= a.Max.Z)
-                    a = new Aabb
-                    {
-                        Min = a.Min,
-                        Max = new Vector3(a.Max.X, a.Max.Y, MathF.Max(a.Min.Z, b.Min.Z))
-                    };
+                    a = new Aabb(a.Min, new Vector3(a.Max.X, a.Max.Y, MathF.Max(a.Min.Z, b.Min.Z)));
             }
 
             return a;
@@ -138,11 +118,8 @@ namespace Raytracer.Geometry
 
 		public Aabb Intersection(Aabb other)
         {
-            return new Aabb
-            {
-                Min = Vector3.Max(Min, other.Min),
-                Max = Vector3.Min(Max, other.Max)
-            };
+            return new Aabb(Vector3.Max(Min, other.Min),
+                            Vector3.Min(Max, other.Max));
         }
 
         /// <summary>
@@ -180,14 +157,29 @@ namespace Raytracer.Geometry
                    Max.Z >= other.Min.Z;
 		}
 
-        public bool Intersects(Ray ray, out float tmin, out float tmax)
-		{
-			Vector3[] bounds = { Min, Max };
+        public bool Intersects(Ray ray, float minDelta, float maxDelta)
+        {
+            float tMin;
+            float tMax;
+            if (!Intersects(ray, out tMin, out tMax))
+                return false;
 
-			tmin = (bounds[ray.Sign.X].X - ray.Origin.X) * ray.InverseDirection.X;
-			tmax = (bounds[1 - ray.Sign.X].X - ray.Origin.X) * ray.InverseDirection.X;
-			float tymin = (bounds[ray.Sign.Y].Y - ray.Origin.Y) * ray.InverseDirection.Y;
-			float tymax = (bounds[1 - ray.Sign.Y].Y - ray.Origin.Y) * ray.InverseDirection.Y;
+            return (!(tMin < minDelta) || !(tMax < minDelta)) &&
+                   (!(tMin > maxDelta) || !(tMax > maxDelta));
+        }
+
+        public bool Intersects(Ray ray, out float tmin, out float tmax)
+        {
+            var bounds = m_Bounds ?? new Vector3[2];
+
+            var sign = ray.Sign;
+            var origin = ray.Origin;
+            var inverseDirection = ray.InverseDirection;
+
+            tmin = (bounds[sign.X].X - origin.X) * inverseDirection.X;
+			tmax = (bounds[1 - sign.X].X - origin.X) * inverseDirection.X;
+			float tymin = (bounds[sign.Y].Y - origin.Y) * inverseDirection.Y;
+			float tymax = (bounds[1 - sign.Y].Y - origin.Y) * inverseDirection.Y;
 
 			if (tmin > tymax || tymin > tmax)
 				return false;
@@ -197,8 +189,8 @@ namespace Raytracer.Geometry
 			if (tymax < tmax)
 				tmax = tymax;
 
-			float tzmin = (bounds[ray.Sign.Z].Z - ray.Origin.Z) * ray.InverseDirection.Z;
-			float tzmax = (bounds[1 - ray.Sign.Z].Z - ray.Origin.Z) * ray.InverseDirection.Z;
+			float tzmin = (bounds[sign.Z].Z - origin.Z) * inverseDirection.Z;
+			float tzmax = (bounds[1 - sign.Z].Z - origin.Z) * inverseDirection.Z;
 
 			if (tmin > tzmax || tzmin > tmax)
 				return false;
@@ -232,11 +224,7 @@ namespace Raytracer.Geometry
 	        clippedA = Vector3.Zero;
 	        clippedB = Vector3.Zero;
 
-	        Ray ray = new Ray
-	        {
-		        Origin = a,
-		        Direction = Vector3.Normalize(b - a)
-	        };
+	        Ray ray = new Ray(a, Vector3.Normalize(b - a));
 
             // Ray doesn't intersect the box
 	        float min;
@@ -293,11 +281,8 @@ namespace Raytracer.Geometry
 					maxZ = transformed.Z;
 			}
 
-			return new Aabb
-			{
-				Min = new Vector3(minX, minY, minZ),
-				Max = new Vector3(maxX, maxY, maxZ)
-			};
+            return new Aabb(new Vector3(minX, minY, minZ),
+                            new Vector3(maxX, maxY, maxZ));
 		}
 	}
 }

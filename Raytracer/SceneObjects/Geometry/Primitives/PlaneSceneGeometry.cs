@@ -76,7 +76,7 @@ namespace Raytracer.SceneObjects.Geometry.Primitives
 
 		protected override Aabb CalculateAabb()
 		{
-			return new Aabb {Min = new Vector3(float.NegativeInfinity), Max = new Vector3(float.PositiveInfinity)};
+			return new Aabb(new Vector3(float.NegativeInfinity), new Vector3(float.PositiveInfinity));
 		}
 	}
 }

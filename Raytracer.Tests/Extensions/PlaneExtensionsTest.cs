@@ -91,11 +91,7 @@ namespace Raytracer.Tests.Extensions
             new object[]
             {
                 new Plane(Vector3.UnitY, 0),
-                new Ray
-                {
-                    Direction = -Vector3.UnitY,
-                    Origin = Vector3.UnitY
-                },
+                new Ray(-Vector3.UnitY, Vector3.UnitY),
                 true,
                 1
             },

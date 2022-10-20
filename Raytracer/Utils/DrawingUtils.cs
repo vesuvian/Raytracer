@@ -10,8 +10,7 @@ namespace Raytracer.Utils
 {
 	public sealed class DrawingUtils
 	{
-		private static Aabb s_NormalizedDeviceSpace =
-			new Aabb { Min = new Vector3(-1, -1, -1), Max = new Vector3(1, 1, 1) };
+		private static Aabb s_NormalizedDeviceSpace = new(new Vector3(-1), new Vector3(1));
 
 		public static void DrawAabb(ICamera camera, Aabb aabb, IBuffer buffer, Color color)
 		{
@@ -84,10 +83,10 @@ namespace Raytracer.Utils
 		private static Aabb GetBufferBounds(IBuffer buffer)
 		{
 			return new Aabb
-			{
-				Min = new Vector3(0, 0, float.NegativeInfinity),
-				Max = new Vector3(buffer.Width, buffer.Height, float.PositiveInfinity)
-			};
+			(
+				new Vector3(0, 0, float.NegativeInfinity),
+				new Vector3(buffer.Width, buffer.Height, float.PositiveInfinity)
+			);
 		}
 	}
 }

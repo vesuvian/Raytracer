@@ -68,11 +68,7 @@ namespace Raytracer.SceneObjects.Cameras
 			// Direction is now the direction from the offset position to the focal point
 			Vector3 apertureOffsetDirection = Vector3.Normalize(focalpoint - apertureOffset);
 
-			return new Ray
-			{
-				Origin = apertureOffset,
-				Direction = apertureOffsetDirection
-			}.Multiply(LocalToWorld);
+			return new Ray(apertureOffset, apertureOffsetDirection).Multiply(LocalToWorld);
 		}
 
 		protected override Matrix4x4 CalculatePerspective()

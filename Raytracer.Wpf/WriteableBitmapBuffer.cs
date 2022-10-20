@@ -37,7 +37,10 @@ namespace Raytracer.Wpf
             Width = m_Bitmap.PixelWidth;
 
             m_WorkerCancellationTokenSource = new CancellationTokenSource();
-            m_WorkerThread = new Thread(() => Worker(m_WorkerCancellationTokenSource.Token));
+            m_WorkerThread = new Thread(() => Worker(m_WorkerCancellationTokenSource.Token))
+            {
+                Name = nameof(WriteableBitmapBuffer)
+            };
             m_WorkerThread.Start();
         }
 

@@ -13,10 +13,10 @@ namespace Raytracer.Tests.Geometry
             new object[]
             {
                 new Aabb
-                {
-					Min = new Vector3(0, 0, 0),
-					Max = new Vector3(1, 1, 1)
-                },
+                (
+					new Vector3(0, 0, 0),
+					new Vector3(1, 1, 1)
+                ),
 				new Vector3(-1, 0.5f, 0.5f),
 				new Vector3(2, 0.5f, 0.5f),
 				true,
@@ -26,10 +26,10 @@ namespace Raytracer.Tests.Geometry
             new object[]
             {
 	            new Aabb
-	            {
-		            Min = new Vector3(0, 0, 0),
-		            Max = new Vector3(1, 1, 1)
-	            },
+	            (
+		            new Vector3(0, 0, 0),
+		            new Vector3(1, 1, 1)
+	            ),
 	            new Vector3(-1, 2f, 0.5f),
 	            new Vector3(2, 2f, 0.5f),
 	            false,
@@ -39,10 +39,10 @@ namespace Raytracer.Tests.Geometry
             new object[]
             {
 	            new Aabb
-	            {
-		            Min = new Vector3(0, 0, 0),
-		            Max = new Vector3(1, 1, 1)
-	            },
+	            (
+		            new Vector3(0, 0, 0),
+		            new Vector3(1, 1, 1)
+	            ),
 	            new Vector3(-3, 0.5f, 0.5f),
 	            new Vector3(-1, 0.5f, 0.5f),
 	            false,
@@ -52,10 +52,10 @@ namespace Raytracer.Tests.Geometry
             new object[]
             {
 	            new Aabb
-	            {
-		            Min = new Vector3(0, 0, 0),
-		            Max = new Vector3(1, 1, 1)
-	            },
+	            (
+		            new Vector3(0, 0, 0),
+		            new Vector3(1, 1, 1)
+	            ),
 	            new Vector3(2, 0.5f, 0.5f),
 	            new Vector3(3, 0.5f, 0.5f),
 	            false,
@@ -65,10 +65,10 @@ namespace Raytracer.Tests.Geometry
             new object[]
             {
 	            new Aabb
-	            {
-		            Min = new Vector3(0, 0, 0),
-		            Max = new Vector3(1, 1, 1)
-	            },
+	            (
+		            new Vector3(0, 0, 0),
+		            new Vector3(1, 1, 1)
+	            ),
 	            new Vector3(-0.5f, 0.5f, 0.5f),
 	            new Vector3(0.5f, 0.5f, 0.5f),
 	            true,
@@ -80,7 +80,7 @@ namespace Raytracer.Tests.Geometry
 		[Test]
         public void PlanesTest()
         {
-	        Aabb aabb = new Aabb { Min = Vector3.Zero, Max = Vector3.One };
+	        Aabb aabb = new Aabb(Vector3.Zero, Vector3.One);
 			Vector3 point = Vector3.One / 2;
 
 			foreach (Plane plane in aabb.Planes)

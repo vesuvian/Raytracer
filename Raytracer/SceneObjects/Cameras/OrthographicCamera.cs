@@ -52,11 +52,7 @@ namespace Raytracer.SceneObjects.Cameras
 			Vector3 end = ProjectionInverse.MultiplyPoint(new Vector3(rayX, rayY, -1));
 			Vector3 direction = Vector3.Normalize(end - start);
 
-			return new Ray
-			{
-				Origin = start,
-				Direction = direction
-			}.Multiply(LocalToWorld);
+			return new Ray(start, direction).Multiply(LocalToWorld);
 		}
 
 		protected override Matrix4x4 CalculatePerspective()

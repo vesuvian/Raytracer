@@ -98,10 +98,10 @@ namespace Raytracer.SceneObjects.Geometry.Primitives
 		protected override Aabb CalculateAabb()
 		{
 			return new Aabb
-			{
-				Min = new Vector3(-m_Radius),
-				Max = new Vector3(m_Radius)
-			}.Multiply(LocalToWorld);
+			(
+				new Vector3(-m_Radius),
+				new Vector3(m_Radius)
+			).Multiply(LocalToWorld);
 		}
 
 		public static Vector2 GetUv(Vector3 position)

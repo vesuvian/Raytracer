@@ -31,7 +31,7 @@ namespace Raytracer.SceneObjects.Lights
 				sample = intersection.Material.Shadow(ray, intersection, sample);
 
 				// Move the ray up to this intersection for the next shadow calculation
-				ray.Origin = intersection.Position;
+                ray = new Ray(intersection.Position, ray.Direction);
 				distance -= intersection.Distance;
 			}
 		}

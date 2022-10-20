@@ -11,12 +11,7 @@ namespace Raytracer.SceneObjects.Lights
 
 		public override Vector3 Sample(Scene scene, Vector3 position, Vector3 normal, Random random)
 		{
-			Ray ray =
-				new Ray
-				{
-					Origin = position - (Forward * Distance),
-					Direction = Forward
-				};
+			Ray ray = new Ray(position - (Forward * Distance), Forward);
 
 			float faceAmount = MathF.Abs(Vector3.Dot(normal, Forward));
 			faceAmount = MathUtils.Clamp(faceAmount, 0, 1);

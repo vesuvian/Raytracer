@@ -53,11 +53,7 @@ namespace Raytracer.SceneObjects.Lights
 			Vector3 pointInSphere = MathUtils.RandomPointInSphere(random);
 			Vector3 softShadowPosition = Position + pointInSphere * SoftShadowRadius;
 
-			return new Ray
-			{
-				Origin = softShadowPosition,
-				Direction = Vector3.Normalize(position - softShadowPosition)
-			};
+            return new Ray(softShadowPosition, Vector3.Normalize(position - softShadowPosition));
 		}
 	}
 }

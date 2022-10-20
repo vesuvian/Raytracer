@@ -105,11 +105,7 @@ namespace Raytracer.Materials
 				Matrix4x4 surface = Matrix4x4Utils.Tbn(nt, nb, normal);
 				Vector3 worldNormal = surface.MultiplyNormal(randomNormal);
 
-				Ray giRay = new Ray
-				{
-					Origin = position,
-					Direction = worldNormal
-				};
+				Ray giRay = new Ray(position, worldNormal);
 
 				Vector3 sample;
 				castRay(scene, giRay, random, rayDepth + 1,
@@ -137,11 +133,7 @@ namespace Raytracer.Materials
 				Matrix4x4 surface = Matrix4x4Utils.Tbn(nt, nb, normal);
 				Vector3 worldNormal = surface.MultiplyNormal(randomNormal);
 
-				Ray giRay = new Ray
-				{
-					Origin = position,
-					Direction = worldNormal
-				};
+				Ray giRay = new Ray(position, worldNormal);
 
 				if (scene.GetIntersection(giRay, out _, eRayMask.AmbientOcclusion, 0.001f, scene.AmbientOcclusionScale))
 					occlusionSum += new Vector3(1) * r1;
@@ -194,11 +186,7 @@ namespace Raytracer.Materials
 				scatterDistance = random.NextFloat(0, scatterDistance);
 				Vector3 scatterPosition = ray.PositionAtDelta(scatterDistance);
 				Vector3 scatterDirection = MathUtils.RandomPointOnSphere(random);
-				refractedRay = new Ray
-				{
-					Origin = scatterPosition,
-					Direction = scatterDirection
-				};
+                refractedRay = new Ray(scatterPosition, scatterDirection);
 			}
 			// Calculate refraction
 			else

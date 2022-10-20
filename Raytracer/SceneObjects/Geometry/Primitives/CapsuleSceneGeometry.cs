@@ -42,10 +42,10 @@ namespace Raytracer.SceneObjects.Geometry.Primitives
 		protected override Aabb CalculateAabb()
 		{
 			return new Aabb
-			{
-				Min = new Vector3(-Radius, -Height / 2, -Radius),
-				Max = new Vector3(Radius, Height / 2, Radius)
-			}.Multiply(LocalToWorld);
+			(
+				new Vector3(-Radius, -Height / 2, -Radius),
+				new Vector3(Radius, Height / 2, Radius)
+			).Multiply(LocalToWorld);
 		}
 
 		protected override bool GetIntersectionFinal(Ray ray, out Intersection intersection,
